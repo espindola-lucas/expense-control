@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: laravel-app
     build:
       context: ./
       dockerfile: app.dockerfile
@@ -13,6 +14,7 @@ services:
       - "9000:9000"
 
   web:
+    container_name: laravel-web
     build:
       context: ./
       dockerfile: web.dockerfile
@@ -25,24 +27,28 @@ services:
       - app
 
   database:
-   image: postgres:11.2
-   volumes:
-     - dbdata:/var/lib/pgsql
-   environment:
-     - "POSTGRES_DB=mydb"
-     - "POSTGRES_USER=myuser"
-     - "POSTGRES_PASSWORD=expensecontrolpassword"
-   ports:
-       - "54321:5432"
+    container_name: laravel-database
+    image: postgres:11.2
+    volumes:
+      - dbdata:/var/lib/pgsql
+    environment:
+      - "POSTGRES_DB=mydb"
+      - "POSTGRES_USER=myuser"
+      - "POSTGRES_PASSWORD=expensecontrolpassword"
+    ports:
+        - "54321:5432"
 
   selenium:
+    container_name: laravel-selenium
     image: selenium/standalone-chrome
 
   adminer:
+    container_name: laravel-adminer
     image: adminer
     restart: always
     ports:
       - 8081:8080
+
   node:
     image: node:18.19.1
     container_name: laravel_node
