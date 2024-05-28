@@ -16,6 +16,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            screens: {
+                'sm-500': '500px',
+            },
+            colors: {
+                'semi-white': '#F3F4F6',
+            }
         },
     },
 
