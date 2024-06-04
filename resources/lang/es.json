@@ -1,0 +1,15 @@
+{
+    "Email": "Email",
+    "Name": "Nombre",
+    "Password": "Contraseña",
+    "Confirm Password": "Confirmar contraseña",
+    "Already registered?":"¿Ya tienes una cuenta?",
+    "Remember me": "Recordarme",
+    "Forgot your password?": "¿Olvidaste tu contraseña?",
+    "Log in": "Iniciar Sesion",
+    "Register": "Crear Cuenta",
+    "Log Out": "Cerrar Sesion",
+    "Product": "Producto",
+    "Price": "Precio",
+    "Actions": "Acciones"
+}
