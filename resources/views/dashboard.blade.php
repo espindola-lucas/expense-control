@@ -23,19 +23,66 @@
 
             <main class="container mx-auto p-4">
                 <div class="w-full md:w-5/6 mx-auto">
-                    <div class="flex justify-start mb-4">
+                    <div class="flex justify-between mb-4">
                         <a href="{{ route('products.create') }}">
                             <x-button-add>
                                 Agregar
                             </x-button-add>
                         </a>
+                        <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
+                            <div class="flex items-center space-x-4">
+                                <div class="mt-4">
+                                    <label for="month" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                    <select id="month" name="month" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option selected disabled>Elegi el mes</option>
+                                        @foreach($months as $month)
+                                        <option value="{{ $month->value }}" {{ $month->value == $selectedMonth ? 'selected' : '' }}>{{ $month->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mt-4">
+                                    <label for="year" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                    <select id="year" name="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option selected disabled>Elegi el año</option>
+                                        @foreach($years as $year)
+                                        <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-4 self-end">Filtrar</button>
+                        </form>
                     </div>
+                    <form action="" method="GET" class="flex space-x-4 -mt-8 flex sm-500:hidden">
+                        <div class="flex items-center space-x-4">
+                            <div>
+                                <label for="month" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                <select id="month" name="month" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option selected disabled>Elegi el mes</option>
+                                    @foreach($months as $month)
+                                    <option value="{{ $month->value }}" {{ $month->value == $selectedMonth ? 'selected' : '' }}>{{ $month->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label for="year" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                <select id="year" name="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <option selected disabled>Elegi el año</option>
+                                    @foreach($years as $year)
+                                    <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-4 self-end">Filtrar</button>
+                    </form>
                     <div class="p-2 bg-white shadow-md">
                         <table class="table-auto w-full border-collapse">
                             <!-- head -->
                             <thead>
                                 <tr class="border-b">
-                                    <th class="px-4 py-2">{{ __('Name') }}</th>
+                                    <th class="px-4 py-2 hidden sm-500:table-cell">{{ __('User') }}</th>
+                                    <th class="px-4 py-2">{{ __('Date') }}</th>
                                     <th class="px-4 py-2">{{ __('Product') }}</th>
                                     <th class="px-4 py-2">{{ __('Price') }}</th>
                                     <th class="px-4 py-2">{{ __('Actions') }}</th>
@@ -44,7 +91,9 @@
                             <tbody>
                                 @foreach($products as $product)
                                 <tr class="bg-base-200 border-b">
-                                    <td class="px-4 py-2 text-center">{{ $user }}</td>
+                                    <td class="px-4 py-2 text-center hidden sm-500:table-cell">{{ $user }}</td>
+                                    <td class="px-4 py-2 text-center">{{ \Carbon\Carbon::createFromFormat('d/m/Y', $product->expense_date)->format('d/m') }}</td>
+                                    <!-- <td class="px-4 py-2 text-center hidden">{{ \Carbon\Carbon::createFromFormat('d/m/Y', $product->expense_date)->format('d/m') }}</td> -->
                                     <td class="px-4 py-2 text-center">{{ $product->name }}</td>
                                     <td class="px-4 py-2 text-center">$ {{ $product->price }}</td>
                                     <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
@@ -70,7 +119,7 @@
                     </div>
                     <div class="flex justify-between mt-4 p-2 bg-white shadow-md">
                         <p>
-                            Plata disponible : 200.000
+                            Plata disponible : 356.880
                         </p>
                         <p>
                             Total de gastos : {{ $totalPrice }}
