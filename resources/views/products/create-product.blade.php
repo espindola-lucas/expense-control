@@ -26,14 +26,35 @@
                 @csrf
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white shadow-md">
-                             <!-- Nombre del Producto -->
+                            <!-- Fecha de compra -->
+                            <div class="mt-4">
+                                <label for="expense_date" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+                                    <input
+                                        type="date"
+                                        id="expense_date"
+                                        name="expense_date"
+                                        value="{{old('expense_date')}}"
+                                        class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
+                                        placeholder="Dia"
+                                    />
+                                    <span class="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
+                                        Dia de la compra
+                                    </span>
+                                </label>
+                                @error('expense_date')
+                                <p>
+                                    {{$message}}
+                                </p>
+                                @enderror
+                            </div>
+                            <!-- Nombre del Producto -->
                             <div class="mt-4">
                                 <label for="productName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
                                     <input
                                         type="text"
                                         id="productName"
                                         name="productName"
-                                        required
+                                        value="{{old('productName')}}"
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
                                         placeholder="Nombre del Producto"
                                     />
@@ -41,8 +62,12 @@
                                         Nombre del Producto
                                     </span>
                                 </label>
+                                @error('productName')
+                                <p>
+                                    {{$message}}
+                                </p>
+                                @enderror
                             </div>
-
                             <!-- Precio -->
                             <div class="mt-4">
                                 <label for="price" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
@@ -51,7 +76,7 @@
                                         step="0.01"
                                         id="price"
                                         name="price"
-                                        required
+                                        value="{{old('price')}}"
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
                                         placeholder="Precio"
                                     />
@@ -59,13 +84,18 @@
                                         Precio
                                     </span>
                                 </label>
+                                @error('price')
+                                <p>
+                                    {{$message}}
+                                </p>
+                                @enderror
                             </div>
                         </div>
                     </div>
                     <div class="container mx-auto p-4">
                         <div class="w-full md:w-5/6 mx-auto">
                             <section class="flex justify-between">
-                                <a href="{{ route('dashboard') }}">
+                                <a href="{{ route('dashboard') }}" id="back-button">
                                     <x-button-add>
                                         Volver
                                     </x-button-add>
@@ -85,4 +115,5 @@
         @livewireScripts
 
     </body>
+    <script src="{{ mix('/js/app.js') }}" defer></script>
 </html>
