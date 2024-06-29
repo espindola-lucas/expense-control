@@ -117,12 +117,15 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="flex justify-between mt-4 p-2 bg-white shadow-md">
-                        <p>
-                            Plata disponible : 356.880
+                    <div class="flex justify-between mt-4 p-2 bg-white shadow-md py-2">
+                        <p class="text-green-800">
+                            Plata disponible: {{ $available_money }}
                         </p>
-                        <p>
-                            Total de gastos : {{ $totalPrice }}
+                        <p class="text-red-800">
+                            Total de gastos: {{ $totalPrice }}
+                        </p>
+                        <p class="text-blue-800">
+                            Resto de plata disponible: {{ $available_money - $totalPrice }}
                         </p>
                     </div>
                 </div>
