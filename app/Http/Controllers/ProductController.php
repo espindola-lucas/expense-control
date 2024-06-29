@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -24,10 +26,26 @@ class ProductController extends Controller
         if ($month_filter) {
             $query->whereMonth('expense_date', $month_filter);
         }
-
         $products = $query->get();
         $user = Auth::user();
-        $totalPrice = Product::sum('price');
+
+        $configuration_money = Configuration::where('user_id', Auth::user()->id)
+                                            ->where('month_available_money', $month_filter)
+                                            ->first();
+
+        $available_money = $configuration_money ? $configuration_money->available_money : 0;        
+
+        $query = Product::query();
+
+        if ($year_filter){
+            $query->whereRaw('EXTRACT(YEAR FROM "expense_date") = ?', [$year_filter]);
+        }
+
+        if ($month_filter){
+            $query->whereRaw('EXTRACT(MONTH FROM "expense_date") = ?', [$month_filter]);
+        }
+
+        $totalPrice = $query->sum('price');
         
         $years = range(2024, 2030);
         
@@ -63,7 +81,8 @@ class ProductController extends Controller
             'years' => $years,
             'months' => $months,
             'selectedYear' => $year_filter,
-            'selectedMonth' => $month_filter
+            'selectedMonth' => $month_filter,
+            'available_money' => $available_money
         ]);
     }
 

@@ -42,7 +42,7 @@
                                     </span>
                                 </label>
                                 @error('expense_date')
-                                <p>
+                                <p class="text-red-800">
                                     {{$message}}
                                 </p>
                                 @enderror
@@ -63,7 +63,7 @@
                                     </span>
                                 </label>
                                 @error('productName')
-                                <p>
+                                <p class="text-red-800">
                                     {{$message}}
                                 </p>
                                 @enderror
@@ -85,7 +85,7 @@
                                     </span>
                                 </label>
                                 @error('price')
-                                <p>
+                                <p class="text-red-800">
                                     {{$message}}
                                 </p>
                                 @enderror
