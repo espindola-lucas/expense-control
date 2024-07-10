@@ -105,6 +105,8 @@
                                         <form method="POST" action="{{ route('products.destroy', $product->id) }}" class="inline">
                                             @method('DELETE')
                                             @csrf
+                                            <input type="hidden" name="month" value="{{ $selectedMonth }}">
+                                            <input type="hidden" name="year" value="{{ $selectedYear }}">
                                             <span class="px-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-red-100">
                                                 <button type="submit" class="text-red-600 hover:text-indigo-900">
                                                     Eliminar
