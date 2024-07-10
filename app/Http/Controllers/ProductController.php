@@ -22,7 +22,7 @@ class ProductController extends Controller
         if ($year_filter) {
             $query->whereYear('expense_date', $year_filter);
         }
-    
+
         if ($month_filter) {
             $query->whereMonth('expense_date', $month_filter);
         }
@@ -33,7 +33,7 @@ class ProductController extends Controller
                                             ->where('month_available_money', $month_filter)
                                             ->first();
 
-        $available_money = $configuration_money ? $configuration_money->available_money : 0;        
+        $available_money = $configuration_money ? $configuration_money->available_money : 0;
 
         $query = Product::query();
 
@@ -46,9 +46,9 @@ class ProductController extends Controller
         }
 
         $totalPrice = $query->sum('price');
-        
+
         $years = range(2024, 2030);
-        
+
         $monthsTranslation = [
             'January' => 'Enero',
             'February' => 'Febrero',
@@ -89,7 +89,7 @@ class ProductController extends Controller
     public function create(){
         return view('products.create-product');
     }
-    
+
     public function store(Request $request){
         if($request->isMethod('post')){
             $request->validate([
@@ -97,14 +97,14 @@ class ProductController extends Controller
                 'productName' => 'required',
                 'price' => 'required',
             ]);
-            
+
             Product::create([
                 'expense_date' => $request->input('expense_date'),
                 'name' => $request->input('productName'),
                 'price' => $request->input('price'),
                 'user_id' => Auth::user()->id
             ]);
-    
+
             return redirect()->route('dashboard')->with('success', 'Producto agregado exitosamente.');
         }
         return view('products.create-product');
@@ -123,8 +123,11 @@ class ProductController extends Controller
         return redirect('dashboard');
     }
 
-    public function destroy(Product $product){
+    public function destroy(Request $request, Product $product){
         $product->delete();
-        return redirect()->route('dashboard');
+        $year_filter = $request->input('year');
+        $month_filter = $request->input('month');
+
+        return redirect()->route('dashboard', ['year' => $year_filter, 'month' => $month_filter]);
     }
 }
