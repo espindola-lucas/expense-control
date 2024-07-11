@@ -26,7 +26,7 @@ class ProductController extends Controller
         if ($month_filter) {
             $query->whereMonth('expense_date', $month_filter);
         }
-        $products = $query->get();
+        $products = $query->orderBy('expense_date')->get();
         $user = Auth::user();
 
         $configuration_money = Configuration::where('user_id', Auth::user()->id)
