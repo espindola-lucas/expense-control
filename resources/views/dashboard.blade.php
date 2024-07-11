@@ -22,8 +22,8 @@
             <x-header></x-header>
 
             <main class="container mx-auto p-4">
-                <div class="w-full md:w-5/6 mx-auto">
-                    <div class="flex justify-between mb-4">
+                <div class="w-11/12 mx-auto">
+                    <div class="flex justify-between mb-8 sm-500:mb-4">
                         <a href="{{ route('products.create') }}">
                             <x-button-add>
                                 Agregar
@@ -53,7 +53,8 @@
                             <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-4 self-end">Filtrar</button>
                         </form>
                     </div>
-                    <form action="" method="GET" class="flex space-x-4 -mt-8 flex sm-500:hidden">
+                    <!-- reponsive -->
+                    <form action="" method="GET" class="flex space-x-4 -mt-8 mb-4 flex sm-500:hidden">
                         <div class="flex items-center space-x-4">
                             <div>
                                 <label for="month" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
@@ -76,50 +77,42 @@
                         </div>
                         <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-4 self-end">Filtrar</button>
                     </form>
-                    <div class="p-2 bg-white shadow-md">
-                        <table class="table-auto w-full border-collapse">
-                            <!-- head -->
-                            <thead>
-                                <tr class="border-b">
-                                    <th class="px-4 py-2 hidden sm-500:table-cell">{{ __('User') }}</th>
-                                    <th class="px-4 py-2">{{ __('Date') }}</th>
-                                    <th class="px-4 py-2">{{ __('Product') }}</th>
-                                    <th class="px-4 py-2">{{ __('Price') }}</th>
-                                    <th class="px-4 py-2">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($products as $product)
-                                <tr class="bg-base-200 border-b">
-                                    <td class="px-4 py-2 text-center hidden sm-500:table-cell">{{ $user }}</td>
-                                    <td class="px-4 py-2 text-center">{{ \Carbon\Carbon::createFromFormat('d/m/Y', $product->expense_date)->format('d/m') }}</td>
-                                    <!-- <td class="px-4 py-2 text-center hidden">{{ \Carbon\Carbon::createFromFormat('d/m/Y', $product->expense_date)->format('d/m') }}</td> -->
-                                    <td class="px-4 py-2 text-center">{{ $product->name }}</td>
-                                    <td class="px-4 py-2 text-center">$ {{ $product->price }}</td>
-                                    <td class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                                        <span class="px-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            <a href="{{ route('products.edit', $product->id) }}" class="text-green-600 hover:text-indigo-900">
-                                                Editar
-                                            </a>
-                                        </span>
+                    <div class="flex flex-col flex-wrap lg:grid lg:grid-cols-3 xl:grid xl:grid-cols-5">
+                        @foreach($products as $product)
+                            <div class="flex flex-col bg-white my-2 mx-1 h-48 rounded-md py-4 px-6 xl:w-60">
+                                <h3 class="text-center font-bold text-xl text-gray-800 pb-2">{{ $product->name }}</h3>
+                                <h3 class="text-base font-semibold text-gray-900">$ {{ $product->price }}</h3>
+                                <p class="text-sm text-gray-500 pb-3"></p>
+                                <div class="flex gap-2 text-sm text-gray-500 border-b pb-2">
+                                    <p class="">{{ __('last update') }}:</p>
+                                    <p>{{ \Carbon\Carbon::createFromFormat('d/m/Y', $product->expense_date)->format('d/m/y') }}</p>
+                                </div>
+                                <div class="flex justify-around items-center py-3">
+                                    <div class="flex gap-2 text-gray-600 hover:scale-110 duration-200 hover:cursor-pointer">
+                                        <svg class="w-6 stroke-green-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        <a href="{{ route('products.edit', $product->id) }}">
+                                            <button class="font-semibold text-sm text-green-700">Edit</button>
+                                        </a>
+                                    </div>
+                                    <div class="flex gap-2 text-gray-600 hover:scale-110 duration-200 hover:cursor-pointer">
+                                        <svg class="w-6 stroke-red-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                         <form method="POST" action="{{ route('products.destroy', $product->id) }}" class="inline">
                                             @method('DELETE')
                                             @csrf
                                             <input type="hidden" name="month" value="{{ $selectedMonth }}">
                                             <input type="hidden" name="year" value="{{ $selectedYear }}">
-                                            <span class="px-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-red-100">
-                                                <button type="submit" class="text-red-600 hover:text-indigo-900">
-                                                    Eliminar
-                                                </button>
-                                            </span>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            <button class="font-semibold text-sm text-red-700">Delete</button>
+                                            <form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="flex justify-between mt-4 p-2 bg-white shadow-md py-2">
+                    <!-- div grande -->
+                    <div class="hidden lg:flex justify-between mt-4 p-2 bg-white shadow-md py-2">
                         <p class="text-green-800">
                             Plata disponible: {{ $available_money }}
                         </p>
@@ -129,6 +122,21 @@
                         <p class="text-blue-800">
                             Resto de plata disponible: {{ $available_money - $totalPrice }}
                         </p>
+                    </div>
+                    <!-- div chico -->
+                    <div class="bg-white shadow-md py-2 lg:hidden xl:hidden">
+                        <h1 class="text-center font-bold text-xl text-gray-800 pb-2">Dinero</h1>
+                        <div class="flex justify-between">
+                            <p class="text-green-800">
+                                Disponible: {{ $available_money }}
+                            </p>
+                            <p class="text-red-800">
+                                Gastos: {{ $totalPrice }}
+                            </p>
+                            <p class="text-blue-800">
+                                Resto: {{ $available_money - $totalPrice }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </main>
