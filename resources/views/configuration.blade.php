@@ -26,16 +26,26 @@
                     @csrf
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white shadow-md">
-                            <!-- <div class="mt-4">
-                                <label for="date_start_counting" class="block mb-2">
-                                    Configura la fecha en que comienza a mostrar los gastos. 
-                                    <input id="date_start_counting" name="date_start_counting" type="date" class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
+                            <div class="mt-4">
+                                <label for="start_counting" class="block mb-2">
+                                    Configure la fecha de inicio del periodo de conteo de gastos.
+                                    <input id="start_counting" name="start_counting" type="date" value="{{ $config['start_counting'] }}" @unless(is_null($config['start_counting'])) disabled @endunless
+                                        class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($config['start_counting'])) bg-gray-200 @endunless"/>
                                 </label>
-                            </div> -->
+                            </div>
+                            <div class="mt-4">
+                                <label for="end_counting" class="block mb-2">
+                                    Configure la fecha de fin del periodo de conteo de gastos.
+                                    <input id="end_counting" name="end_counting" type="date" value="{{ $config['end_counting'] }}" @unless(is_null($config['end_counting'])) disabled @endunless
+                                        class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($config['end_counting'])) bg-gray-200 @endunless"/>
+                                </label>
+                            </div>
                             <div class="mt-4">
                                 <label for="available_money" class="block mb-2">
-                                    Configure la cantidad de plata disponible para el mes
-                                    <input id="available_money" name="available_money" type="number" value="{{ $config['available_money'] }}" class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
+                                    Configure la cantidad de plata disponible para el mes <br>
+                                    Puede ser desde x.00 hasta xxxx.00
+                                    <input id="available_money" name="available_money" type="number" value="{{ $config['available_money'] }}" @unless(is_null($config['available_money'])) disabled @endunless
+                                       class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($config['available_money'])) bg-gray-200 @endunless"/>
                                 </label>
                                 @error('available_money')
                                 <p class="text-red-800">
@@ -45,7 +55,7 @@
                             </div>
                             <div class="mt-">
                                 <label for="month_available_money" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                                <select id="month_available_money" name="month_available_money" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
+                                <select id="month_available_money" name="month_available_money" @unless($isDefaultMonth) disabled @endunless class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
                                     <option selected disabled>Elegi el mes correspondiente al monto disponible</option>
                                     @foreach($months as $month)
                                     <option value="{{ $month->value }}" {{ $month->value == $selectedMonth ? 'selected' : '' }}>{{ $month->name }}</option>
@@ -58,16 +68,16 @@
                                     <br>
                                     <label for="filter" class="flex justify-around">
                                         <div>
-                                            <span class="label-text">Año</span> 
-                                            <input id="year" name="filter" type="checkbox" name="filter" value="year" class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
+                                            <span class="label-text">Año</span>
+                                            <input id="year" name="filter" type="checkbox" name="filter" value="year" @unless($isDefaultMonth) disabled @endunless class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
                                         </div>
                                         <div>
-                                            <span class="label-text">Mes</span> 
-                                            <input id="month" name="filter" type="checkbox" name="filter" value="month" class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
+                                            <span class="label-text">Mes</span>
+                                            <input id="month" name="filter" type="checkbox" name="filter" value="month" @unless($isDefaultMonth) disabled @endunless class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
                                         </div>
                                         <div>
-                                            <span class="label-text">Ambos</span> 
-                                            <input id="both" name="filter" type="checkbox" name="filter" value="both" class="checkbox checkbox-primary cursor-pointer" checked onclick="handleCheckboxClick(this)"/>
+                                            <span class="label-text">Ambos</span>
+                                            <input id="both" name="filter" type="checkbox" name="filter" value="both" @unless($isDefaultMonth) disabled @endunless class="checkbox checkbox-primary cursor-pointer" checked onclick="handleCheckboxClick(this)"/>
                                         </div>
                                     </label>
                                 </div>

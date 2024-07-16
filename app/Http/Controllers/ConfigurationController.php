@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 
 class ConfigurationController extends Controller
 {
@@ -41,24 +42,31 @@ class ConfigurationController extends Controller
 
         $current_month = now()->month;
         $selectedMonth = $request->input('month_available_money', $current_month);
+        $isDefaultMonth = true;
 
         if($lastConfiguration == null){
             $config = array(
-                'available_money' => 0,
-                'month_available_money' => $selectedMonth
+                'available_money' => null,
+                'month_available_money' => $selectedMonth,
+                'start_counting' => null,
+                'end_counting' => null,
             );
         }else{
             $config = array(
                 'available_money' => $lastConfiguration['available_money'],
-                'month_available_money' => $lastConfiguration['month_available_money']
+                'month_available_money' => $lastConfiguration['month_available_money'],
+                'start_counting' => $lastConfiguration['start_counting'],
+                'end_counting' => $lastConfiguration['end_counting'],
             );
             $selectedMonth = $lastConfiguration['month_available_money'];
+            $isDefaultMonth = false;
         }
 
         return view('configuration', [
             'months' => $months,
             'config' => $config,
-            'selectedMonth' => $selectedMonth
+            'selectedMonth' => $selectedMonth,
+            'isDefaultMonth' => $isDefaultMonth
         ]);
     }
 
@@ -73,15 +81,20 @@ class ConfigurationController extends Controller
                 'filter' => 'required',
                 'month_available_money' => 'required'
             ]);
-            
+
             $filter = $request->input('filter');
+            $start_counting = $request->input('start_counting') ?: null;
+            $end_counting = $request->input('end_counting') ?: null;
+
             Configuration::create([
+                'start_counting' => $start_counting,
+                'end_counting' => $end_counting,
                 'filter' => $filter,
                 'available_money' => $request->input('available_money'),
                 'month_available_money' => $request->input('month_available_money'),
                 'user_id' => Auth::user()->id
             ]);
-            
+
             return Redirect::back()->with('success', 'Configuración guardada exitosamente.');
         }
     }

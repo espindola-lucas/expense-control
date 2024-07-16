@@ -18,7 +18,8 @@ class ProductController extends Controller
         // filter
         $query = Product::query();
         $year_filter = $request->input('year', $currentYear);
-        $month_filter = $request->input('month', $currentMonth);
+        $month_input = $request->input('month', $currentMonth);
+        $month_filter = intval($month_input) < 10 ? str_pad($month_input, 2, '0', STR_PAD_LEFT) : $month_input;
         if ($year_filter) {
             $query->whereYear('expense_date', $year_filter);
         }
@@ -46,6 +47,13 @@ class ProductController extends Controller
         }
 
         $totalPrice = $query->sum('price');
+
+        $rest_money = $available_money - $totalPrice . '.' . '00';
+
+        $split_digits = explode('.', $available_money);
+        if(strlen($split_digits[0]) > 3){
+            $available_money = substr_replace($split_digits[0], '.', -3, 0) . '.' . $split_digits[1];
+        }
 
         $years = range(2024, 2030);
 
@@ -82,7 +90,8 @@ class ProductController extends Controller
             'months' => $months,
             'selectedYear' => $year_filter,
             'selectedMonth' => $month_filter,
-            'available_money' => $available_money
+            'available_money' => $available_money,
+            'rest_money' => $rest_money
         ]);
     }
 
