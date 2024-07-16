@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('configurations', function (Blueprint $table) {
             $table->id();
             $table->date('start_counting')->nullable();
+            $table->date('end_counting')->nullable();
             $table->string('filter', length: 5);
-            $table->decimal('available_money', total: 6, places: 3);
+            $table->decimal('available_money', total: 10, places: 2);
             $table->string('month_available_money', length: 10);
             $table->foreignId('user_id')
                 ->references('id')

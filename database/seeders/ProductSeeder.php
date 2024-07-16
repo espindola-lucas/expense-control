@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
+use Faker\Factory as Faker;
 
 class ProductSeeder extends Seeder
 {
@@ -13,35 +14,28 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        Product::insert([
-        [
-            'id' => '1',
-            'name' => 'peluqueria',
-            'price' => '6.000',
-            'user_id' => '1',
-            'expense_date' => '06/01/2024'
-        ],
-        [
-            'id' => '2',
-            'name' => 'comida pichis',
-            'price' => '26.000',
-            'user_id' => '1',
-            'expense_date' => '06/03/2024'
-        ],
-        [
-            'id' => '3',
-            'name' => 'pan',
-            'price' => '1.000',
-            'user_id' => '1',
-            'expense_date' => '06/07/2024'
-        ],
-        [
-            'id' => '4',
-            'name' => 'nafata',
-            'price' => '45.000',
-            'user_id' => '1',
-            'expense_date' => '06/10/2024'
-        ]
-        ]);
+        $locale = config('app.faker_locale');
+        $faker = Faker::create($locale);
+        $products = [];
+
+        $startYear = 2024;
+        $endYear = 2030;
+
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            for ($month = 1; $month <= 12; $month++) {
+                $lastDayOfMonth = date('t', strtotime("$year-$month-01"));
+                for ($day = 1; $day <= 12; $day++) {
+                    $products[] = [
+                        'name' => $faker->word,
+                        'price' => $faker->numberBetween(2, 90) . '.000',
+                        'user_id' => 1,
+                        'expense_date' => $faker->dateTimeBetween("$year-$month-01", "$year-$month-$lastDayOfMonth")->format('Y-m-d')
+                    ];
+                }
+            }
+        }
+        foreach (array_chunk($products, 1000) as $chunk) {
+            Product::insert($chunk);
+        }
     }
 }
