@@ -55,6 +55,21 @@ class ProductController extends Controller
             $available_money = substr_replace($split_digits[0], '.', -3, 0) . '.' . $split_digits[1];
         }
 
+        $lastConfiguration = Configuration::latest()->first();
+
+        if(!is_null($lastConfiguration['start_counting']) && !is_null($lastConfiguration['end_counting'])){
+            $lastConfiguration['start_counting'] = str_replace('-', '/', $lastConfiguration['start_counting']);
+            $lastConfiguration['end_counting'] = str_replace('-', '/', $lastConfiguration['end_counting']);
+            $lastConfiguration['start_counting'] = \Carbon\Carbon::createFromFormat('Y/m/d', $lastConfiguration['start_counting'])->format('d/m/y');
+            $lastConfiguration['end_counting'] = \Carbon\Carbon::createFromFormat('Y/m/d', $lastConfiguration['end_counting'])->format('d/m/y');
+        }elseif(!is_null($lastConfiguration['start_counting'])){
+            $lastConfiguration['start_counting'] = str_replace('-', '/', $lastConfiguration['start_counting']);
+            $lastConfiguration['start_counting'] = \Carbon\Carbon::createFromFormat('Y/m/d', $lastConfiguration['start_counting'])->format('d/m/y');
+        }else{
+            $lastConfiguration['end_counting'] = str_replace('-', '/', $lastConfiguration['end_counting']);
+            $lastConfiguration['end_counting'] = \Carbon\Carbon::createFromFormat('Y/m/d', $lastConfiguration['end_counting'])->format('d/m/y');
+        }
+
         $years = range(2024, 2030);
 
         $monthsTranslation = [
@@ -91,7 +106,8 @@ class ProductController extends Controller
             'selectedYear' => $year_filter,
             'selectedMonth' => $month_filter,
             'available_money' => $available_money,
-            'rest_money' => $rest_money
+            'rest_money' => $rest_money,
+            'lastConfiguration' => $lastConfiguration
         ]);
     }
 
