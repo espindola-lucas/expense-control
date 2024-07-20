@@ -86,9 +86,17 @@
                     </div>
                     <div class="container mx-auto p-4">
                         <div class="w-full md:w-5/6 mx-auto flex justify-end">
-                            <button type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
-                                Guardar
-                            </button>
+                            @if($isDefaultMonth)
+                                <button type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
+                                    Guardar
+                                </button>
+                            @else
+                                <x-button-add>
+                                    <a href="{{ route('configuration.edit', $idLastConfiguration) }}">
+                                        Editar
+                                    </a>
+                                </x-button-add>
+                            @endif
                         </div>
                     </div>
                 </form>
