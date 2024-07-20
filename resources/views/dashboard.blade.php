@@ -104,7 +104,7 @@
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                         </svg>
                                         <a href="{{ route('products.edit', $product->id) }}">
-                                            <button class="font-semibold text-sm text-green-700">Edit</button>
+                                            <button class="font-semibold text-sm text-green-700">Editar</button>
                                         </a>
                                     </div>
                                     <div class="flex gap-2 text-gray-600 hover:scale-110 duration-200 hover:cursor-pointer">
@@ -114,7 +114,7 @@
                                             @csrf
                                             <input type="hidden" name="month" value="{{ $selectedMonth }}">
                                             <input type="hidden" name="year" value="{{ $selectedYear }}">
-                                            <button class="font-semibold text-sm text-red-700">Delete</button>
+                                            <button class="font-semibold text-sm text-red-700">Eliminar</button>
                                             <form>
                                     </div>
                                 </div>
