@@ -34,7 +34,7 @@
                                 @unless(!$lastConfiguration)
                                     @unless(is_null($lastConfiguration->start_counting) || is_null($lastConfiguration->end_counting))
                                         <div class="text-black py-2 px-4 self-end">Periodo: {{ $lastConfiguration->start_counting }} - {{ $lastConfiguration->end_counting }}
-                                            {{ \Carbon\Carbon::createFromFormat('d/m/Y', $lastConfiguration->start_counting)->format('d/m/y') }}</div>
+                                        </div>
                                     @elseif(!is_null($lastConfiguration->start_counting))
                                         <div class="text-black py-2 px-4 self-end">Periodo: {{ $lastConfiguration->start_counting }} - Sin corte</div>
                                     @else
@@ -43,7 +43,7 @@
                                 @endunless
                                 <div class="mt-4">
                                     <label for="month" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                                    <select id="month" name="month" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <select id="month" name="month" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option selected disabled>Elegi el mes</option>
                                         @foreach($months as $month)
                                         <option value="{{ $month->value }}" {{ $month->value == $selectedMonth ? 'selected' : '' }}>{{ $month->name }}</option>
@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="mt-4">
                                     <label for="year" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                                    <select id="year" name="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <select id="year" name="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg cursor-pointer focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option selected disabled>Elegi el año</option>
                                         @foreach($years as $year)
                                         <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
@@ -64,29 +64,40 @@
                         </form>
                     </div>
                     <!-- reponsive -->
-                    <form action="" method="GET" class="flex space-x-4 -mt-8 mb-4 flex sm-500:hidden">
-                        <div class="flex items-center space-x-4">
-                            <div>
-                                <label for="month" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                                <select id="month" name="month" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option selected disabled>Elegi el mes</option>
-                                    @foreach($months as $month)
-                                    <option value="{{ $month->value }}" {{ $month->value == $selectedMonth ? 'selected' : '' }}>{{ $month->name }}</option>
-                                    @endforeach
-                                </select>
+                    <div class="flex flex-col space-y-2 -mt-8 sm-500:hidden">
+                        <form action="" method="GET" class="flex space-x-4">
+                            <div class="flex items-center space-x-4">
+                                <div>
+                                    <label for="month" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                    <select id="month" name="month" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option selected disabled>Elegi el mes</option>
+                                        @foreach($months as $month)
+                                        <option value="{{ $month->value }}" {{ $month->value == $selectedMonth ? 'selected' : '' }}>{{ $month->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="year" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                    <select id="year" name="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option selected disabled>Elegi el año</option>
+                                        @foreach($years as $year)
+                                        <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label for="year" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                                <select id="year" name="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option selected disabled>Elegi el año</option>
-                                    @foreach($years as $year)
-                                    <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-4 self-end">Filtrar</button>
-                    </form>
+                            <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-4 self-end">Filtrar</button>
+                        </form>
+                        @unless(!$lastConfiguration)
+                            @unless(is_null($lastConfiguration->start_counting) || is_null($lastConfiguration->end_counting))
+                                <div class="text-black py-2 px-4">Periodo: {{ $lastConfiguration->start_counting }} - {{ $lastConfiguration->end_counting }}</div>
+                            @elseif(!is_null($lastConfiguration->start_counting))
+                                <div class="text-black py-2 px-4">Periodo: {{ $lastConfiguration->start_counting }} - Sin corte</div>
+                            @else
+                                <div class="text-black py-2 px-4">Periodo: Sin inicio - {{ $lastConfiguration->end_counting }}</div>
+                            @endunless
+                        @endunless
+                    </div>
                     <div class="flex flex-col flex-wrap lg:grid lg:grid-cols-3 xl:grid xl:grid-cols-5">
                         @foreach($products as $product)
                             <div class="flex flex-col bg-white my-2 mx-1 h-48 rounded-md py-4 px-6 xl:w-60">

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('start_counting')->nullable();
             $table->date('end_counting')->nullable();
             $table->string('filter', length: 5);
-            $table->decimal('available_money', total: 10, places: 2);
+            $table->integer('available_money');
             $table->string('month_available_money', length: 10);
             $table->foreignId('user_id')
                 ->references('id')
