@@ -19,6 +19,7 @@ class ConfigurationController extends Controller
         $current_month = now()->month;
         $selectedMonth = $request->input('month_available_money', $current_month);
         $isDefaultMonth = true;
+        $idLastConfiguration = null;
 
         if($lastConfiguration == null){
             $config = array(

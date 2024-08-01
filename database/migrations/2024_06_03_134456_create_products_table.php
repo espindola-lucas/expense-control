@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->char('name', length: 100);
-            $table->decimal('price', total: 6, places: 3);
+            $table->integer('price');
             $table->foreignId('user_id')
                 ->references('id')
                 ->on('users')

@@ -42,8 +42,8 @@
                             </div>
                             <div class="mt-4">
                                 <label for="available_money" class="block mb-2">
-                                    Configure la cantidad de plata disponible para el mes <br>
-                                    Puede ser desde x.00 hasta xxxx.00
+                                    Configure la cantidad de plata disponible para el mes, <br>
+                                    sin puntos ni comas.
                                     <input id="available_money" name="available_money" type="number" value="{{ $config['available_money'] }}" @unless(is_null($config['available_money'])) disabled @endunless
                                        class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($config['available_money'])) bg-gray-200 @endunless"/>
                                 </label>
@@ -111,5 +111,5 @@
 
         @livewireScripts
     </body>
-    <script src="{{ mix('/js/app.js') }}"></script>
+    <script src="{{ mix('/js/app.js') }}" defer></script>
 </html>
