@@ -1,4 +1,4 @@
-<footer class="footer footer-center p-10 bg-primary text-primary-content bg-[#DBEAFE]">
+<footer class="footer footer-center p-10 bg-primary text-primary-content text-black bg-[#DBEAFE]">
 	<section class="w-96 mx-auto max-w-full">
         <aside class="flex flex-col items-center">
             <svg

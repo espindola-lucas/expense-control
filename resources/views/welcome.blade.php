@@ -21,11 +21,10 @@
                         Es una web app que se encarga de registrar gastos, ingresos, y llevar un control detallado de tus finanzas personales.
                     </p>
                     <div class="mb-4">
-                        <a class="group relative inline-block overflow-hidden border border-white px-8 py-3 focus:outline-none focus:ring" target="_blank" href="https://github.com/espindola-lucas/expense-control">
-                            <span class="absolute inset-y-0 left-0 w-[2px] bg-white transition-all group-hover:w-full group-active:bg-indigo-500"></span>
-                            <span class="relative text-sm font-medium text-white transition-colors group-hover:text-indigo-600">
+                        <a target="_blank" href="https://github.com/espindola-lucas/expense-control">
+                            <x-button>
                                 Más
-                            </span>
+                            </x-button>
                         </a>
                     </div>
                 </div>
@@ -35,23 +34,26 @@
                     <h1 class="text-gray-800 font-bold text-2xl mb-1">Bienvenido!</h1>
                     <p class="text-sm font-normal text-gray-600 mb-7">¿Que quiere hacer?</p>
                     <div class="mb-4">
-                        <a class="group relative inline-block overflow-hidden border border-indigo-600 px-8 py-3 focus:outline-none focus:ring" href="{{ route('session-login') }}">
-                            <span class="absolute inset-y-0 left-0 w-[2px] bg-indigo-600 transition-all group-hover:w-full group-active:bg-indigo-500"></span>
-                            <span class="relative text-sm font-medium text-indigo-600  transition-colors group-hover:text-white">
+                        <a href="{{ route('session-login') }}">
+                            <x-button :link="true">
                                 Iniciar Sesion
-                            </span>
+                            </x-button>
                         </a>
                     </div>
                     <div class="mb-4">
-                        <a class="group relative inline-block overflow-hidden border border-indigo-600 px-10 py-3 focus:outline-none focus:ring" href="{{ route('session-register') }}">
-                            <span class="absolute inset-y-0 left-0 w-[2px] bg-indigo-600 transition-all group-hover:w-full group-active:bg-indigo-500"></span>
-                            <span class="relative text-sm font-medium text-indigo-600 transition-colors group-hover:text-white">
+                        <a href="{{ route('session-register') }}">
+                            <x-button :link="true">
                                 Registrarse
-                            </span>
+                            </x-button>
                         </a>
                     </div>
                 </form>
             </div>
         </div>
+        <x-footer>
+            <x-slot name="namewebapp">
+                Expense Control
+            </x-slot>
+        </x-footer>
     </body>
 </html>
