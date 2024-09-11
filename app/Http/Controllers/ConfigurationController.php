@@ -6,38 +6,53 @@ use Illuminate\Http\Request;
 use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ConfigurationController extends Controller
 {
     public function index(Request $request){
         $months = \Helps::getNameMonths();
-
         // show default settings
         $lastConfiguration = Configuration::latest()->first();
-
-        $current_month = now()->month;
+        
+        $current_date = Carbon::now();
+        $current_month = $current_date->month;
         $selectedMonth = $request->input('month_available_money', $current_month);
         $isDefaultMonth = true;
         $idLastConfiguration = null;
 
         if($lastConfiguration == null){
-            $config = array(
+            $config = [
                 'available_money' => null,
                 'month_available_money' => $selectedMonth,
                 'start_counting' => null,
                 'end_counting' => null,
-            );
+            ];
         }else{
-            $config = array(
-                'available_money' => $lastConfiguration['available_money'],
-                'month_available_money' => $lastConfiguration['month_available_money'],
-                'start_counting' => $lastConfiguration['start_counting'],
-                'end_counting' => $lastConfiguration['end_counting']
-            );
-            $idLastConfiguration = $lastConfiguration['id'];
-            $selectedMonth = $lastConfiguration['month_available_money'];
-            $isDefaultMonth = false;
+            $endCounting = Carbon::parse($lastConfiguration['end_counting']);
+            // Verificar si la fecha actual es después de la fecha de fin de conteo
+            if ($current_date->greaterThan($endCounting)) {
+                // Si se ha pasado la fecha de fin, resetear para nueva configuración
+                $isDefaultMonth = true;
+                $config = [
+                    'available_money' => null,
+                    'month_available_money' => $selectedMonth,
+                    'start_counting' => null,
+                    'end_counting' => null,
+                ];
+            } else {
+                // Usar la configuración existente
+                $config = [
+                    'available_money' => $lastConfiguration['available_money'],
+                    'month_available_money' => $lastConfiguration['month_available_money'],
+                    'start_counting' => $lastConfiguration['start_counting'],
+                    'end_counting' => $lastConfiguration['end_counting']
+                ];
+                $idLastConfiguration = $lastConfiguration['id'];
+                $selectedMonth = $lastConfiguration['month_available_money'];
+                $isDefaultMonth = false;
+            }
         }
 
         return view('configuration', [
