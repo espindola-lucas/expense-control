@@ -29,6 +29,9 @@
                                 Agregar
                             </x-button-add>
                         </a>
+                        <div class="flex items-center space-x-4">
+                            Fecha actual: {{ $currentDate }}
+                        </div>
                         <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
                             <div class="flex items-center space-x-4">
                                 @unless(!$lastConfiguration)
@@ -98,6 +101,7 @@
                             @endunless
                         @endunless
                     </div>
+                    
                     <div class="flex flex-col flex-wrap lg:grid lg:grid-cols-3 xl:grid xl:grid-cols-5">
                         @foreach($products as $product)
                             <div class="flex flex-col bg-white my-2 mx-1 h-48 rounded-md py-4 px-6 xl:w-60">
@@ -106,7 +110,7 @@
                                 <p class="text-sm text-gray-500 pb-3"></p>
                                 <div class="flex gap-2 text-sm text-gray-500 border-b pb-2">
                                     <p class="">{{ __('last update') }}:</p>
-                                    <p>{{ \Carbon\Carbon::createFromFormat('d/m/Y', $product->expense_date)->format('d/m/y') }}</p>
+                                    <p>{{ $product->expense_date }}</p>
                                 </div>
                                 <div class="flex justify-around items-center py-3">
                                     <div class="flex gap-2 text-gray-600 hover:scale-110 duration-200 hover:cursor-pointer">
@@ -126,7 +130,7 @@
                                             <input type="hidden" name="month" value="{{ $selectedMonth }}">
                                             <input type="hidden" name="year" value="{{ $selectedYear }}">
                                             <button class="font-semibold text-sm text-red-700">Eliminar</button>
-                                            <form>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

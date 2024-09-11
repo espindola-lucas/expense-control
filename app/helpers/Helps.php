@@ -1,4 +1,5 @@
 <?php
+use Carbon\Carbon;
 
 class Helps{
     public static function getNameMonths(){
@@ -28,6 +29,11 @@ class Helps{
         }
 
         return $months;
+    }
+
+    public static function getDate(){
+        $currentDate = Carbon::now()->format('d/m/Y');
+        return $currentDate;
     }
 }
 
