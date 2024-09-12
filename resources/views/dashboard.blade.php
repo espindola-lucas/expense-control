@@ -21,6 +21,21 @@
         <div class="min-h-screen bg-gray-100">
             <x-header></x-header>
 
+            @if($message)
+                <x-notification class="w-full text-red-700 bg-red-100">
+                    <x-slot name="message">
+                        Apa, ya gastaste mas del 85% de la plata del mes.
+                    </x-slot>
+                </x-notification>
+            @else
+                <x-notification class="w-full text-green-700 bg-green-100">
+                    <x-slot name="message">
+                        Tranquilo maquina, todavía hay plata para gastar. <br>
+                        Llevas usado {{ $percentageUsed }}% de la plata del mes.
+                    </x-slot>
+                </x-notification>
+            @endif
+
             <main class="container mx-auto p-4">
                 <div class="w-11/12 mx-auto">
                     <div class="flex justify-between mb-8 sm-500:mb-4">
