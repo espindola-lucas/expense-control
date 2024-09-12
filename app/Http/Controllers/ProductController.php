@@ -71,7 +71,7 @@ class ProductController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'currentDate' => $currentDate,
-            'percentageUsed' => $percentageUsed,
+            'percentageUsed' => round($percentageUsed, 1),
             'message' => $message
         ]);
     }
