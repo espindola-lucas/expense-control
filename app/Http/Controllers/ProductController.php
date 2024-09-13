@@ -227,7 +227,7 @@ class ProductController extends Controller
     private function getFilteredProductsByDateRange($userId, $startDate, $endDate){
         $products = Product::where('user_id', $userId)
                             ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
-                            ->orderBy('expense_date')
+                            ->orderBy('expense_date', 'desc')
                             ->get();
         
         foreach($products as $product){
