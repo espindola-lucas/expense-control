@@ -88,11 +88,7 @@
                 </div>
             </main>
         </div>
-        <x-footer>
-            <x-slot name="namewebapp">
-                Expense Control
-            </x-slot>
-        </x-footer>
+        <x-footer :nameWebApp="$footerInformation['textInformation']" :currentYear="$footerInformation['year']" />
         @stack('modals')
 
         @livewireScripts

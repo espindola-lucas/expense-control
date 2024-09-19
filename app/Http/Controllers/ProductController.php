@@ -56,6 +56,10 @@ class ProductController extends Controller
         $years = range(2024, 2030);
         $months = $this->getMonths();
         $currentDate = $this->getCurrentDate();
+        $footerInformation = [
+            'year' => $currentYear,
+            'textInformation' => 'Expense Control'
+        ];
 
         return view('dashboard', [
             'products' => $data['products'],
@@ -72,7 +76,8 @@ class ProductController extends Controller
             'endDate' => $endDate,
             'currentDate' => $currentDate,
             'percentageUsed' => round($percentageUsed, 1),
-            'message' => $message
+            'message' => $message,
+            'footerInformation' => $footerInformation
         ]);
     }
 

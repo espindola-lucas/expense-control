@@ -50,10 +50,5 @@
                 </form>
             </div>
         </div>
-        <x-footer>
-            <x-slot name="namewebapp">
-                Expense Control
-            </x-slot>
-        </x-footer>
     </body>
 </html>
