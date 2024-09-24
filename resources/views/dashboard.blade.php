@@ -24,7 +24,8 @@
             @if($message)
                 <x-notification class="w-full text-red-700 bg-red-100">
                     <x-slot name="message">
-                        Apa, ya gastaste mas del 85% de la plata del mes.
+                        Apa, ya gastaste mas del {{ $lastConfiguration['expense_percentage_limit'] }}% de la plata del mes. <br>
+                        Porcentaje usado: {{ $percentageUsed }}%
                     </x-slot>
                 </x-notification>
             @else

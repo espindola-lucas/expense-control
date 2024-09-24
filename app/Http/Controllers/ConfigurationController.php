@@ -28,6 +28,7 @@ class ConfigurationController extends Controller
                 'month_available_money' => $selectedMonth,
                 'start_counting' => null,
                 'end_counting' => null,
+                'expense_percentage_limit' => null
             ];
         }else{
             $endCounting = Carbon::parse($lastConfiguration['end_counting']);
@@ -40,6 +41,7 @@ class ConfigurationController extends Controller
                     'month_available_money' => $selectedMonth,
                     'start_counting' => null,
                     'end_counting' => null,
+                    'expense_percentage_limit' => null
                 ];
             } else {
                 // Usar la configuración existente
@@ -47,7 +49,8 @@ class ConfigurationController extends Controller
                     'available_money' => $lastConfiguration['available_money'],
                     'month_available_money' => $lastConfiguration['month_available_money'],
                     'start_counting' => $lastConfiguration['start_counting'],
-                    'end_counting' => $lastConfiguration['end_counting']
+                    'end_counting' => $lastConfiguration['end_counting'],
+                    'expense_percentage_limit' => $lastConfiguration['expense_percentage_limit']
                 ];
                 $idLastConfiguration = $lastConfiguration['id'];
                 $selectedMonth = $lastConfiguration['month_available_money'];
@@ -55,12 +58,19 @@ class ConfigurationController extends Controller
             }
         }
 
+        $currentYear = now()->year;
+        $footerInformation = [
+            'year' => $currentYear,
+            'textInformation' => 'Expense Control'
+        ];
+
         return view('configuration', [
             'months' => $months,
             'config' => $config,
             'selectedMonth' => $selectedMonth,
             'isDefaultMonth' => $isDefaultMonth,
-            'idLastConfiguration' => $idLastConfiguration
+            'idLastConfiguration' => $idLastConfiguration,
+            'footerInformation' => $footerInformation
         ]);
     }
 
@@ -69,11 +79,13 @@ class ConfigurationController extends Controller
     }
 
     public function store(Request $request){
+        // dd($request->all());
         if($request->isMethod('post')){
             $request->validate([
                 'available_money' => 'required',
                 'filter' => 'required',
-                'month_available_money' => 'required'
+                'month_available_money' => 'required',
+                'expense_percentage_limit' => 'required'
             ]);
 
             $filter = $request->input('filter');
@@ -86,6 +98,7 @@ class ConfigurationController extends Controller
                 'filter' => $filter,
                 'available_money' => $request->input('available_money'),
                 'month_available_money' => $request->input('month_available_money'),
+                'expense_percentage_limit' => $request->input('expense_percentage_limit'),
                 'user_id' => Auth::user()->id
             ]);
 
@@ -101,12 +114,18 @@ class ConfigurationController extends Controller
         $months = \Helps::getNameMonths();
         $isDefaultMonth = true;
         $selectedMonth = $configuration['month_available_money'];
+        $currentYear = now()->year;
+        $footerInformation = [
+            'year' => $currentYear,
+            'textInformation' => 'Expense Control'
+        ];
 
         return view('configuration.edit-configuration', [
             'configuration' => $configuration,
             'months' => $months,
             'isDefaultMonth' => $isDefaultMonth,
-            'selectedMonth' => $selectedMonth
+            'selectedMonth' => $selectedMonth,
+            'footerInformation' => $footerInformation
         ]);
     }
 

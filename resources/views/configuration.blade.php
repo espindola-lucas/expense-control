@@ -63,6 +63,13 @@
                                 </select>
                             </div>
                             <div class="mt-4">
+                                <label for="expense_percentage_limit" class="block mb-2">
+                                    Coloque el porcentaje (%) del umbral.
+                                    <input id="expense_percentage_limit" name="expense_percentage_limit" type="number" value="{{ $config['expense_percentage_limit'] }}" @unless(is_null($config['expense_percentage_limit'])) disabled @endunless
+                                       class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($config['expense_percentage_limit'])) bg-gray-200 @endunless"/>
+                                </label>
+                            </div>
+                            <div class="mt-4">
                                 <div class="form-control w-full sm-500:w-1/2">
                                     Que filtros quieres que aparezcan en el dashboard?
                                     <br>
@@ -102,11 +109,7 @@
                 </form>
             </main>
         </div>
-        <x-footer>
-            <x-slot name="namewebapp">
-                Expense Control
-            </x-slot>
-        </x-footer>
+        <x-footer :nameWebApp="$footerInformation['textInformation']" :currentYear="$footerInformation['year']" />
         @stack('modals')
 
         @livewireScripts

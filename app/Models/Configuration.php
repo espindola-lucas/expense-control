@@ -9,7 +9,7 @@ class Configuration extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['start_counting', 'end_counting', 'filter', 'available_money', 'month_available_money', 'user_id'];
+    protected $fillable = ['start_counting', 'end_counting', 'filter', 'available_money', 'month_available_money', 'expense_percentage_limit', 'user_id'];
 
     public function user()
     {
