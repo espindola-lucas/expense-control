@@ -20,8 +20,4 @@ class Product extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    public function getExpenseDateAttribute($value){
-        return $value ? Carbon::parse($value)->format('d/m/Y') : null;
-    }
 }

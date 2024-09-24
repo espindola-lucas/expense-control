@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('filter', length: 5);
             $table->integer('available_money');
             $table->string('month_available_money', length: 10);
+            $table->integer('expense_percentage_limit');
             $table->foreignId('user_id')
                 ->references('id')
                 ->on('users')

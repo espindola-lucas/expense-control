@@ -60,7 +60,7 @@ class ProductController extends Controller
             'year' => $currentYear,
             'textInformation' => 'Expense Control'
         ];
-
+        
         return view('dashboard', [
             'products' => $data['products'],
             'user' => $user->name,
