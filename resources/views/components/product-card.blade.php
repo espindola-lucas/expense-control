@@ -23,8 +23,6 @@
                     <form method="POST" action="{{ route('products.destroy', $product->id) }}" class="inline">
                         @method('DELETE')
                         @csrf
-                        <input type="hidden" name="month" value="{{ $selectedMonth }}">
-                        <input type="hidden" name="year" value="{{ $selectedYear }}">
                         <button class="font-semibold text-sm text-red-700">Eliminar</button>
                     </form>
                 </div>
