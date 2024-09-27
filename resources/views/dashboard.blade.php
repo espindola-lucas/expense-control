@@ -68,7 +68,7 @@
                         <x-period-display :lastConfiguration="$lastConfiguration" />
                     </div>
                     
-                    <x-product-card :products="$products" :selectedMonth="$selectedMonth" :selectedYear="$selectedMonth"/>
+                    <x-product-card :products="$products" :selectedMonth="$selectedMonth" :selectedYear="$selectedYear"/>
 
                     <div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between lg:rounded-none">
                         <p class="text-center text-green-800">
