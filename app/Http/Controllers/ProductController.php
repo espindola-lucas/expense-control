@@ -15,28 +15,28 @@ class ProductController extends Controller
         $message = false;
 
         $currentYear = now()->year;
-        $currentMonth = now()->month;
-    
-        $yearFilter = $request->input('year', $currentYear);
-        $monthInput = $request->input('month', $currentMonth);
-        $monthFilter = $this->formatMonth($monthInput);
-
         $user = Auth::user();
-        // Obtener las fechas de inicio y fin desde la base de datos
-        $startDate = $request->input('start_date') ?? $this->getStartDateFromDatabase($user);
-        $endDate = $request->input('end_date') ?? $this->getEndDateFromDatabase($user);
     
-        // revisamos si se utilizaron los filtros
-        $hasMonthFilter = $request->has('month');
-        $hasYearFilter = $request->has('year');
+        $selectedMonth = $request->input('period');
 
-        if($hasMonthFilter || $hasYearFilter){
-            $data = $this->filterMonthYear($user->id, $monthFilter, $yearFilter);
-        } else if ($startDate && $endDate){
-            $data = $this->filterBetweenDates($user->id, $startDate, $endDate);
+        $getAllPeriods = $this->getAllPeriods($user->id);
+
+        if($selectedMonth){
+            $selectedPeriod = $getAllPeriods->firstWhere('month_available_money', $selectedMonth);
+            if($selectedPeriod){
+                $startDate = $selectedPeriod->start_counting;
+                $endDate = $selectedPeriod->end_counting;        
+            } else {
+                $startDate = $this->getStartDateFromDatabase($user);
+                $endDate = $this->getEndDateFromDatabase($user);
+            }
         } else {
-            $data = $this->filteredAll($user->id);
+            // usar los valores por defecte si no se usa el filtro
+            $startDate = $request->input('start_date') ?? $this->getStartDateFromDatabase($user);
+            $endDate = $request->input('end_date') ?? $this->getEndDateFromDatabase($user);
         }
+
+        $data = $this->filterByPeriod($user->id, $startDate, $endDate);
 
         $restMoney = $data['availableMoney'] - $data['totalPrice'];
 
@@ -44,7 +44,7 @@ class ProductController extends Controller
         $formattedAvailableMoney = $this->formatValue($data['availableMoney']);
         $formattedRestMoney = $this->formatValue($restMoney);
         $formattedTotalPrice = $this->formatValue($data['totalPrice']);
-        $lastConfiguration = $this->getConfigurationForMonth($monthFilter, $yearFilter, $user->id);
+        $lastConfiguration = $this->getConfigurationForMonth($user->id);
         
         if(!empty($formattedAvailableMoney)){
             $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney']);
@@ -53,8 +53,6 @@ class ProductController extends Controller
             }
         }
 
-        $years = range(2024, 2030);
-        $months = $this->getMonths();
         $currentDate = $this->getCurrentDate();
         $footerInformation = [
             'year' => $currentYear,
@@ -64,11 +62,8 @@ class ProductController extends Controller
         return view('dashboard', [
             'products' => $data['products'],
             'user' => $user->name,
+            'allPeriods' => $getAllPeriods,
             'totalPrice' => $formattedTotalPrice,
-            'years' => $years,
-            'months' => $months,
-            'selectedYear' => $yearFilter,
-            'selectedMonth' => $monthFilter,
             'available_money' => $formattedAvailableMoney,
             'rest_money' => $formattedRestMoney,
             'lastConfiguration' => $lastConfiguration,
@@ -126,35 +121,17 @@ class ProductController extends Controller
         return redirect()->route('dashboard', ['year' => $year_filter, 'month' => $month_filter]);
     }
 
-    private function filterMonthYear($userId, $monthFilter, $yearFilter){
-        $products = $this->getFilteredProductsByYearMonth($userId, $monthFilter, $yearFilter);
-        $availableMoney = $this->getAvailableMoney($userId, $monthFilter);
-        $totalPrice = $this->getTotalPriceByYearMonth($yearFilter, $monthFilter);
-
-        return [
-            'products' => $products,
-            'availableMoney' => $availableMoney,
-            'totalPrice' => $totalPrice
-        ];
+    private function getAllPeriods($userId){
+        $periods = Configuration::select('start_counting', 'end_counting', 'month_available_money')
+                                ->where('user_id', $userId)
+                                ->get();
+        return $periods;
     }
 
-    private function filterBetweenDates($userId, $startDate, $endDate){
-        $products = $this->getFilteredProductsByDateRange($userId, $startDate, $endDate);
-        $availableMoney = $this->getAvailableMoney($userId, $startDate, $endDate);
-        $totalPrice = $this->getTotalPriceByDateRange($startDate, $endDate);
-
-        return [
-            'products' => $products,
-            'availableMoney' => $availableMoney,
-            'totalPrice' => $totalPrice
-        ];
-    }
-
-
-    private function filteredAll($userId){
-        $products = $this->getAllProductsForMonth($userId); 
-        $availableMoney = $this->getAvailableMoney($userId);
-        $totalPrice = 0;
+    private function filterByPeriod($userId, $startDate, $endDate){
+        $products = $this->getFilteredProductsByPeriod($userId, $startDate, $endDate);
+        $availableMoney = $this->getAvailableMoneyByPeriod($userId, $startDate, $endDate);
+        $totalPrice = $this->getTotalPriceByPeriod($startDate, $endDate);
         
         return [
             'products' => $products,
@@ -229,7 +206,7 @@ class ProductController extends Controller
     * @param int $endDate end day
 	* @return array arrangement of recovered data
 	*/
-    private function getFilteredProductsByDateRange($userId, $startDate, $endDate){
+    private function getFilteredProductsByPeriod($userId, $startDate, $endDate){
         $products = Product::where('user_id', $userId)
                             ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
                             ->orderBy('expense_date', 'desc')
@@ -265,7 +242,7 @@ class ProductController extends Controller
     * @param int $endDate end day
 	* @return int money available
 	*/
-    private function getAvailableMoney($userId, $startDate = null, $endDate = null) {
+    private function getAvailableMoneyByPeriod($userId, $startDate = null, $endDate = null) {
         $query = Configuration::where('user_id', $userId);
 
         if ($startDate && $endDate) {
@@ -324,7 +301,7 @@ class ProductController extends Controller
     * @param int $endDate end day
 	* @return int sum spent
 	*/
-    private function getTotalPriceByDateRange($startDate, $endDate) {
+    private function getTotalPriceByPeriod($startDate, $endDate) {
         return Product::whereBetween('expense_date', [$startDate, $endDate])
                       ->sum('price');
     }
@@ -338,11 +315,9 @@ class ProductController extends Controller
         return number_format($param, 0, '', '.');
     }
     
-    private function getConfigurationForMonth($month, $year, $userId) {
+    private function getConfigurationForMonth($userId) {
          // Obtener la configuración para el mes y año específicos
         $configuration = Configuration::where('user_id', $userId)
-                                        ->where('month_available_money', $month)
-                                        ->whereYear('start_counting', $year)
                                         ->orderBy('end_counting', 'desc')
                                         ->first();
     

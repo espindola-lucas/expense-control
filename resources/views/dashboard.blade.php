@@ -54,7 +54,7 @@
                         </div>
 
                         <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
-                            <x-filter-dropdown :months="$months" :years="$years" :selectedMonth="$selectedMonth" :selectedYear="$selectedYear" />
+                            <x-filter-dropdown :allPeriods="$allPeriods"/>
                             <x-button-filter/>
                         </form>
                     </div>
@@ -62,13 +62,13 @@
                     <!-- Responsive -->
                     <div class="flex flex-col space-y-2 sm-500:hidden">
                         <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 justify-center items-center">
-                            <x-filter-dropdown :months="$months" :years="$years" :selectedMonth="$selectedMonth" :selectedYear="$selectedYear" />
-                            <x-button-filter />
+                            <x-filter-dropdown :allPeriods="$allPeriods"/>
+                            <x-button-filter/>
                         </form>
                         <x-period-display :lastConfiguration="$lastConfiguration" />
                     </div>
                     
-                    <x-product-card :products="$products" :selectedMonth="$selectedMonth" :selectedYear="$selectedYear"/>
+                    <x-product-card :products="$products"/>
 
                     <div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between lg:rounded-none">
                         <p class="text-center text-green-800">
