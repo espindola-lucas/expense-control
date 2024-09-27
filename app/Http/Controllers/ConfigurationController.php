@@ -13,51 +13,9 @@ class ConfigurationController extends Controller
 {
     public function index(Request $request){
         $months = \Helps::getNameMonths();
-        // show default settings
-        $lastConfiguration = Configuration::latest()->first();
+        $user = Auth::user();
+        $allConfigurations = $this->getAllConfiguration($user->id);
         
-        $current_date = Carbon::now();
-        $current_month = $current_date->month;
-        $selectedMonth = $request->input('month_available_money', $current_month);
-        $isDefaultMonth = true;
-        $idLastConfiguration = null;
-
-        if($lastConfiguration == null){
-            $config = [
-                'available_money' => null,
-                'month_available_money' => $selectedMonth,
-                'start_counting' => null,
-                'end_counting' => null,
-                'expense_percentage_limit' => null
-            ];
-        }else{
-            $endCounting = Carbon::parse($lastConfiguration['end_counting']);
-            // Verificar si la fecha actual es después de la fecha de fin de conteo
-            if ($current_date->greaterThan($endCounting)) {
-                // Si se ha pasado la fecha de fin, resetear para nueva configuración
-                $isDefaultMonth = true;
-                $config = [
-                    'available_money' => null,
-                    'month_available_money' => $selectedMonth,
-                    'start_counting' => null,
-                    'end_counting' => null,
-                    'expense_percentage_limit' => null
-                ];
-            } else {
-                // Usar la configuración existente
-                $config = [
-                    'available_money' => $lastConfiguration['available_money'],
-                    'month_available_money' => $lastConfiguration['month_available_money'],
-                    'start_counting' => $lastConfiguration['start_counting'],
-                    'end_counting' => $lastConfiguration['end_counting'],
-                    'expense_percentage_limit' => $lastConfiguration['expense_percentage_limit']
-                ];
-                $idLastConfiguration = $lastConfiguration['id'];
-                $selectedMonth = $lastConfiguration['month_available_money'];
-                $isDefaultMonth = false;
-            }
-        }
-
         $currentYear = now()->year;
         $footerInformation = [
             'year' => $currentYear,
@@ -66,20 +24,20 @@ class ConfigurationController extends Controller
 
         return view('configuration', [
             'months' => $months,
-            'config' => $config,
-            'selectedMonth' => $selectedMonth,
-            'isDefaultMonth' => $isDefaultMonth,
-            'idLastConfiguration' => $idLastConfiguration,
+            'configurations' => $allConfigurations,
             'footerInformation' => $footerInformation
         ]);
     }
 
     public function create(){
-        return view('configuration');
+        $months = \Helps::getNameMonths();
+
+        return view('configuration.create-configuration', [
+            'months' => $months
+        ]);
     }
 
     public function store(Request $request){
-        // dd($request->all());
         if($request->isMethod('post')){
             $request->validate([
                 'available_money' => 'required',
@@ -106,8 +64,19 @@ class ConfigurationController extends Controller
         }
     }
 
-    public function show(){
-
+    public function show($id){
+        $configId = Configuration::find($id);
+        $isDefaultMonth = false;
+        $user = Auth::user();
+        $configuration = $this->getAllConfiguration($user->id);
+        $selectedMonth = $configuration->first()->month_available_money ?? null;
+        $months = \Helps::getNameMonths();
+        return view('configuration.show-configuration', [
+            'configuration' => $configId,
+            'isDefaultMonth' => $isDefaultMonth,
+            'selectedMonth' => $selectedMonth,
+            'months' => $months
+        ]);
     }
 
     public function edit(Configuration $configuration){
@@ -119,7 +88,7 @@ class ConfigurationController extends Controller
             'year' => $currentYear,
             'textInformation' => 'Expense Control'
         ];
-
+    
         return view('configuration.edit-configuration', [
             'configuration' => $configuration,
             'months' => $months,
@@ -137,5 +106,11 @@ class ConfigurationController extends Controller
 
     public function destroy(){
 
+    }
+
+    private function getAllConfiguration($userId){
+        $configurations = Configuration::where('user_id', $userId)
+                                        ->get();
+        return $configurations;
     }
 }
