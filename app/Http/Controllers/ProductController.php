@@ -61,7 +61,7 @@ class ProductController extends Controller
         
         return view('dashboard', [
             'products' => $data['products'],
-            'user' => $user->name,
+            'user' => $user,
             'allPeriods' => $getAllPeriods,
             'totalPrice' => $formattedTotalPrice,
             'available_money' => $formattedAvailableMoney,
@@ -131,7 +131,7 @@ class ProductController extends Controller
     private function filterByPeriod($userId, $startDate, $endDate){
         $products = $this->getFilteredProductsByPeriod($userId, $startDate, $endDate);
         $availableMoney = $this->getAvailableMoneyByPeriod($userId, $startDate, $endDate);
-        $totalPrice = $this->getTotalPriceByPeriod($startDate, $endDate);
+        $totalPrice = $this->getTotalPriceByPeriod($userId, $startDate, $endDate);
         
         return [
             'products' => $products,
@@ -149,8 +149,8 @@ class ProductController extends Controller
         $configuration = Configuration::where('user_id', $user->id)
                                       ->latest()
                                       ->first();
-    
-        return $configuration ? $configuration->start_counting : null;
+
+        return $configuration ? $configuration->start_counting : Carbon::now();
     }
     
     /**
@@ -159,14 +159,11 @@ class ProductController extends Controller
 	* @return string returns the end date of the period
 	*/
     private function getEndDateFromDatabase($user) {
-        // $userId = Auth::id();
-        
-        // Obtener la última configuración para el usuario actual
         $configuration = Configuration::where('user_id', $user->id)
                                       ->latest()
                                       ->first();
     
-        return $configuration ? $configuration->end_counting : null;
+        return $configuration ? $configuration->end_counting : Carbon::now();
     }
 
     /**
@@ -301,9 +298,10 @@ class ProductController extends Controller
     * @param int $endDate end day
 	* @return int sum spent
 	*/
-    private function getTotalPriceByPeriod($startDate, $endDate) {
-        return Product::whereBetween('expense_date', [$startDate, $endDate])
-                      ->sum('price');
+    private function getTotalPriceByPeriod($userId, $startDate, $endDate) {
+        return Product::where('user_id', $userId)
+                        ->whereBetween('expense_date', [$startDate, $endDate])
+                        ->sum('price');
     }
     
     /**

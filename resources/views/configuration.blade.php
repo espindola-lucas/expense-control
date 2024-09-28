@@ -19,7 +19,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            <x-header></x-header>
+            <x-header :user="$user"></x-header>
 
             <main class="container mx-auto p-4">
                 <div class="w-11/12 mx-auto">
@@ -28,7 +28,9 @@
                             Agregar
                         </x-button-add>
                     </a>
-                    <x-configuration-list :configurations="$configurations" />
+                    @if(!$configurations->isEmpty())
+                        <x-configuration-list :configurations="$configurations" />
+                    @endif
                 </div>
             </main>
         </div>

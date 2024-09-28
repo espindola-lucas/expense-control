@@ -11,6 +11,9 @@
         </div>
         <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow hidden md:flex md:justify-start md:flex-row">
             <ul class="space-y-2 list-none lg:space-y-0 lg:items-center lg:inline-flex">
+                <li class="px-2 lg:px-6 text-sm leading-[22px] md:px-3 text-gray-500 hover:text-blue-500">
+                    Hola, {{ $user->name }}
+                </li>
                 <li>
                     <a href="{{ route('dashboard') }}" class="px-2 lg:px-6 text-sm leading-[22px] md:px-3 {{ Request::is('dashboard') ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500' }}"> Dashboard </span>
                     </a>

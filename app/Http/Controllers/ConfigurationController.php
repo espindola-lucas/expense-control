@@ -25,6 +25,7 @@ class ConfigurationController extends Controller
         return view('configuration', [
             'months' => $months,
             'configurations' => $allConfigurations,
+            'user' => $user,
             'footerInformation' => $footerInformation
         ]);
     }

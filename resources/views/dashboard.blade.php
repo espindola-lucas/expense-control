@@ -19,7 +19,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            <x-header></x-header>
+            <x-header :user="$user"></x-header>
 
             @if($message)
                 <x-notification class="w-full text-red-700 bg-red-100">
