@@ -19,7 +19,7 @@
 </head>
 <body class="font-sans antialiased">
 <div class="min-h-screen bg-gray-100">
-    <x-header></x-header>
+    <x-header :user="$user"></x-header>
 
     <main class="container mx-auto p-4">
         <form method="POST" action="{{ route('configuration.update', $configuration) }}">
@@ -62,6 +62,13 @@
                                 <option value="{{ $month->value }}" {{ $selectedMonth == $month->value ? 'selected' : '' }}>{{ $month->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="mt-4">
+                        <label for="expense_percentage_limit" class="block mb-2">
+                            Coloque el porcentaje (%) del umbral.
+                            <input id="expense_percentage_limit" name="expense_percentage_limit" type="number" value="{{ $configuration['expense_percentage_limit'] }}"
+                            class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
+                        </label>
                     </div>
                     <div class="mt-4">
                         <div class="form-control w-full sm-500:w-1/2">

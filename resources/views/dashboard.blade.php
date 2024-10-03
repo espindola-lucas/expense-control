@@ -18,7 +18,7 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-page-custom">
             <x-header :user="$user"></x-header>
 
             @if($message)
@@ -70,7 +70,7 @@
                     
                     <x-product-card :products="$products"/>
 
-                    <div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between lg:rounded-none">
+                    <div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between">
                         <p class="text-center text-green-800">
                             <span class="lg:hidden">Disponible:</span>
                             Plata disponible: {{ $available_money }}
