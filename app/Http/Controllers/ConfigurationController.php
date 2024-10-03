@@ -32,9 +32,11 @@ class ConfigurationController extends Controller
 
     public function create(){
         $months = \Helps::getNameMonths();
+        $user = Auth::user();
 
         return view('configuration.create-configuration', [
-            'months' => $months
+            'months' => $months,
+            'user' => $user
         ]);
     }
 
@@ -73,6 +75,7 @@ class ConfigurationController extends Controller
         $selectedMonth = $configuration->first()->month_available_money ?? null;
         $months = \Helps::getNameMonths();
         return view('configuration.show-configuration', [
+            'user' => $user,
             'configuration' => $configId,
             'isDefaultMonth' => $isDefaultMonth,
             'selectedMonth' => $selectedMonth,
@@ -82,6 +85,7 @@ class ConfigurationController extends Controller
 
     public function edit(Configuration $configuration){
         $months = \Helps::getNameMonths();
+        $user = Auth::user();
         $isDefaultMonth = true;
         $selectedMonth = $configuration['month_available_money'];
         $currentYear = now()->year;
@@ -91,6 +95,7 @@ class ConfigurationController extends Controller
         ];
     
         return view('configuration.edit-configuration', [
+            'user' => $user,
             'configuration' => $configuration,
             'months' => $months,
             'isDefaultMonth' => $isDefaultMonth,

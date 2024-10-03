@@ -45,10 +45,10 @@ class ProductController extends Controller
         $formattedRestMoney = $this->formatValue($restMoney);
         $formattedTotalPrice = $this->formatValue($data['totalPrice']);
         $lastConfiguration = $this->getConfigurationForMonth($user->id);
-        
+        // dd($lastConfiguration->expense_percentage_limit);
         if(!empty($formattedAvailableMoney)){
             $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney']);
-            if($percentageUsed >= 85){
+            if($percentageUsed >= $lastConfiguration->expense_percentage_limit){
                 $message = true;
             }
         }
@@ -77,7 +77,10 @@ class ProductController extends Controller
     }
 
     public function create(){
-        return view('products.create-product');
+        $user = Auth::user();
+        return view('products.create-product', [
+            'user' => $user
+        ]);
     }
 
     public function store(Request $request){

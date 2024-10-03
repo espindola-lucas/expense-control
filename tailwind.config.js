@@ -21,6 +21,8 @@ export default {
             },
             colors: {
                 'semi-white': '#F3F4F6',
+                'page-custom': '#131314',
+                'card-custom': '#29292b'
             }
         },
     },

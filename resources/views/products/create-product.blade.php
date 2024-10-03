@@ -19,7 +19,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            <x-header></x-header>
+            <x-header :user="$user"></x-header>
             
             <main class="container mx-auto p-4">
                 <form method="POST" action="{{ route('products.store') }}">
