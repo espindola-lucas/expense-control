@@ -18,15 +18,15 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            <x-header></x-header>
+        <div class="min-h-screen bg-page-custom">
+            <x-header :user="$user"></x-header>
             
             <main class="container mx-auto p-4">
                 <form method="POST" action="{{ route('products.update', $product) }}">
                 @csrf
                 @method('PUT')
                     <div class="w-full md:w-5/6 mx-auto">
-                        <div class="p-2 bg-white shadow-md">
+                        <div class="p-2 bg-white rounded-md">
                             <!-- Fecha de compra -->
                             <div class="mt-4">
                                 <label for="expense_date" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">

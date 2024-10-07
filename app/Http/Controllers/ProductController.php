@@ -104,8 +104,10 @@ class ProductController extends Controller
     }
 
     public function edit(Product $product){
+        $user = Auth::user();
         return view('products.edit-product', [
-            'product' => $product
+            'product' => $product,
+            'user' => $user
         ]);
     }
 
