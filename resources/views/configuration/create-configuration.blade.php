@@ -18,13 +18,13 @@
         @livewireStyles
     </head>
     <body>
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-page-custom">
             <x-header :user="$user"></x-header>
             <main class="container mx-auto p-4">
                 <form method="POST" action="{{ route('configuration.store') }}">
                     @csrf
                     <div class="w-full md:w-5/6 mx-auto">
-                        <div class="p-2 bg-white shadow-md">
+                        <div class="p-2 bg-white shadow-md rounded-md">
                             <div class="mt-4">
                                 <label for="start_counting" class="block mb-2">
                                     Configure la fecha de inicio del periodo de conteo de gastos.
