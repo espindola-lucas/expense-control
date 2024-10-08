@@ -16,12 +16,17 @@ class ConfigurationController extends Controller
         $user = Auth::user();
         $allConfigurations = $this->getAllConfiguration($user->id);
         
+        foreach ($allConfigurations as $configuration) {
+            $configuration->available_money = $this->formatMoney($configuration->available_money);
+            $month_name = \Helps::getMonthNameByKey($configuration->month_available_money);
+            $configuration->month_available_money = "{$configuration->month_available_money} - {$month_name}";
+        }
+
         $currentYear = now()->year;
         $footerInformation = [
             'year' => $currentYear,
             'textInformation' => 'Expense Control'
         ];
-
         return view('configuration', [
             'months' => $months,
             'configurations' => $allConfigurations,
@@ -86,14 +91,15 @@ class ConfigurationController extends Controller
     public function edit(Configuration $configuration){
         $months = \Helps::getNameMonths();
         $user = Auth::user();
-        $isDefaultMonth = true;
         $selectedMonth = $configuration['month_available_money'];
         $currentYear = now()->year;
         $footerInformation = [
             'year' => $currentYear,
             'textInformation' => 'Expense Control'
         ];
-    
+        
+        $isDefaultMonth = true;
+        
         return view('configuration.edit-configuration', [
             'user' => $user,
             'configuration' => $configuration,
@@ -118,5 +124,12 @@ class ConfigurationController extends Controller
         $configurations = Configuration::where('user_id', $userId)
                                         ->get();
         return $configurations;
+    }
+
+    private function formatMoney($amount) {
+        if (is_numeric($amount)) {
+            return number_format($amount, 0, ',', '.');
+        }
+        return $amount;
     }
 }
