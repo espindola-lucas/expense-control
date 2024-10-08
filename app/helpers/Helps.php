@@ -35,6 +35,25 @@ class Helps{
         $currentDate = Carbon::now()->format('d/m/Y');
         return $currentDate;
     }
+
+    public static function getMonthNameByKey($key){
+        $month_name = match($key){
+            '01' => 'Enero',
+            '02' => 'Febrero',
+            '03' => 'Marzo',
+            '04' => 'Abril',
+            '05' => 'Mayo',
+            '06' => 'Junio',
+            '07' => 'Julio',
+            '08' => 'Agosto',
+            '09' => 'Septiembre',
+            '10' => 'Octubre',
+            '11' => 'Noviembre',
+            '12' => 'Diciembre'
+        };
+
+        return $month_name;
+    }
 }
 
 ?>

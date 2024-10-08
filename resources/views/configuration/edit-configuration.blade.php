@@ -43,8 +43,8 @@
                     </div>
                     <div class="mt-4">
                         <label for="available_money" class="block mb-2">
-                            Configure la cantidad de plata disponible para el mes <br>
-                            Puede ser desde x.00 hasta xxxx.00
+                            Configure la cantidad de plata disponible para el mes correspondiente <br>
+                            Sin puntos, ni comas.
                             <input id="available_money" name="available_money" type="number" value="{{ $configuration['available_money'] }}"
                             class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
                         </label>
@@ -70,43 +70,16 @@
                             class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
                         </label>
                     </div>
-                    <div class="mt-4">
-                        <div class="form-control w-full sm-500:w-1/2">
-                            Que filtros quieres que aparezcan en el dashboard?
-                            <br>
-                            <label for="filter" class="flex justify-around">
-                                <div>
-                                    <span class="label-text">Año</span>
-                                    <input id="year" name="filter" type="checkbox" name="filter" value="year" class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
-                                </div>
-                                <div>
-                                    <span class="label-text">Mes</span>
-                                    <input id="month" name="filter" type="checkbox" name="filter" value="month" class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
-                                </div>
-                                <div>
-                                    <span class="label-text">Ambos</span>
-                                    <input id="both" name="filter" type="checkbox" name="filter" value="both" class="checkbox checkbox-primary cursor-pointer" checked onclick="handleCheckboxClick(this)"/>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="container mx-auto p-4">
-                <div class="w-full md:w-5/6 mx-auto flex justify-end">
-                    @if($isDefaultMonth)
-                        <button type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
-                            Guardar
-                        </button>
-                    @else
-                        <form>
-                            <a href="{{ route('configuration.edit', $idLastConfiguration) }}" class="ml-4">
-                                <x-button-add>
-                                    Editar
-                                </x-button-add>
-                            </a>
-                        </form>
-                    @endif
+                <div class="w-full md:w-5/6 mx-auto flex justify-between">
+                    <a href="{{ url()->previous() }}" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800 pointer-cursor">
+                        Volver
+                    </a>
+                    <button type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
+                        Guardar
+                    </button>
                 </div>
             </div>
         </form>
