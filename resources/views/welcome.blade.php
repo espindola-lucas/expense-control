@@ -35,7 +35,7 @@
                     <p class="text-sm font-normal text-gray-600 mb-7">¿Que quiere hacer?</p>
                     <div class="mb-4">
                         <a href="{{ route('session-login') }}">
-                            <x-button :link="true">
+                            <x-button :link="true" id="login">
                                 Iniciar Sesion
                             </x-button>
                         </a>

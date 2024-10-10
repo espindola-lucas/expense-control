@@ -1,7 +1,7 @@
 <div class="flex flex-col flex-wrap lg:grid lg:grid-cols-3 xl:grid xl:grid-cols-5">
     @foreach($products as $product)
         <div class="flex flex-col bg-card-custom my-2 mx-1 h-48 rounded-md py-4 px-6 xl:w-60">
-            <h3 class="text-center text-white font-bold text-xl text-gray-800 pb-2">{{ $product->name }}</h3>
+            <h3 id="expense-title" class="text-center text-white font-bold text-xl text-gray-800 pb-2">{{ $product->name }}</h3>
             <h3 class="text-base text-white font-semibold text-gray-900">$ {{ $product->price }}</h3>
             <p class="text-sm text-gray-500 pb-3"></p>
             <div class="flex gap-2 text-sm text-gray-500 border-b pb-2">
@@ -23,7 +23,7 @@
                     <form method="POST" action="{{ route('products.destroy', $product->id) }}" class="inline">
                         @method('DELETE')
                         @csrf
-                        <button class="font-semibold text-sm text-red-700 hover:text-red-100">Eliminar</button>
+                        <button id="expense-delete" class="font-semibold text-sm text-red-700 hover:text-red-100">Eliminar</button>
                     </form>
                 </div>
             </div>

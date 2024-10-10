@@ -100,7 +100,7 @@
                                         Volver
                                     </x-button-add>
                                 </a>
-                                <button type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
+                                <button id="add-expense" type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
                                     Agregar
                                 </button>
                             </section>
