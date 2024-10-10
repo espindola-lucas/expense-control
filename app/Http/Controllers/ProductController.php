@@ -37,7 +37,7 @@ class ProductController extends Controller
         }
 
         $data = $this->filterByPeriod($user->id, $startDate, $endDate);
-
+        
         $restMoney = $data['availableMoney'] - $data['totalPrice'];
 
         // Formatear los valores para la salida
@@ -45,7 +45,7 @@ class ProductController extends Controller
         $formattedRestMoney = $this->formatValue($restMoney);
         $formattedTotalPrice = $this->formatValue($data['totalPrice']);
         $lastConfiguration = $this->getConfigurationForMonth($user->id);
-        // dd($lastConfiguration->expense_percentage_limit);
+
         if(!empty($formattedAvailableMoney)){
             $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney']);
             if($percentageUsed >= $lastConfiguration->expense_percentage_limit){

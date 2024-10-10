@@ -40,7 +40,7 @@
             <main class="container mx-auto p-4">
                 <div class="w-11/12 mx-auto">
                     <div class="flex justify-between sm-500:mb-4">
-                        <a href="{{ route('products.create') }}">
+                        <a href="{{ route('products.create') }}" id="add-expense">
                             <x-button-add>
                                 Agregar
                             </x-button-add>
