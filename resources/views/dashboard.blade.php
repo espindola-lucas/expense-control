@@ -68,8 +68,6 @@
                         <x-period-display :lastConfiguration="$lastConfiguration" />
                     </div>
                     
-                    <x-product-card :products="$products"/>
-
                     <div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between">
                         <p class="text-center text-green-800">
                             <span class="lg:hidden">Disponible:</span>
@@ -86,6 +84,9 @@
                             Resto de plata disponible: {{ $rest_money }}
                         </p>
                     </div>
+                    
+                    <x-product-card :products="$products"/>
+
                 </div>
             </main>
         </div>

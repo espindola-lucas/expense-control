@@ -123,6 +123,12 @@ class ConfigurationController extends Controller
     private function getAllConfiguration($userId){
         $configurations = Configuration::where('user_id', $userId)
                                         ->get();
+        
+        foreach($configurations as $configuration){
+            $configuration->start_counting = Carbon::parse($configuration->start_counting)->format('d/m/Y');
+            $configuration->end_counting = Carbon::parse($configuration->end_counting)->format('d/m/Y');
+        }
+        
         return $configurations;
     }
 

@@ -216,6 +216,7 @@ class ProductController extends Controller
         
         foreach($products as $product){
             $product->price = number_format($product->price, 0, '', '.');
+            $product->expense_date = Carbon::parse($product->expense_date)->format('d/m/Y');
         }
 
         return $products;
