@@ -49,19 +49,16 @@ class ConfigurationController extends Controller
         if($request->isMethod('post')){
             $request->validate([
                 'available_money' => 'required',
-                'filter' => 'required',
                 'month_available_money' => 'required',
                 'expense_percentage_limit' => 'required'
             ]);
 
-            $filter = $request->input('filter');
             $start_counting = $request->input('start_counting') ?: null;
             $end_counting = $request->input('end_counting') ?: null;
 
             Configuration::create([
                 'start_counting' => $start_counting,
                 'end_counting' => $end_counting,
-                'filter' => $filter,
                 'available_money' => $request->input('available_money'),
                 'month_available_money' => $request->input('month_available_money'),
                 'expense_percentage_limit' => $request->input('expense_percentage_limit'),
