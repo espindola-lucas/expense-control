@@ -69,6 +69,7 @@
                 </a>
             </div>
         </div>
+        <hr>
         @endforeach
     </dl>
 </div>

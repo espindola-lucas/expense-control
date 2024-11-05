@@ -68,26 +68,6 @@
                                     class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
                                 </label>
                             </div>
-                            <div class="mt-4">
-                                <div class="form-control w-full sm-500:w-1/2">
-                                    Que filtros quieres que aparezcan en el dashboard?
-                                    <br>
-                                    <label for="filter" class="flex justify-around">
-                                        <div>
-                                            <span class="label-text">Año</span>
-                                            <input id="year" name="filter" type="checkbox" name="filter" value="year" class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
-                                        </div>
-                                        <div>
-                                            <span class="label-text">Mes</span>
-                                            <input id="month" name="filter" type="checkbox" name="filter" value="month" class="checkbox checkbox-primary cursor-pointer" onclick="handleCheckboxClick(this)"/>
-                                        </div>
-                                        <div>
-                                            <span class="label-text">Ambos</span>
-                                            <input id="both" name="filter" type="checkbox" name="filter" value="both" class="checkbox checkbox-primary cursor-pointer" checked onclick="handleCheckboxClick(this)"/>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="container mx-auto p-4">

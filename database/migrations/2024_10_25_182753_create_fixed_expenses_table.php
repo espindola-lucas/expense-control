@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configurations', function (Blueprint $table) {
+        Schema::create('fixed_expenses', function (Blueprint $table) {
             $table->id();
-            $table->date('start_counting')->nullable();
-            $table->date('end_counting')->nullable();
-            $table->integer('available_money');
-            $table->string('month_available_money', length: 10);
-            $table->integer('expense_percentage_limit');
+            $table->string('input_name', 100);
+            $table->integer('value');
             $table->foreignId('user_id')
                 ->references('id')
                 ->on('users')
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configurations');
+        Schema::dropIfExists('fixed_expenses');
     }
 };
