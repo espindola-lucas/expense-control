@@ -22,7 +22,7 @@
             <x-header :user="$user"></x-header>
             
             <main class="container mx-auto p-4">
-                <form method="POST" action="{{ route('products.update', $product) }}">
+                <form method="POST" action="{{ route('spents.update', $spent) }}">
                 @csrf
                 @method('PUT')
                     <div class="w-full md:w-5/6 mx-auto">
@@ -34,7 +34,7 @@
                                         type="date"
                                         id="expense_date"
                                         name="expense_date"
-                                        value="{{ $product->expense_date }}"
+                                        value="{{ $spent->expense_date }}"
                                         required
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
                                         placeholder="Dia"
@@ -49,23 +49,23 @@
                                 </p>
                                 @enderror
                             </div>
-                            <!-- Nombre del Producto -->
+                            <!-- Nombre del gasto -->
                             <div class="mt-4">
-                                <label for="productName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+                                <label for="spentName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
                                     <input
                                         type="text"
-                                        id="productName"
-                                        name="productName"
-                                        value="{{ $product->name }}"
+                                        id="spentName"
+                                        name="spentName"
+                                        value="{{ $spent->name }}"
                                         required
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                        placeholder="Nombre del Producto"
+                                        placeholder="Nombre del Gasto"
                                     />
                                     <span class="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                        Nombre del Producto
+                                        Nombre del Gasto
                                     </span>
                                 </label>
-                                @error('productName')
+                                @error('spentName')
                                 <p>
                                     {{$message}}
                                 </p>
@@ -80,7 +80,7 @@
                                         step="0.01"
                                         id="price"
                                         name="price"
-                                        value="{{ $product->price }}"
+                                        value="{{ $spent->price }}"
                                         required
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
                                         placeholder="Precio"

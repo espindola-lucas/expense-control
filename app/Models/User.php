@@ -63,8 +63,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function products(){
-        return $this->hasMany(Product::class);
+    public function spents(){
+        return $this->hasMany(Spent::class);
     }
 
     public function configuration(){

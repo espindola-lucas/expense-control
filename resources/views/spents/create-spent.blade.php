@@ -22,7 +22,7 @@
             <x-header :user="$user"></x-header>
             
             <main class="container mx-auto p-4">
-                <form method="POST" action="{{ route('products.store') }}">
+                <form method="POST" action="{{ route('spents.store') }}">
                 @csrf
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white rounded-md">
@@ -47,22 +47,22 @@
                                 </p>
                                 @enderror
                             </div>
-                            <!-- Nombre del Producto -->
+                            <!-- Nombre del Gasto -->
                             <div class="mt-4">
-                                <label for="productName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+                                <label for="spentName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
                                     <input
                                         type="text"
-                                        id="productName"
-                                        name="productName"
-                                        value="{{old('productName')}}"
+                                        id="spentName"
+                                        name="spentName"
+                                        value="{{old('spentName')}}"
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                        placeholder="Nombre del Producto"
+                                        placeholder="Nombre del gasto"
                                     />
                                     <span class="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                        Nombre del Producto
+                                        Nombre del Gasto
                                     </span>
                                 </label>
-                                @error('productName')
+                                @error('spentName')
                                 <p class="text-red-800">
                                     {{$message}}
                                 </p>

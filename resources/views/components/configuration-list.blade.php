@@ -13,9 +13,9 @@
     <tbody class="divide-y divide-gray-200">
         @foreach($configurations as $configuration)
         <tr>
-            <td class="whitespace-nowrap px-4 py-2 text-black">{{ $configuration->start_counting }}</td>
+            <td class="text-black">{{ $configuration->start_counting }}</td>
             <td class="whitespace-nowrap px-4 py-2 text-black">{{ $configuration->end_counting }}</td>
-            <td class="whitespace-nowrap px-4 py-2 text-black">{{ $configuration->available_money }}</td>
+            <td class="whitespace-nowrap px-4 py-2 text-black">$ {{ $configuration->available_money }}</td>
             <td class="whitespace-nowrap px-4 py-2 text-black">{{ $configuration->month_available_money }}</td>
             <td class="whitespace-nowrap px-4 py-2 text-black">{{ $configuration->expense_percentage_limit }}%</td>
             <td class="whitespace-nowrap px-4 py-2">
@@ -25,6 +25,11 @@
                 <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
                     Editar
                 </a>
+                <form method="POST" action="{{ route('configuration.destroy', $configuration->id) }}" class="inline">
+                    @method('DELETE')
+                    @csrf
+                    <button id="configuration-delete" class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700">Eliminar</button>
+                </form>
             </td>
         </tr>
         @endforeach
@@ -67,6 +72,11 @@
                 <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
                     Editar
                 </a>
+                <form method="POST" action="{{ route('configuration.destroy', $configuration->id) }}" class="inline">
+                    @method('DELETE')
+                    @csrf
+                    <button id="configuration-delete" class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700">Eliminar</button>
+                </form>
             </div>
         </div>
         <hr>
