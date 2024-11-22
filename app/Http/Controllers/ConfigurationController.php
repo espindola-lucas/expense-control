@@ -113,8 +113,11 @@ class ConfigurationController extends Controller
         return redirect('configuration');
     }
 
-    public function destroy(){
-
+    public function destroy($id){
+        $config = Configuration::findOrFail($id);
+        $config->delete();
+        
+        return redirect('configuration');
     }
 
     private function getAllConfiguration($userId){

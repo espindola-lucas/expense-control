@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Spent;
 use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class ProductController extends Controller
+class SpentController extends Controller
 {
     public function index(Request $request) {
         $percentageUsed = null;
@@ -25,10 +25,7 @@ class ProductController extends Controller
             $selectedPeriod = $getAllPeriods->firstWhere('month_available_money', $selectedMonth);
             if($selectedPeriod){
                 $startDate = $selectedPeriod->start_counting;
-                $endDate = $selectedPeriod->end_counting;        
-            } else {
-                $startDate = $this->getStartDateFromDatabase($user);
-                $endDate = $this->getEndDateFromDatabase($user);
+                $endDate = $selectedPeriod->end_counting;
             }
         } else {
             // usar los valores por defecte si no se usa el filtro
@@ -38,6 +35,8 @@ class ProductController extends Controller
 
         $data = $this->filterByPeriod($user->id, $startDate, $endDate);
         
+        $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
+
         $restMoney = $data['availableMoney'] - $data['totalPrice'];
 
         // Formatear los valores para la salida
@@ -60,12 +59,13 @@ class ProductController extends Controller
         ];
         
         return view('dashboard', [
-            'products' => $data['products'],
+            'spents' => $data['spents'],
             'user' => $user,
             'allPeriods' => $getAllPeriods,
             'totalPrice' => $formattedTotalPrice,
             'available_money' => $formattedAvailableMoney,
             'rest_money' => $formattedRestMoney,
+            'countSpent' => $countSpents,
             'lastConfiguration' => $lastConfiguration,
             'startDate' => $startDate,
             'endDate' => $endDate,
@@ -78,7 +78,7 @@ class ProductController extends Controller
 
     public function create(){
         $user = Auth::user();
-        return view('products.create-product', [
+        return view('spents.create-spent', [
             'user' => $user
         ]);
     }
@@ -87,39 +87,39 @@ class ProductController extends Controller
         if($request->isMethod('post')){
             $request->validate([
                 'expense_date' => 'required',
-                'productName' => 'required',
+                'spentName' => 'required',
                 'price' => 'required',
             ]);
 
-            Product::create([
+            Spent::create([
                 'expense_date' => $request->input('expense_date'),
-                'name' => $request->input('productName'),
+                'name' => $request->input('spentName'),
                 'price' => $request->input('price'),
                 'user_id' => Auth::user()->id
             ]);
 
-            return redirect()->route('dashboard')->with('success', 'Producto agregado exitosamente.');
+            return redirect()->route('dashboard')->with('success', 'Gasto agregado exitosamente.');
         }
-        return view('products.create-product');
+        return view('spents.create-spent');
     }
 
-    public function edit(Product $product){
+    public function edit(Spent $spent){
         $user = Auth::user();
-        return view('products.edit-product', [
-            'product' => $product,
+        return view('spents.edit-spent', [
+            'spent' => $spent,
             'user' => $user
         ]);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Spent $spent)
     {
         $input = $request->all();
-        $product -> update($input);
+        $spent -> update($input);
         return redirect('dashboard');
     }
 
-    public function destroy(Request $request, Product $product){
-        $product->delete();
+    public function destroy(Request $request, Spent $spent){
+        $spent->delete();
         $year_filter = $request->input('year');
         $month_filter = $request->input('month');
 
@@ -134,12 +134,12 @@ class ProductController extends Controller
     }
 
     private function filterByPeriod($userId, $startDate, $endDate){
-        $products = $this->getFilteredProductsByPeriod($userId, $startDate, $endDate);
+        $spents = $this->getFilteredSpentsByPeriod($userId, $startDate, $endDate);
         $availableMoney = $this->getAvailableMoneyByPeriod($userId, $startDate, $endDate);
         $totalPrice = $this->getTotalPriceByPeriod($userId, $startDate, $endDate);
         
         return [
-            'products' => $products,
+            'spents' => $spents,
             'availableMoney' => $availableMoney,
             'totalPrice' => $totalPrice
         ];
@@ -181,14 +181,14 @@ class ProductController extends Controller
     }
     
     /**
-	* Gets the products of each user, depending on the filter used
+	* Gets the spents of each user, depending on the filter used
 	* @param int $userId user ID
     * @param int $yearFilter filtered year number
     * @param int $monthFilter filtered month number
 	* @return array arrangement of recovered data
 	*/
-    private function getFilteredProductsByYearMonth($userId, $monthFilter, $yearFilter) {
-        $query = Product::where('user_id', $userId);
+    private function getFilteredSpentsByYearMonth($userId, $monthFilter, $yearFilter) {
+        $query = Spent::where('user_id', $userId);
 
         if ($monthFilter) {
             $query->whereMonth('expense_date', $monthFilter);
@@ -202,40 +202,40 @@ class ProductController extends Controller
     }
     
     /**
-	* Products are filtered by the configured start and end dates
+	* Spents are filtered by the configured start and end dates
 	* @param int $userId user ID
     * @param int $startDate start day
     * @param int $endDate end day
 	* @return array arrangement of recovered data
 	*/
-    private function getFilteredProductsByPeriod($userId, $startDate, $endDate){
-        $products = Product::where('user_id', $userId)
+    private function getFilteredSpentsByPeriod($userId, $startDate, $endDate){
+        $spents = Spent::where('user_id', $userId)
                             ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
                             ->orderBy('expense_date', 'desc')
                             ->get();
         
-        foreach($products as $product){
-            $product->price = number_format($product->price, 0, '', '.');
-            $product->expense_date = Carbon::parse($product->expense_date)->format('d/m/Y');
+        foreach($spents as $spent){
+            $spent->price = number_format($spent->price, 0, '', '.');
+            $spent->expense_date = Carbon::parse($spent->expense_date)->format('d/m/Y');
         }
 
-        return $products;
+        return $spents;
     }
 
     /**
-	* Returns all products of the logged in user
+	* Returns all spents of the logged in user
 	* @param int $userId user ID
 	* @return array arrangement of recovered data
 	*/
-    private function getAllProductsForMonth($userId){
-        $products = Product::where('user_id', $userId)
+    private function getAllSpentForMonth($userId){
+        $spents = Spent::where('user_id', $userId)
                             ->get();
         
-        foreach ($products as $product) {
-            $product->expense_date = Carbon::parse($product->expense_date)->format('d/m/Y');
+        foreach ($spents as $spent) {
+            $spent->expense_date = Carbon::parse($spent->expense_date)->format('d/m/Y');
         }
         
-        return $products;
+        return $spents;
     }
 
     /**
@@ -277,6 +277,20 @@ class ProductController extends Controller
 
         return $configurationMoney ? $configurationMoney->available_money : 0;
     }
+
+    private function getTotalSpentsByPeriod($userId, $startDate = null, $endDate = null){
+        if($startDate && $endDate){
+            $count = Spent::join('configurations as c', function ($join){
+                $join->on('spents.expense_date', '>=', 'c.start_counting')
+                    ->on('spents.expense_date', '<=', 'c.end_counting'); 
+            })
+            ->where('c.start_counting', $startDate)
+            ->where('c.end_counting', $endDate)
+            ->count();
+        }
+
+        return $count;
+    }
     
     /**
 	* Returns the money spent for an entire month
@@ -285,7 +299,7 @@ class ProductController extends Controller
 	* @return int sum spent
 	*/
     private function getTotalPriceByYearMonth($yearFilter, $monthFilter) {
-        $query = Product::query();
+        $query = Spent::query();
     
         if ($yearFilter) {
             $query->whereRaw('EXTRACT(YEAR FROM "expense_date") = ?', [$yearFilter]);
@@ -305,7 +319,7 @@ class ProductController extends Controller
 	* @return int sum spent
 	*/
     private function getTotalPriceByPeriod($userId, $startDate, $endDate) {
-        return Product::where('user_id', $userId)
+        return Spent::where('user_id', $userId)
                         ->whereBetween('expense_date', [$startDate, $endDate])
                         ->sum('price');
     }
@@ -360,6 +374,10 @@ class ProductController extends Controller
 
     private function getCurrentDate(){
         return \Helps::getDate();
+    }
+
+    private function amountOfExpenses(){
+        
     }
     
 }
