@@ -22,9 +22,11 @@
                 <a href="{{ route('configuration.show', $configuration->id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
                     Ver
                 </a>
-                <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
-                    Editar
-                </a>
+                @if($configuration->show_edit_button)
+                    <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
+                        Editar
+                    </a>
+                @endif
                 <form method="POST" action="{{ route('configuration.destroy', $configuration->id) }}" class="inline">
                     @method('DELETE')
                     @csrf
@@ -69,9 +71,11 @@
                 <a href="{{ route('configuration.show', $configuration->id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
                     Ver
                 </a>
-                <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
-                    Editar
-                </a>
+                @if($configuration->show_edit_button)
+                    <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
+                        Editar
+                    </a>
+                @endif
                 <form method="POST" action="{{ route('configuration.destroy', $configuration->id) }}" class="inline">
                     @method('DELETE')
                     @csrf
