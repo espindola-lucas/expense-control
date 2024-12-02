@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class ConfigurationController extends Controller
 {
@@ -20,6 +20,10 @@ class ConfigurationController extends Controller
             $configuration->available_money = $this->formatMoney($configuration->available_money);
             $month_name = \Helps::getMonthNameByKey($configuration->month_available_money);
             $configuration->month_available_money = "{$configuration->month_available_money} - {$month_name}";
+
+            $currentDate = Carbon::now();
+            $endDate = Carbon::createFromFormat('d/m/Y', $configuration->end_counting);
+            $configuration->show_edit_button = $currentDate->lte($endDate);
         }
 
         $currentYear = now()->year;
@@ -122,6 +126,7 @@ class ConfigurationController extends Controller
 
     private function getAllConfiguration($userId){
         $configurations = Configuration::where('user_id', $userId)
+                                        ->orderBy('month_available_money', 'desc')
                                         ->get();
         
         foreach($configurations as $configuration){
