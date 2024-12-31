@@ -126,7 +126,7 @@ class ConfigurationController extends Controller
 
     private function getAllConfiguration($userId){
         $configurations = Configuration::where('user_id', $userId)
-                                        ->orderBy('month_available_money', 'desc')
+                                        ->orderBy('id', 'desc')
                                         ->get();
         
         foreach($configurations as $configuration){
