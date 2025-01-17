@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon;
+use App\Models\Spent;
 
 class ConfigurationController extends Controller
 {
@@ -142,5 +141,82 @@ class ConfigurationController extends Controller
             return number_format($amount, 0, ',', '.');
         }
         return $amount;
+    }
+
+    public function getInfo() {
+        $user_id = auth()->id();
+
+        $latestConfiguration = Configuration::orderBy('id', 'desc')->first();
+
+        if($latestConfiguration){
+            $startDate = $latestConfiguration->start_counting;
+            $endDate = $latestConfiguration->end_counting;
+
+            $available_money = $this->getAvailableMoneyByPeriod($user_id, $startDate, $endDate);
+
+            $totalSpent = $this->getTotalPriceByPeriod($user_id, $startDate, $endDate);
+
+            $remainingMoney = $available_money - $totalSpent;
+
+            return response()->json([
+                'info' => \Helps::formatValue($remainingMoney)
+            ]);
+        }
+
+        return response()->json([
+            'info' => 0
+        ]);
+    }
+
+    /**
+	* Returns the money spent for the configured date range
+    * @param int $startDate start day
+    * @param int $endDate end day
+	* @return int sum spent
+	*/
+    private function getTotalPriceByPeriod($userId, $startDate, $endDate) {
+        return Spent::where('user_id', $userId)
+                        ->whereBetween('expense_date', [$startDate, $endDate])
+                        ->sum('price');
+    }
+
+    /**
+	* Returns the available money for the configured month
+	* @param int $userId user ID
+    * @param int $startDate start day
+    * @param int $endDate end day
+	* @return int money available
+	*/
+    private function getAvailableMoneyByPeriod($userId, $startDate = null, $endDate = null) {
+        $query = Configuration::where('user_id', $userId);
+
+        if ($startDate && $endDate) {
+            // Filtra las configuraciones donde el rango de fechas proporcionado intersecta con el rango de la configuración.
+            $query->where(function ($q) use ($startDate, $endDate) {
+                $q->where(function ($query) use ($startDate, $endDate) {
+                    $query->whereNotNull('start_counting')
+                          ->whereNotNull('end_counting')
+                          ->where(function ($query) use ($startDate, $endDate) {
+                              $query->whereBetween('start_counting', [$startDate, $endDate])
+                                    ->orWhereBetween('end_counting', [$startDate, $endDate])
+                                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                                        $query->where('start_counting', '<=', $startDate)
+                                              ->where('end_counting', '>=', $endDate);
+                                    });
+                          });
+                });
+            });
+        } else {
+            // Si no se proporcionan fechas, devuelve el dinero disponible para la configuración actual.
+            $query->whereNotNull('start_counting')
+                  ->whereNotNull('end_counting')
+                  ->whereDate('start_counting', '<=', now())
+                  ->whereDate('end_counting', '>=', now())
+                  ->orderBy('start_counting', 'desc');
+        }
+
+        $configurationMoney = $query->first();
+
+        return $configurationMoney ? $configurationMoney->available_money : 0;
     }
 }

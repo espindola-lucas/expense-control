@@ -40,9 +40,9 @@ class SpentController extends Controller
         $restMoney = $data['availableMoney'] - $data['totalPrice'];
 
         // Formatear los valores para la salida
-        $formattedAvailableMoney = $this->formatValue($data['availableMoney']);
-        $formattedRestMoney = $this->formatValue($restMoney);
-        $formattedTotalPrice = $this->formatValue($data['totalPrice']);
+        $formattedAvailableMoney = \Helps::formatValue($data['availableMoney']);
+        $formattedRestMoney = \Helps::formatValue($restMoney);
+        $formattedTotalPrice = \Helps::formatValue($data['totalPrice']);
         $lastConfiguration = $this->getConfigurationForMonth($user->id);
 
         if(!empty($formattedAvailableMoney)){
@@ -322,15 +322,6 @@ class SpentController extends Controller
         return Spent::where('user_id', $userId)
                         ->whereBetween('expense_date', [$startDate, $endDate])
                         ->sum('price');
-    }
-    
-    /**
-	* Formats the value of a number
-    * @param int $param value
-	* @return int value formatted
-	*/
-    private function formatValue($param) {
-        return number_format($param, 0, '', '.');
     }
     
     private function getConfigurationForMonth($userId) {
