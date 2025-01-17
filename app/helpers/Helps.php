@@ -54,6 +54,15 @@ class Helps{
 
         return $month_name;
     }
+
+    /**
+	* Formats the month number, if it is less than 10, it adds a 0 in front (example. 8 -> 08)
+	* @param int $monthInput month number
+	* @return int formatted month number
+	*/
+    public static function formatValue($param) {
+        return number_format($param, 0, '', '.');
+    }
 }
 
 ?>

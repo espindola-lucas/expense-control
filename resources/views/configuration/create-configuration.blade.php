@@ -52,6 +52,15 @@
                                 </p>
                                 @enderror
                             </div>
+                            <div>
+                                <label class="label cursor-pointer">
+                                    <input type="checkbox" id="info-checkbox" class="checkbox checkbox-primary rounded-md" />
+                                    <span class="label-text">¿Sumar resto del mes anterior?</span>
+                                </label>
+                            </div>
+                            <div id="info-content" class="hidden">
+                                <p id="info-text" class="bg-green-300 inline-block py-1 px-4 mt-2 border rounded-md"></p>
+                            </div>
                             <div class="mt-">
                                 <label for="month_available_money" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                                 <select id="month_available_money" name="month_available_money" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
@@ -82,4 +91,25 @@
         </div>
     </body>
 <script src="{{ mix('/js/app.js') }}" defer></script>
+<script>
+    document.getElementById('info-checkbox').addEventListener('change', function () {
+        const availableMoney = parseFloat(document.getElementById('available_money').value);
+        if (this.checked) {
+            fetch('/get-info')
+                .then(response => response.json())
+                .then(data => {
+                    const total = parseFloat(availableMoney) + parseFloat(data.info);
+                    document.getElementById('info-text').textContent = 'Se sumaran $ ' + data.info + ' al valor de la plata configurada ($ ' + availableMoney +'). Total: $ ' + total.toFixed(3);
+                    document.getElementById('info-content').style.display = 'block';
+                    let value = total.toFixed(3);
+                    let splitValue = value.split('.');
+                    let output = splitValue[0] + splitValue[1];
+                    document.getElementById('available_money').value = output;
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            document.getElementById('info-content').style.display = 'none';
+        }
+    });
+</script>
 </html>

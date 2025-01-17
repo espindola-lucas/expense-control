@@ -42,5 +42,6 @@ Route::middleware([
     Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');
     Route::resource('spents', SpentController::class);
     Route::resource('configuration', ConfigurationController::class);
+    Route::get('/get-info', [ConfigurationController::class, 'getInfo']);
     Route::resource('fixedexpenses', FixedExpenseController::class);
 });
