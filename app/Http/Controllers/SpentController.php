@@ -72,6 +72,7 @@ class SpentController extends Controller
             'currentDate' => $currentDate,
             'percentageUsed' => round($percentageUsed, 1),
             'message' => $message,
+            'branchName' => \Helps::getGitBranchName(),
             'footerInformation' => $footerInformation
         ]);
     }
