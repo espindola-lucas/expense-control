@@ -27,5 +27,10 @@ export default {
         },
     },
 
+    safelist:[
+        'bg-green-700',
+        'bg-red-700',
+    ],
+
     plugins: [forms, typography],
 };

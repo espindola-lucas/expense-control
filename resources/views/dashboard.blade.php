@@ -25,18 +25,10 @@
                 <x-notification class="w-full text-red-700 bg-red-100">
                     <x-slot name="message">
                         Apa, ya gastaste mas del {{ $lastConfiguration['expense_percentage_limit'] }}% de la plata del mes. <br>
-                        Porcentaje usado: {{ $percentageUsed }}%
-                    </x-slot>
-                </x-notification>
-            @else
-                <x-notification class="w-full text-green-700 bg-green-100">
-                    <x-slot name="message">
-                        Tranquilo maquina, todavía hay plata para gastar. <br>
-                        Llevas usado {{ $percentageUsed }}% de la plata del mes.
+                        Porcentaje usado: {{ $percentageUsed['percentageUser'] }}%
                     </x-slot>
                 </x-notification>
             @endif
-
             <main class="container mx-auto p-4">
                 <div class="w-11/12 mx-auto">
                     <div class="flex justify-between sm-500:mb-4">
@@ -88,6 +80,13 @@
                             <span class="block lg:hidden">Cantidad: {{ $countSpent }}</span>
                             <span class="hidden lg:block">Conteo de gastos: {{ $countSpent }}</span>
                         </p>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
+                        <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
+                             style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
+                             {{ $percentageUsed['percentageUser'] }}%
+                        </div>
                     </div>
                     
                     <x-spent-card :spents="$spents"/>

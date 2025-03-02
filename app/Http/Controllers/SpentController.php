@@ -46,8 +46,8 @@ class SpentController extends Controller
         $lastConfiguration = $this->getConfigurationForMonth($user->id);
 
         if(!empty($formattedAvailableMoney)){
-            $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney']);
-            if($percentageUsed >= $lastConfiguration->expense_percentage_limit){
+            $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney'], $lastConfiguration->expense_percentage_limit);
+            if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
                 $message = true;
             }
         }
@@ -70,7 +70,7 @@ class SpentController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'currentDate' => $currentDate,
-            'percentageUsed' => round($percentageUsed, 1),
+            'percentageUsed' => $percentageUsed,
             'message' => $message,
             'branchName' => \Helps::getGitBranchName(),
             'footerInformation' => $footerInformation
@@ -355,9 +355,12 @@ class SpentController extends Controller
         return \Carbon\Carbon::createFromFormat('Y/m/d', $date)->format('d/m/y');
     }
 
-    private function checkSpending($totalPrice, $availableMoney){
-        $percentageUser = ($totalPrice / $availableMoney) * 100;
-        return $percentageUser;
+    private function checkSpending($totalPrice, $availableMoney, $limit){
+        $data['percentageUser'] = round(($totalPrice / $availableMoney) * 100, 1, PHP_ROUND_HALF_UP);
+        
+        ($data['percentageUser'] >= $limit) ? $data['color'] = 'red' : $data['color'] = 'green';
+
+        return $data;
     }
     
     private function getMonths() {
