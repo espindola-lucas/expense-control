@@ -59,28 +59,13 @@
                         </form>
                         <x-period-display :lastConfiguration="$lastConfiguration" />
                     </div>
-                    
-                    <div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between">
-                        <p class="text-center text-green-800">
-                            <span class="block lg:hidden">Disponible: $ {{ $available_money }}</span>
-                            <span class="hidden lg:block">Plata disponible: $ {{ $available_money }}</span>
-                        </p>
-                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-                        <p class="text-center text-red-800">
-                            <span class="block lg:hidden">Gastos: $ {{ $totalPrice }}</span>
-                            <span class="hidden lg:block">Total de gastos: ${{ $totalPrice }}</span>
-                        </p>
-                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-                        <p class="text-center text-blue-800">
-                            <span class="block lg:hidden">Resto: $ {{ $rest_money }}</span>
-                            <span class="hidden lg:block">Resto de plata disponible: $ {{ $rest_money }}</span>
-                        </p>
-                        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-                        <p class="text-center text-orange-400">
-                            <span class="block lg:hidden">Cantidad: {{ $countSpent }}</span>
-                            <span class="hidden lg:block">Conteo de gastos: {{ $countSpent }}</span>
-                        </p>
-                    </div>
+
+                    <x-monthly-balance 
+                        :availableMoney="$monthly_balance['available_money']"
+                        :totalPrice="$monthly_balance['total_price']"
+                        :restMoney="$monthly_balance['rest_money']"
+                        :countSpent="$monthly_balance['count_spent']"
+                    />
 
                     <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
                         <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
@@ -98,7 +83,10 @@
                 </div>
             </main>
         </div>
-        <x-footer :nameWebApp="$footerInformation['textInformation']" :currentYear="$footerInformation['year']" />
+        <x-footer 
+            :nameWebApp="$footerInformation['textInformation']" 
+            :currentYear="$footerInformation['year']" 
+        />
         @stack('modals')
 
         @livewireScripts

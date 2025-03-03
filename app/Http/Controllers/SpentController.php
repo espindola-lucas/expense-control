@@ -57,15 +57,19 @@ class SpentController extends Controller
             'year' => $currentYear,
             'textInformation' => 'Expense Control'
         ];
+
+        $monthlyBalance = [
+            'available_money' => $formattedAvailableMoney,
+            'total_price' => $formattedTotalPrice,
+            'rest_money' => $formattedRestMoney,
+            'count_spent' => $countSpents,
+        ];
         
         return view('dashboard', [
             'spents' => $data['spents'],
             'user' => $user,
             'allPeriods' => $getAllPeriods,
-            'totalPrice' => $formattedTotalPrice,
-            'available_money' => $formattedAvailableMoney,
-            'rest_money' => $formattedRestMoney,
-            'countSpent' => $countSpents,
+            'monthly_balance' => $monthlyBalance,
             'lastConfiguration' => $lastConfiguration,
             'startDate' => $startDate,
             'endDate' => $endDate,
