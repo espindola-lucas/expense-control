@@ -50,6 +50,11 @@ class SpentController extends Controller
             if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
                 $message = true;
             }
+        }else{
+            $percentageUsed = [
+                'percentageUser' => 0,
+                'color' => 'green'
+            ];
         }
 
         $currentDate = $this->getCurrentDate();
@@ -360,9 +365,16 @@ class SpentController extends Controller
     }
 
     private function checkSpending($totalPrice, $availableMoney, $limit){
-        $data['percentageUser'] = round(($totalPrice / $availableMoney) * 100, 1, PHP_ROUND_HALF_UP);
-        
-        ($data['percentageUser'] >= $limit) ? $data['color'] = 'red' : $data['color'] = 'green';
+        if ($totalPrice && $availableMoney){
+            $data['percentageUser'] = round(($totalPrice / $availableMoney) * 100, 1, PHP_ROUND_HALF_UP);
+            
+            ($data['percentageUser'] >= $limit) ? $data['color'] = 'red' : $data['color'] = 'green';
+        }else{
+            $data = [
+                'percentageUser' => 0,
+                'color' => 'green'
+            ];
+        }
 
         return $data;
     }
