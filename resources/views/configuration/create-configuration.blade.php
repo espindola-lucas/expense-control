@@ -25,12 +25,18 @@
                     @csrf
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white shadow-md rounded-md">
+                            <!-- fecha inicio del periodo del mes -->
                             <div class="mt-4">
                                 <label for="start_counting" class="block mb-2">
                                     Configure la fecha de inicio del periodo de conteo de gastos.
                                     <input id="start_counting" name="start_counting" type="date" value="{{ old('start_counting') }}"
                                         class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
                                 </label>
+                                @error('start_counting')
+                                <p class="text-red-800">
+                                    {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                             <div class="mt-4">
                                 <label for="end_counting" class="block mb-2">
@@ -38,6 +44,11 @@
                                     <input id="end_counting" name="end_counting" type="date" value="{{ old('end_counting') }}"
                                         class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
                                 </label>
+                                @error('end_counting')
+                                <p class="text-red-800">
+                                    {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                             <div class="mt-4">
                                 <label for="available_money" class="block mb-2">
@@ -52,7 +63,7 @@
                                 </p>
                                 @enderror
                             </div>
-                            <div>
+                            <!-- <div>
                                 <label class="label cursor-pointer">
                                     <input type="checkbox" id="info-checkbox" class="checkbox checkbox-primary rounded-md" />
                                     <span class="label-text">¿Sumar resto del mes anterior?</span>
@@ -60,7 +71,7 @@
                             </div>
                             <div id="info-content" class="hidden">
                                 <p id="info-text" class="bg-green-300 inline-block py-1 px-4 mt-2 border rounded-md"></p>
-                            </div>
+                            </div> -->
                             <div class="mt-">
                                 <label for="month_available_money" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                                 <select id="month_available_money" name="month_available_money" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
@@ -69,6 +80,11 @@
                                         <option value="{{ $month->value }}">{{ $month->name }}</option>
                                     @endforeach
                                 </select>
+                                @error('month_available_money')
+                                <p class="text-red-800">
+                                    {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                             <div class="mt-4">
                                 <label for="expense_percentage_limit" class="block mb-2">
@@ -76,6 +92,11 @@
                                     <input id="expense_percentage_limit" name="expense_percentage_limit" type="number" value="{{ old('expense_percentage_limit') }}"
                                     class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
                                 </label>
+                                @error('expense_percentage_limit')
+                                <p class="text-red-800">
+                                    {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                         </div>
                     </div>

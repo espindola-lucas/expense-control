@@ -51,6 +51,8 @@ class ConfigurationController extends Controller
     public function store(Request $request){
         if($request->isMethod('post')){
             $request->validate([
+                'start_counting' => 'required',
+                'end_counting'  => 'required',
                 'available_money' => 'required',
                 'month_available_money' => 'required',
                 'expense_percentage_limit' => 'required'
