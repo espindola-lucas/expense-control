@@ -27,13 +27,16 @@
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white rounded-md">
                             <!-- Fecha de compra -->
+                            @php
+                                $today = now()->format('Y-m-d');
+                            @endphp
                             <div class="mt-4">
                                 <label for="expense_date" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
                                     <input
                                         type="date"
                                         id="expense_date"
                                         name="expense_date"
-                                        value="{{old('expense_date')}}"
+                                        value="{{old('expense_date', $today)}}"
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
                                         placeholder="Dia"
                                     />

@@ -7,17 +7,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon;
 use App\Models\Spent;
+use App\Helpers\Helps;
 
 class ConfigurationController extends Controller
 {
     public function index(Request $request){
-        $months = \Helps::getNameMonths();
+        $months = Helps::getNameMonths();
         $user = Auth::user();
         $allConfigurations = $this->getAllConfiguration($user->id);
         
         foreach ($allConfigurations as $configuration) {
             $configuration->available_money = $this->formatMoney($configuration->available_money);
-            $month_name = \Helps::getMonthNameByKey($configuration->month_available_money);
+            $month_name = Helps::getMonthNameByKey($configuration->month_available_money);
             $configuration->month_available_money = "{$configuration->month_available_money} - {$month_name}";
 
             $currentDate = Carbon::now();
@@ -39,7 +40,7 @@ class ConfigurationController extends Controller
     }
 
     public function create(){
-        $months = \Helps::getNameMonths();
+        $months = Helps::getNameMonths();
         $user = Auth::user();
 
         return view('configuration.create-configuration', [
@@ -80,7 +81,7 @@ class ConfigurationController extends Controller
         $user = Auth::user();
         $configuration = $this->getAllConfiguration($user->id);
         $selectedMonth = $configuration->first()->month_available_money ?? null;
-        $months = \Helps::getNameMonths();
+        $months = Helps::getNameMonths();
         return view('configuration.show-configuration', [
             'user' => $user,
             'configuration' => $configId,
@@ -91,7 +92,7 @@ class ConfigurationController extends Controller
     }
 
     public function edit(Configuration $configuration){
-        $months = \Helps::getNameMonths();
+        $months = Helps::getNameMonths();
         $user = Auth::user();
         $selectedMonth = $configuration['month_available_money'];
         $currentYear = now()->year;
@@ -161,7 +162,7 @@ class ConfigurationController extends Controller
             $remainingMoney = $available_money - $totalSpent;
 
             return response()->json([
-                'info' => \Helps::formatValue($remainingMoney)
+                'info' => Helps::formatValue($remainingMoney)
             ]);
         }
 
