@@ -68,6 +68,15 @@
                         </label>
                     </div>
                 </div>
+                <div class="container mx-auto p-4">
+                    <div class="w-full md:w-5/6">
+                        <a href="{{ route('configuration.index') }}" id="back-button">
+                            <x-button-add>
+                                Volver
+                            </x-button-add>
+                        </a>
+                    </div>
+                </div>
             </div>
         </main>
 

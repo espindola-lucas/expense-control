@@ -19,7 +19,14 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('configuration.index') }}" class="px-2 lg:px-6 text-sm leading-[22px] md:px-3 {{ Request::is('configuration') ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500' }}"> {{ __('Configuration') }} </a>
+                    <a href="{{ route('configuration.index') }}" class="px-2 lg:px-6 text-sm leading-[22px] md:px-3 {{ Request::is('configuration') ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500' }}"> 
+                        {{ __('Configuration') }} 
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('fixedexpenses.index') }}" class="px-2 lg:px-6 text-sm leading-[22px] md:px-3 {{ Request::is('fixedexpenses') ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500' }}"> 
+                        Gastos Fijos por Mes 
+                    </a>
                 </li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}" x-data class>

@@ -1,39 +1,33 @@
 <?php
+namespace App\Helpers;
 use Carbon\Carbon;
+use App\Enums\MonthEnum;
 
 class Helps{
     public static function getNameMonths(){
-        $monthsTranslation = [
-            'January' => 'Enero',
-            'February' => 'Febrero',
-            'March' => 'Marzo',
-            'April' => 'Abril',
-            'May' => 'Mayo',
-            'June' => 'Junio',
-            'July' => 'Julio',
-            'August' => 'Agosto',
-            'September' => 'Septiembre',
-            'October' => 'Octubre',
-            'November' => 'Noviembre',
-            'December' => 'Diciembre'
-        ];
-
-        $months = collect([]);
-        for ($month = 1; $month <= 12; $month++){
-            $monthName = \DateTime::createFromFormat('!m', $month)->format('F');
-            $translatedMonthName = $monthsTranslation[$monthName];
-            $months->push((object)[
-                'name' => $translatedMonthName,
-                'value' => str_pad($month, 2, '0', STR_PAD_LEFT)
-            ]);
-        }
-
-        return $months;
+        return MonthEnum::getMonths();
     }
 
     public static function getDate(){
         $currentDate = Carbon::now()->format('d/m/Y');
         return $currentDate;
+    }
+
+    public static function getMonthNameByKey($key){
+        return MonthEnum::getMonthNameByKey($key);
+    }
+
+    public static function formatValue($param) {
+        return number_format($param, 0, '', '.');
+    }
+    
+    public static function getGitBranchName(){
+        $gitBranch = base_path('.git/HEAD');
+        $headContent = file_get_contents($gitBranch);
+        if(strpos($headContent, 'ref:') === 0){
+            $branch = trim(str_replace('ref: refs/heads/', '', $headContent));
+        }
+        return $branch;
     }
 }
 
