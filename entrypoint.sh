@@ -7,4 +7,4 @@ cd /var/www
 npm install
 
 # Inicia Vite
-npm run dev
+npm run build
