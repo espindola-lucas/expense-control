@@ -111,7 +111,7 @@
             </main>
         </div>
     </body>
-<script src="{{ mix('/js/app.js') }}" defer></script>
+    @vite('resources/js/app.js')
 <script>
     document.getElementById('info-checkbox').addEventListener('change', function () {
         const availableMoney = parseFloat(document.getElementById('available_money').value);

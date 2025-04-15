@@ -12,6 +12,8 @@ services:
       - "DB_HOST=database"
     ports:
       - "9000:9000"
+    networks:
+      - app-network
 
   web:
     container_name: laravel-web
@@ -25,6 +27,8 @@ services:
       - 8080:80
     depends_on:
       - app
+    networks:
+      - app-network
 
   database:
     container_name: laravel-database
@@ -37,6 +41,8 @@ services:
       - "POSTGRES_PASSWORD=expensecontrolpassword"
     ports:
         - "54321:5432"
+    networks:
+      - app-network
 
   selenium:
     container_name: laravel-selenium
@@ -61,3 +67,7 @@ services:
 
 volumes:
   dbdata: {}
+
+networks:
+  app-network:
+    driver: bridge
