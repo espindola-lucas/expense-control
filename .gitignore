@@ -20,3 +20,6 @@ yarn-error.log
 /.vscode
 convension
 laravel_docblock_template.md
+docker-compose.dev.yml
+entrypoint-dev.sh
+vite.config.dev.js
