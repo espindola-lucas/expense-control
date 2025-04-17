@@ -1,66 +1,174 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Expense Control
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Versiones Recomendadas
 
-## About Laravel
+| Nombre     | Versión  |
+|------------|----------|
+| PHP        | 8.3.x    |
+| PostgreSQL | 14.x     |
+| Composer   | 2.8.x    |
+| Docker     | 28.0.x   |
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup Config Develop
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Se debe copiar y renombrar los siguientes archivos:
 
-## Learning Laravel
+| Archivo              | Copia                  |
+|----------------------|------------------------|
+| `docker-compose.yml` | `docker-compose.dev.yml` |
+| `.env.example`       | `.env`                 |
+| `vite.config.js`     | `vite.config.dev.js`   |
+| `entrypoint.sh`      | `entrypoint.dev.sh`    |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Configuración de `docker-compose.dev.yml`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Eliminar la red interna.
+- Sacar de cada imagen el apartado de `networks`.
+- Eliminar el contenedor de `networks`.
 
-## Laravel Sponsors
+```yaml
+services:
+  app:
+    container_name: laravel-app
+    build:
+      context: ./
+      dockerfile: app.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=database"
+    ports:
+      - "9000:9000"
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+  web:
+    container_name: laravel-web
+    build:
+      context: ./
+      dockerfile: web.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - 8080:80
+    depends_on:
+      - app
 
-### Premium Partners
+  database:
+    container_name: laravel-database
+    image: postgres:11.2
+    volumes:
+      - dbdata:/var/lib/pgsql
+    environment:
+      - "POSTGRES_DB=mydb"
+      - "POSTGRES_USER=myuser"
+      - "POSTGRES_PASSWORD=expensecontrolpassword"
+    ports:
+        - "54321:5432"
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+  selenium:
+    container_name: laravel-selenium
+    image: selenium/standalone-chrome
 
-## Contributing
+  adminer:
+    container_name: laravel-adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+  node:
+    image: node:18.19.1
+    container_name: laravel_node
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    entrypoint: ["/var/www/entrypoint-dev.sh"]
+    ports:  
+      -  "5173:5173"
 
-## Code of Conduct
+volumes:
+  dbdata: {}
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Configuración de .env 
+Conexión a la base de datos:
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=pgsql
+DB_HOST=[tu host de docker-compose.dev.yml]
+DB_PORT=[tu puerto de docker-compose.dev.yml]
+DB_DATABASE=[tu database de docker-compose.dev.yml]
+DB_USERNAME=[tu user de docker-compose.dev.yml]
+DB_PASSWORD=[tu pass de docker-compose.dev.yml]
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Configuración de vite.config.dev.js
 
-## License
+```javascript
+export default defineConfig({
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.js'],
+      refresh: true,
+    }),
+  ],
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    hmr: {
+      host: '[tu ip local]',
+      port: 5173
+    },
+  },
+});
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Configuración de entrypoint.dev.sh
+
+```bash
+#!/bin/sh
+
+# Navega al directorio de trabajo
+cd /var/www
+
+# Instala dependencias
+npm install
+
+# Inicia Vite
+npm run dev
+```
+
+## Construir imágenes
+
+```bash
+docker compose -f docker-compose.dev.yml up -d --build
+```
+
+## Convención de Trabajo
+
+1. **No trabajar directamente en `main`**
+    - Simpre crear una nueva rama desde `develop`
+2. **Formato de nombre para ramar**
+    - `feature/nombre-descriptivo` -> para nuevas funcionalidades.
+    - `bugfix/nombre-descriptivo` -> para correción de errores.
+    - `hotfix/nombre-descriptivo` -> para parches urgentes.
+3. **Hacer pull request (PR) antes de mergear**
+    - Toda nueva funcionalidad o fix debe ir en un PR.
+    - El PR debe ser revisado y aprobado antes de hacer merge.
+4. **Solo `@espindola-lucas` puede hacer merge a `main`**
+    - Los demás pueden crear PRs, pero no mergearlos.
+5. **Commits descriptivos**
+    - User mensajes de commit claros y en infinitivo, por ejemplo: <br>
+    `Agregar validación de email en formulario de registro`
+6. **Actualizar rama antes de mergear**
+    - Asegurarse de hacer `git pull origin develop` o rebase antes de mergear una PR para evitar conflictos.
+7. **Etiqueta en los commits**
+    - Agregar etiqueta al issue desarrollado, por ejemplo: <br>
+    `Closes #34 [mensaje del commit]`
