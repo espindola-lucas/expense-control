@@ -69,17 +69,18 @@
 
                     <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
                         <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
-                             style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
-                             {{ $percentageUsed['percentageUser'] }}%
+                            style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
+                            {{ $percentageUsed['percentageUser'] }}%
                         </div>
                     </div>
                     
                     <x-spent-card :spents="$spents"/>
 
-                    <div class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-white px-2 border border-gray-300 rounded shadow-lg cursor-not-allowed">
-                        {{ $branchName }}
-                    </div>
-
+                    @if ($branchName != 'main')
+                        <div class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-white px-2 border border-gray-300 rounded shadow-lg cursor-not-allowed">
+                            {{ $branchName }}
+                        </div>
+                    @endif
                 </div>
             </main>
         </div>
