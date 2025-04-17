@@ -150,3 +150,25 @@ npm run dev
 ```bash
 docker compose -f docker-compose.dev.yml up -d --build
 ```
+
+## Convención de Trabajo
+
+1. **No trabajar directamente en `main`**
+    - Simpre crear una nueva rama desde `develop`
+2. **Formato de nombre para ramar**
+    - `feature/nombre-descriptivo` -> para nuevas funcionalidades.
+    - `bugfix/nombre-descriptivo` -> para correción de errores.
+    - `hotfix/nombre-descriptivo` -> para parches urgentes.
+3. **Hacer pull request (PR) antes de mergear**
+    - Toda nueva funcionalidad o fix debe ir en un PR.
+    - El PR debe ser revisado y aprobado antes de hacer merge.
+4. **Solo `@espindola-lucas` puede hacer merge a `main`**
+    - Los demás pueden crear PRs, pero no mergearlos.
+5. **Commits descriptivos**
+    - User mensajes de commit claros y en infinitivo, por ejemplo: <br>
+    `Agregar validación de email en formulario de registro`
+6. **Actualizar rama antes de mergear**
+    - Asegurarse de hacer `git pull origin develop` o rebase antes de mergear una PR para evitar conflictos.
+7. **Etiqueta en los commits**
+    - Agregar etiqueta al issue desarrollado, por ejemplo: <br>
+    `Closes #34 [mensaje del commit]`
