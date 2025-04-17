@@ -52,15 +52,15 @@ class ConfigurationController extends Controller
     public function store(Request $request){
         if($request->isMethod('post')){
             $request->validate([
-                'start_counting' => 'required',
-                'end_counting'  => 'required',
-                'available_money' => 'required',
+                'start_counting' => 'required|date',
+                'end_counting'  => 'required|date|after_or_equal:start_counting',
+                'available_money' => 'required|numeric',
                 'month_available_money' => 'required',
-                'expense_percentage_limit' => 'required'
+                'expense_percentage_limit' => 'required|numeric'
             ]);
 
-            $start_counting = $request->input('start_counting') ?: null;
-            $end_counting = $request->input('end_counting') ?: null;
+            $start_counting = $request->input('start_counting');
+            $end_counting = $request->input('end_counting');
 
             Configuration::create([
                 'start_counting' => $start_counting,
