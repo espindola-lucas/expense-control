@@ -101,10 +101,17 @@
                         </div>
                     </div>
                     <div class="container mx-auto p-4">
-                        <div class="w-full md:w-5/6 mx-auto flex justify-end">
-                            <button type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
-                                Guardar
-                            </button>
+                        <div class="w-full md:w-5/6 mx-auto">
+                            <section class="flex justify-between">
+                                <a href="{{ route('configuration.index') }}" id="back-button">
+                                    <x-button-add>
+                                        Volver
+                                    </x-button-add>
+                                </a>
+                                <button id="add-expense" type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
+                                    Agregar
+                                </button>
+                            </section>
                         </div>
                     </div>
                 </form>

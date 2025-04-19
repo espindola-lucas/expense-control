@@ -21,7 +21,7 @@
         <div class="min-h-screen bg-page-custom">
             <x-header :user="$user"></x-header>
 
-            <main class="container mx-auto p-4">
+            <main class="container mx-auto p-4 mb-14">
                 <div class="w-11/12 mx-auto">
                     <a href="{{ route('configuration.create') }}">
                         <x-button-add>
@@ -34,6 +34,7 @@
                 </div>
             </main>
         </div>
+        <x-buttom-nav/>
         <x-footer :nameWebApp="$footerInformation['textInformation']" :currentYear="$footerInformation['year']" />
         @stack('modals')
 
