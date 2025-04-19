@@ -84,7 +84,7 @@
                 </div>
             </main>
         </div>
-        <x-buttom-nav/>
+        <x-buttom-nav></x-buttom-nav>
         <x-footer 
             :nameWebApp="$footerInformation['textInformation']" 
             :currentYear="$footerInformation['year']" 
