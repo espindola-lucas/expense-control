@@ -51,11 +51,11 @@
                             </div>
                             <!-- Nombre del gasto -->
                             <div class="mt-4">
-                                <label for="spentName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+                                <label for="name" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
                                     <input
                                         type="text"
-                                        id="spentName"
-                                        name="spentName"
+                                        id="name"
+                                        name="name"
                                         value="{{ $spent->name }}"
                                         required
                                         class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"

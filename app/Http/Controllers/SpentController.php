@@ -84,6 +84,8 @@ class SpentController extends Controller
             'count_spent' => $countSpents,
         ];
         
+        // dd(Helps::getGitBranchName());
+
         return view('dashboard', [
             'spents' => $data['spents'],
             'user' => $user,
@@ -137,10 +139,13 @@ class SpentController extends Controller
                 'price' => 'required',
             ]);
 
+            $spentName = trim($request->input('spentName'));
+            $price = trim($request->input('price'));
+
             Spent::create([
                 'expense_date' => $request->input('expense_date'),
-                'name' => $request->input('spentName'),
-                'price' => $request->input('price'),
+                'name' => $spentName,
+                'price' => $price,
                 'user_id' => Auth::user()->id
             ]);
 
@@ -162,6 +167,10 @@ class SpentController extends Controller
     */
     public function edit(Spent $spent){
         $user = Auth::user();
+
+        $spent->name = trim($spent->name);
+        $spent->price = trim($spent->price);
+
         return view('spents.edit-spent', [
             'spent' => $spent,
             'user' => $user
@@ -350,6 +359,7 @@ class SpentController extends Controller
                             ->get();
         
         foreach($spents as $spent){
+            $spent->name = trim($spent->name);
             $spent->price = number_format($spent->price, 0, '', '.');
             $spent->expense_date = Carbon::parse($spent->expense_date)->format('d/m/Y');
         }
