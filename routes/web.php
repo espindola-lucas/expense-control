@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SpentController;
 use App\Http\Controllers\ConfigurationController;
@@ -37,11 +38,14 @@ DELETE /spents/{product} → SpentController@destroy
 Route::middleware([
     'auth',
     config('jetstream.auth_session'),
-    'verified'
+    'verified',
 ])->group(function () {
     Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');
     Route::resource('spents', SpentController::class);
     Route::resource('configuration', ConfigurationController::class);
     Route::get('/get-info', [ConfigurationController::class, 'getInfo']);
     Route::resource('fixedexpenses', FixedExpenseController::class);
+    Route::resource('is_admin', AdminController::class)
+        ->parameters(['is_admin' => 'user'])
+        ->only(['index', 'destroy']);
 });
