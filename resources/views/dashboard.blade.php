@@ -29,7 +29,7 @@
                     </x-slot>
                 </x-notification>
             @endif
-            <main class="container mx-auto p-4">
+            <main class="container mx-auto p-4 mb-14">
                 <div class="w-11/12 mx-auto">
                     <div class="flex justify-between sm-500:mb-4">
                         <a href="{{ route('spents.create') }}" id="add-expense">
@@ -84,6 +84,7 @@
                 </div>
             </main>
         </div>
+        <x-buttom-nav/>
         <x-footer 
             :nameWebApp="$footerInformation['textInformation']" 
             :currentYear="$footerInformation['year']" 
