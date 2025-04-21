@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SessionAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SpentController;
 use App\Http\Controllers\ConfigurationController;
@@ -10,12 +11,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-]);
-
 Route::get('/login', function () {
     return view('session.login');
 })->name('session-login');
@@ -24,6 +19,9 @@ Route::get('/register', function () {
     return view('session.register');
 })->name('session-register');
 
+Route::post('/register', [SessionAuthController::class, 'register'])->name('session-register.store');
+Route::post('/login', [SessionAuthController::class, 'login'])->name('session-login.authenticate');
+Route::post('/logout', [SessionAuthController::class, 'logout'])->name('session-logout');
 
 /*
 Route::resource()
@@ -37,8 +35,6 @@ DELETE /spents/{product} → SpentController@destroy
 
 Route::middleware([
     'auth',
-    config('jetstream.auth_session'),
-    'verified',
 ])->group(function () {
     Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');
     Route::resource('spents', SpentController::class);

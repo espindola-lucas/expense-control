@@ -15,9 +15,8 @@
     <body class="font-sans antialiased dark:bg-black dark:text-white/50">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                <form method="POST" action="{{ route('session-login') }}">
+                <form method="POST" action="{{ route('session-login.authenticate') }}">
                     @csrf
-
                     <div>
                         <label for="name" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
                             <input
@@ -35,6 +34,9 @@
                                 Email
                             </span>
                         </label>
+                        @error('email')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="mt-4">
@@ -53,6 +55,9 @@
                                 Password
                             </span>
                         </label>
+                        @error('password')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="block mt-4">
