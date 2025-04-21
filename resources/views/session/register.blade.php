@@ -15,7 +15,7 @@
     <body class="font-sans antialiased dark:bg-black dark:text-white/50">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                <form method="POST" action="{{ route('session-register') }}">
+                <form method="POST" action="{{ route('session-register.store') }}">
                 @csrf
                     <div>
                         <label for="name" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
@@ -33,6 +33,9 @@
                                 Nombre
                             </span>
                         </label>
+                        @error('name')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mt-4">
                         <label for="email" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
@@ -50,6 +53,9 @@
                                 Email
                             </span>
                         </label>
+                        @error('email')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mt-4">
                         <label for="password" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
@@ -66,6 +72,9 @@
                                 Contraseña
                             </span>
                         </label>
+                        @error('password')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mt-4">
                         <label for="password_confirmation" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
@@ -82,22 +91,10 @@
                                 Confirmar contraseña
                             </span>
                         </label>
+                        @error('password_confirmation')
+                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
-                    @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                    <div class="mt-4">
-                        <x-label for="terms">
-                            <div class="flex items-center">
-                                <x-checkbox name="terms" id="terms" required />
-                                <div class="ms-2">
-                                    {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                            'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
-                                            'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Privacy Policy').'</a>',
-                                    ]) !!}
-                                </div>
-                            </div>
-                        </x-label>
-                    </div>
-                    @endif
                     <div class="flex items-center justify-end mt-4">
                         <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-4" href="{{ route('session-login') }}">
                             {{ __('Already registered?') }}

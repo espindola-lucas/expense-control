@@ -31,6 +31,11 @@
             </div>
             <div class="flex w-full sm-500:w-1/2 justify-center items-center bg-semi-white">
                 <form class="bg-white text-center mt-6 px-6 py-4 shadow-md sm:rounded-lg">
+                    @if(session('success'))
+                        <x-alert type="success">
+                            {{ session('success') }}
+                        </x-alert>
+                    @endif
                     <h1 class="text-gray-800 font-bold text-2xl mb-1">Bienvenido!</h1>
                     <p class="text-sm font-normal text-gray-600 mb-7">¿Que quiere hacer?</p>
                     <div class="mb-4">
@@ -47,6 +52,11 @@
                             </x-button>
                         </a>
                     </div>
+                    @if(session('logout'))
+                        <x-alert type="logout">
+                            {{ session('logout') }}
+                        </x-alert>
+                    @endif
                 </form>
             </div>
         </div>
