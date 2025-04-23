@@ -50,8 +50,12 @@ class SpentController extends Controller
         $data = $this->filterByPeriod($user->id, $startDate, $endDate);
         
         $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
-
-        $restMoney = $data['availableMoney'] - $data['totalPrice'];
+        
+        if($data['availableMoney'] != 0 ){
+            $restMoney = $data['availableMoney'] - $data['totalPrice'];
+        }else {
+            $restMoney = 0;
+        }
 
         // Formatear los valores para la salida
         $formattedAvailableMoney = Helps::formatValue($data['availableMoney']);
