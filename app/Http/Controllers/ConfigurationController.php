@@ -71,7 +71,7 @@ class ConfigurationController extends Controller
                 'user_id' => Auth::user()->id
             ]);
 
-            return Redirect::back()->with('success', 'ConfiguraciÃ³n guardada exitosamente.');
+            return redirect()->route('configuration.index')->with('success', 'Configuración guardada exitosamente.');
         }
     }
 
