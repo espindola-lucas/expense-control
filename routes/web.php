@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SpentController;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\FixedExpenseController;
+use App\Http\Middleware\CheckSessionTimeout;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,6 +36,7 @@ DELETE /spents/{product} → SpentController@destroy
 
 Route::middleware([
     'auth',
+    CheckSessionTimeout::class,
 ])->group(function () {
     Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');
     Route::resource('spents', SpentController::class);

@@ -8,7 +8,7 @@ use App\Models\Configuration;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\Helps;
-
+use Illuminate\Support\Facades\Session;
 class SpentController extends Controller
 {
     /**
@@ -88,8 +88,6 @@ class SpentController extends Controller
             'count_spent' => $countSpents,
         ];
         
-        // dd(Helps::getGitBranchName());
-
         return view('dashboard', [
             'spents' => $data['spents'],
             'user' => $user,
