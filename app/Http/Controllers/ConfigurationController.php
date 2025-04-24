@@ -126,7 +126,7 @@ class ConfigurationController extends Controller
         return redirect('configuration');
     }
 
-    private function getAllConfiguration($userId){
+    static function getAllConfiguration($userId){
         $configurations = Configuration::where('user_id', $userId)
                                         ->orderBy('id', 'desc')
                                         ->get();

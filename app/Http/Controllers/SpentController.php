@@ -27,9 +27,10 @@ class SpentController extends Controller
     public function index(Request $request) {
         $percentageUsed = null;
         $message = false;
-
+        $hasConfiguration = true;
         $currentYear = now()->year;
         $user = Auth::user();
+        $config = ConfigurationController::getAllConfiguration($user->id);
     
         $selectedMonth = $request->input('period');
 
@@ -87,7 +88,10 @@ class SpentController extends Controller
             'rest_money' => $formattedRestMoney,
             'count_spent' => $countSpents,
         ];
-        
+
+        if($config->isEmpty()){
+            $hasConfiguration = false;
+        }
         return view('dashboard', [
             'spents' => $data['spents'],
             'user' => $user,
@@ -100,7 +104,8 @@ class SpentController extends Controller
             'percentageUsed' => $percentageUsed,
             'message' => $message,
             'branchName' => Helps::getGitBranchName(),
-            'footerInformation' => $footerInformation
+            'footerInformation' => $footerInformation,
+            'hasConfiguration' => $hasConfiguration
         ]);
     }
 
