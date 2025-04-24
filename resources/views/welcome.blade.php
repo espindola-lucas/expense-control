@@ -36,6 +36,11 @@
                             {{ session('success') }}
                         </x-alert>
                     @endif
+                    @if (session('warning'))
+                    <x-alert type="warning">
+                        {{ session('warning') }}
+                    </x-alert>
+                    @endif
                     <h1 class="text-gray-800 font-bold text-2xl mb-1">Bienvenido!</h1>
                     <p class="text-sm font-normal text-gray-600 mb-7">¿Que quiere hacer?</p>
                     <div class="mb-4">
