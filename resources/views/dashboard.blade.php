@@ -30,6 +30,8 @@
                 </x-notification>
             @endif
             <main class="container mx-auto p-4 mb-14">
+            
+            @if($hasConfiguration)
                 <div class="w-11/12 mx-auto">
                     <div class="flex justify-between sm-500:mb-4">
                         <a href="{{ route('spents.create') }}" id="add-expense">
@@ -73,8 +75,8 @@
                             {{ $percentageUsed['percentageUser'] }}%
                         </div>
                     </div>
-                    
-                    <x-spent-card :spents="$spents"/>
+            @endif        
+                    <x-spent-card :spents="$spents"/> 
 
                     @if ($branchName != 'main')
                         <div class="fixed bottom-16 left-1/2 transform -translate-x-1/2 bg-white px-2 border border-gray-300 rounded shadow-lg cursor-not-allowed">
