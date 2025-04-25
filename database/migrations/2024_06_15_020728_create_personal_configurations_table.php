@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configurations', function (Blueprint $table) {
+        Schema::create('personal_configurations', function (Blueprint $table) {
             $table->id();
             $table->date('start_counting')->nullable();
             $table->date('end_counting')->nullable();
