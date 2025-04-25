@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\Configuration;
+use App\Models\PersonalConfiguration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon;
 use App\Models\Spent;
 use App\Helpers\Helps;
 
-class ConfigurationController extends Controller
+class PersonalConfigurationController extends Controller
 {
     public function index(Request $request){
         $months = Helps::getNameMonths();
@@ -62,7 +62,7 @@ class ConfigurationController extends Controller
             $start_counting = $request->input('start_counting');
             $end_counting = $request->input('end_counting');
 
-            Configuration::create([
+            PersonalConfiguration::create([
                 'start_counting' => $start_counting,
                 'end_counting' => $end_counting,
                 'available_money' => $request->input('available_money'),
@@ -71,12 +71,12 @@ class ConfigurationController extends Controller
                 'user_id' => Auth::user()->id
             ]);
 
-            return redirect()->route('configuration.index')->with('success', 'ConfiguraciÛn guardada exitosamente.');
+            return redirect()->route('configuration.index')->with('success', 'ConfiguraciÔøΩn guardada exitosamente.');
         }
     }
 
     public function show($id){
-        $configId = Configuration::find($id);
+        $configId = PersonalConfiguration::find($id);
         $isDefaultMonth = false;
         $user = Auth::user();
         $configuration = $this->getAllConfiguration($user->id);
@@ -91,7 +91,7 @@ class ConfigurationController extends Controller
         ]);
     }
 
-    public function edit(Configuration $configuration){
+    public function edit(PersonalConfiguration $configuration){
         $months = Helps::getNameMonths();
         $user = Auth::user();
         $selectedMonth = $configuration['month_available_money'];
@@ -113,21 +113,21 @@ class ConfigurationController extends Controller
         ]);
     }
 
-    public function update(Request $request, Configuration $configuration){
+    public function update(Request $request, PersonalConfiguration $configuration){
         $input = $request->all();
         $configuration->update($input);
         return redirect('configuration');
     }
 
     public function destroy($id){
-        $config = Configuration::findOrFail($id);
+        $config = PersonalConfiguration::findOrFail($id);
         $config->delete();
         
         return redirect('configuration');
     }
 
     static function getAllConfiguration($userId){
-        $configurations = Configuration::where('user_id', $userId)
+        $configurations = PersonalConfiguration::where('user_id', $userId)
                                         ->orderBy('id', 'desc')
                                         ->get();
         
@@ -149,7 +149,7 @@ class ConfigurationController extends Controller
     public function getInfo() {
         $user_id = auth()->id();
 
-        $latestConfiguration = Configuration::orderBy('id', 'desc')->first();
+        $latestConfiguration = PersonalConfiguration::orderBy('id', 'desc')->first();
 
         if($latestConfiguration){
             $startDate = $latestConfiguration->start_counting;
@@ -191,7 +191,7 @@ class ConfigurationController extends Controller
 	* @return int money available
 	*/
     private function getAvailableMoneyByPeriod($userId, $startDate = null, $endDate = null) {
-        $query = Configuration::where('user_id', $userId);
+        $query = PersonalConfiguration::where('user_id', $userId);
 
         if ($startDate && $endDate) {
             // Filtra las configuraciones donde el rango de fechas proporcionado intersecta con el rango de la configuraci√≥n.

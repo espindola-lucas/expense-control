@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Spent;
-use App\Models\Configuration;
+use App\Models\PersonalConfiguration;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\Helps;
@@ -30,7 +30,7 @@ class SpentController extends Controller
         $hasConfiguration = true;
         $currentYear = now()->year;
         $user = Auth::user();
-        $config = ConfigurationController::getAllConfiguration($user->id);
+        $config = PersonalConfigurationController::getAllConfiguration($user->id);
     
         $selectedMonth = $request->input('period');
 
@@ -232,7 +232,7 @@ class SpentController extends Controller
     * @return \Illuminate\Support\Collection List of periods with start date, end date, and available money.
     */
     private function getAllPeriods($userId){
-        $periods = Configuration::select('start_counting', 'end_counting', 'month_available_money')
+        $periods = PersonalConfiguration::select('start_counting', 'end_counting', 'month_available_money')
                                 ->where('user_id', $userId)
                                 ->get();
         return $periods;
@@ -276,7 +276,7 @@ class SpentController extends Controller
     * @return \Illuminate\Support\Carbon|string Start date from the latest configuration or current date.
     */
     private function getStartDateFromDatabase($user) {
-        $configuration = Configuration::where('user_id', $user->id)
+        $configuration = PersonalConfiguration::where('user_id', $user->id)
                                       ->latest()
                                       ->first();
 
@@ -294,7 +294,7 @@ class SpentController extends Controller
     * @return \Illuminate\Support\Carbon|string End date from the latest configuration or current date.
     */
     private function getEndDateFromDatabase($user) {
-        $configuration = Configuration::where('user_id', $user->id)
+        $configuration = PersonalConfiguration::where('user_id', $user->id)
                                       ->latest()
                                       ->first();
     
@@ -414,7 +414,7 @@ class SpentController extends Controller
     * @return int Available money configured for the user within the period.
     */
     private function getAvailableMoneyByPeriod($userId, $startDate = null, $endDate = null) {
-        $query = Configuration::where('user_id', $userId);
+        $query = PersonalConfiguration::where('user_id', $userId);
 
         if ($startDate && $endDate) {
             // Filtra las configuraciones donde el rango de fechas proporcionado intersecta con el rango de la configuración.
@@ -460,7 +460,7 @@ class SpentController extends Controller
     */
     private function getTotalSpentsByPeriod($userId, $startDate = null, $endDate = null){
         if($startDate && $endDate){
-            $count = Spent::join('configurations as c', function ($join){
+            $count = Spent::join('personal_configurations as c', function ($join){
                 $join->on('spents.expense_date', '>=', 'c.start_counting')
                     ->on('spents.expense_date', '<=', 'c.end_counting'); 
             })
@@ -524,11 +524,11 @@ class SpentController extends Controller
     *
     * @param int $userId   ID of the authenticated user.
     * 
-    * @return Configuration|null  Latest Configuration found or null if not exists.
+    * @return PersonalConfiguration|null  Latest Configuration found or null if not exists.
     */
     private function getConfigurationForMonth($userId) {
          // Obtener la configuración para el mes y año específicos
-        $configuration = Configuration::where('user_id', $userId)
+        $configuration = PersonalConfiguration::where('user_id', $userId)
                                         ->orderBy('end_counting', 'desc')
                                         ->first();
     
@@ -544,7 +544,7 @@ class SpentController extends Controller
     * This method updates the Configuration object by formatting the start_counting
     * and end_counting dates to a consistent format (d/m/Y).
     *
-    * @param Configuration $configuration  Configuration model instance (passed by reference).
+    * @param PersonalConfiguration $configuration  Configuration model instance (passed by reference).
     * 
     * @return void
     */
