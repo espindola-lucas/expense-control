@@ -44,17 +44,6 @@ services:
     networks:
       - app-network
 
-  selenium:
-    container_name: laravel-selenium
-    image: selenium/standalone-chrome
-
-  adminer:
-    container_name: laravel-adminer
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
-
   node:
     image: node:18.19.1
     container_name: laravel_node
