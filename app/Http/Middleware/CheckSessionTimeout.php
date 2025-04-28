@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Session;
 class CheckSessionTimeout
 {
 
-    protected $timeout = 7200;
+    protected $timeoutMinutes = 120;
 
     /**
      * Handle an incoming request.
@@ -22,7 +22,7 @@ class CheckSessionTimeout
         if (Session::has('lastActivityTime')){
             $inactivity = time() - Session::get('lastActivityTime');
 
-            if ($inactivity > $this->timeout){
+            if ($inactivity > $this->timeoutMinutes * 60){
                 Auth::logout();
                 Session::invalidate();
                 Session::regenerateToken();
