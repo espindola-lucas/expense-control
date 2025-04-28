@@ -15,7 +15,8 @@ class PersonalConfigurationController extends Controller
         $months = Helps::getNameMonths();
         $user = Auth::user();
         $allConfigurations = $this->getAllConfiguration($user->id);
-        
+        $hasConfiguration = true;
+
         foreach ($allConfigurations as $configuration) {
             $configuration->available_money = $this->formatMoney($configuration->available_money);
             $month_name = Helps::getMonthNameByKey($configuration->month_available_money);
@@ -31,10 +32,16 @@ class PersonalConfigurationController extends Controller
             'year' => $currentYear,
             'textInformation' => 'Expense Control'
         ];
+
+        if($allConfigurations->isEmpty()){
+            $hasConfiguration = false;
+        }
+
         return view('configuration', [
             'months' => $months,
             'configurations' => $allConfigurations,
             'user' => $user,
+            'hasConfiguration' => $hasConfiguration,
             'footerInformation' => $footerInformation
         ]);
     }
