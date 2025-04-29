@@ -14,14 +14,14 @@ Route::get('/', function () {
 
 Route::get('/login', function () {
     return view('session.login');
-})->name('session-login');
+})->name('login');
 
 Route::get('/register', function () {
     return view('session.register');
 })->name('session-register');
 
 Route::post('/register', [SessionAuthController::class, 'register'])->name('session-register.store');
-Route::post('/login', [SessionAuthController::class, 'login'])->name('session-login.authenticate');
+Route::post('/login', [SessionAuthController::class, 'login'])->name('login.authenticate');
 Route::post('/logout', [SessionAuthController::class, 'logout'])->name('session-logout');
 
 /*

@@ -7,10 +7,11 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 class CheckSessionTimeout
 {
 
-    protected $timeoutMinutes = 120;
+    protected $timeout = 300;
 
     /**
      * Handle an incoming request.
@@ -21,13 +22,13 @@ class CheckSessionTimeout
     {
         if (Session::has('lastActivityTime')){
             $inactivity = time() - Session::get('lastActivityTime');
-
-            if ($inactivity > $this->timeoutMinutes * 60){
+            if ($inactivity > $this->timeout){
+                Session::forget('lastActivityTime');
                 Auth::logout();
                 Session::invalidate();
                 Session::regenerateToken();
 
-                return redirect('/')->with('warning', 'Tu sesión ha expirado por inactvidad');
+                return redirect('/')->with('warning', 'Tu sesión ha experidao por inactividad');
             }
         }
 
