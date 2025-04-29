@@ -44,7 +44,7 @@
                     <h1 class="text-gray-800 font-bold text-2xl mb-1">Bienvenido!</h1>
                     <p class="text-sm font-normal text-gray-600 mb-7">¿Que quiere hacer?</p>
                     <div class="mb-4">
-                        <a href="{{ route('session-login') }}">
+                        <a href="{{ route('login') }}">
                             <x-button :link="true" id="login">
                                 Iniciar Sesion
                             </x-button>
