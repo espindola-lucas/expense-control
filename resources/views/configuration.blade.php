@@ -28,7 +28,7 @@
                             Agregar
                         </x-button-add>
                     </a>
-                    @if(!$configurations->isEmpty() and !hasConfiguration)
+                    @if(!$configurations->isEmpty() and $hasConfiguration)
                         <x-configuration-list :configurations="$configurations" />
                     @else
                         <div class="w-11/12 mx-auto mt-4">
