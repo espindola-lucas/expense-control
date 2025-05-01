@@ -23,6 +23,7 @@ Route::get('/register', function () {
 Route::post('/register', [SessionAuthController::class, 'register'])->name('session-register.store');
 Route::post('/login', [SessionAuthController::class, 'login'])->name('login.authenticate');
 Route::post('/logout', [SessionAuthController::class, 'logout'])->name('session-logout');
+Route::get('/verify-email/{id}/{hash}/', [SessionAuthController::class, 'verifyEmail'])->name('verify-email');
 
 /*
 Route::resource()
@@ -34,8 +35,10 @@ PUT/PATCH /spents/{product} → SpentController@update
 DELETE /spents/{product} → SpentController@destroy
 */
 
+
 Route::middleware([
     'auth',
+    'verified',
     CheckSessionTimeout::class,
 ])->group(function () {
     Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');

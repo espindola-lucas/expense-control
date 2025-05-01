@@ -15,6 +15,11 @@
     <body class="font-sans antialiased dark:bg-black dark:text-white/50">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+                @if(session('error'))
+                <x-alert type="error">
+                    {{ session('error') }}
+                </x-alert>
+                @endif
                 <form method="POST" action="{{ route('login.authenticate') }}">
                     @csrf
                     <div>
@@ -34,9 +39,6 @@
                                 Email
                             </span>
                         </label>
-                        @error('email')
-                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="mt-4">
@@ -55,9 +57,6 @@
                                 Password
                             </span>
                         </label>
-                        @error('password')
-                            <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <div class="block mt-4">
