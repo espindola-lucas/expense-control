@@ -7,6 +7,7 @@
         'info' => 'bg-blue-100 text-blue-800',
         'warning' => 'bg-yellow-100 text-yellow-800',
         'logout' => 'bg-orange-100 text-orange-800',
+        'status' => 'bg-sky-100 text-sky-800',
     ];
 @endphp
 
