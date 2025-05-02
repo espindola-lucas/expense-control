@@ -462,7 +462,8 @@ class SpentController extends Controller
         if($startDate && $endDate){
             $count = Spent::join('personal_configurations as c', function ($join){
                 $join->on('spents.expense_date', '>=', 'c.start_counting')
-                    ->on('spents.expense_date', '<=', 'c.end_counting'); 
+                    ->on('spents.expense_date', '<=', 'c.end_counting')
+                    ->on('spents.user_id', '=', 'c.user_id');
             })
             ->where('c.start_counting', $startDate)
             ->where('c.end_counting', $endDate)
