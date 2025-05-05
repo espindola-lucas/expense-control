@@ -25,6 +25,11 @@ Route::post('/login', [SessionAuthController::class, 'login'])->name('login.auth
 Route::post('/logout', [SessionAuthController::class, 'logout'])->name('session-logout');
 Route::get('/verify-email/{id}/{hash}/', [SessionAuthController::class, 'verifyEmail'])->name('verify-email');
 
+Route::get('/forgot-password', [SessionAuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [SessionAuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [SessionAuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [SessionAuthController::class, 'resetPassword'])->name('password.update');
+
 /*
 Route::resource()
 GET /spents/create → SpentController@create

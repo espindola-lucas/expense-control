@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ResetPasswordMailable;
 use App\Models\User;
 // use App\Notifications\EmailVerificationNotification;
 use Illuminate\Http\Request;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyEmailMailable;
+use Illuminate\Support\Facades\Password;
 
 
 class SessionAuthController extends Controller
@@ -98,5 +100,58 @@ class SessionAuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/')->with('logout', 'Sesión cerrada.');
+    }
+
+    public function showForgotPasswordForm(){
+        return view('session.forgot-password');
+    }
+
+    public function sendResetLink(Request $request){
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user){
+            return back()->withErrors(['email' => 'No se encontró un usuario con ese correo.']);
+        }
+
+        $token = Password::createToken($user);
+
+        $resetUrl = route('password.reset', [
+            'token' => $token,
+            'email' => $user->email, 
+        ]);
+
+        Mail::to($user->email)->send(new ResetPasswordMailable($user, $resetUrl));
+
+        return redirect('/')->with('info', 'Te enviamos un correo con el enlace para restablecer tu contraseña.');
+    }
+
+    public function showResetForm(Request $request, $token){
+        return view('session.new-password', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    public function resetPassword(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+        ? redirect('/')->with('info', 'Contraseña restablecida correctamente.')
+        : back()->withErrors(['email' => __($status)]);
     }
 }
