@@ -36,38 +36,24 @@
                     <input type="hidden" name="email" value="{{ $email }}">
 
                     <div class="mt-4">
-                        <label for="password" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                            <input
-                                id="password"
-                                class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                type="password"
-                                name="password"
-                                required
-                                placeholder="confirm-password"
-                            />
-                            <span class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                Nueva contraseña
-                            </span>
-                        </label>
+                        <x-form-input
+                            type="password"
+                            id="password"
+                            name="password"
+                            label="Nueva contraseña"
+                        ></x-form-input>
                         @error('password_confirmation')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
                     </div>
                     
                     <div class="mt-4">
-                        <label for="password_confirmation" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                            <input
-                                id="password_confirmation"
-                                class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                type="password"
-                                name="password_confirmation"
-                                required
-                                placeholder="confirm-password"
-                            />
-                            <span class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                Confirmar nueva contraseña
-                            </span>
-                        </label>
+                        <x-form-input
+                            type="password"
+                            id="password"
+                            name="password"
+                            label="Confirmar nueva contraseña"
+                        ></x-form-input>
                         @error('password_confirmation')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
