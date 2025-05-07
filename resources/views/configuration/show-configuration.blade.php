@@ -25,25 +25,25 @@
             <div class="container mx-auto p-4">
                 <div class="p-2 bg-white rounded-md">
                     <div class="mt-4">
-                        <label for="start_counting" class="block mb-2">
+                        <label for="start_counting" class="block mb-2 text-sm text-sm">
                             Configure la fecha de inicio del periodo de conteo de gastos.
                             <input id="start_counting" name="start_counting" type="date" value="{{ $configuration['start_counting'] }}" @unless(is_null($configuration['start_counting'])) disabled @endunless
                                 class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($configuration['start_counting'])) bg-gray-200 @endunless"/>
                         </label>
                     </div>
                     <div class="mt-4">
-                        <label for="end_counting" class="block mb-2">
+                        <label for="end_counting" class="block mb-2 text-sm">
                             Configure la fecha de fin del periodo de conteo de gastos.
                             <input id="end_counting" name="end_counting" type="date" value="{{ $configuration['end_counting'] }}" @unless(is_null($configuration['end_counting'])) disabled @endunless
                                 class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($configuration['end_counting'])) bg-gray-200 @endunless"/>
                         </label>
                     </div>
                     <div class="mt-4">
-                        <label for="available_money" class="block mb-2">
+                        <label for="available_money" class="block mb-2 text-sm">
                             Configure la cantidad de plata disponible para el mes, <br>
                             sin puntos ni comas.
                             <input id="available_money" name="available_money" type="number" value="{{ $configuration['available_money'] }}" @unless(is_null($configuration['available_money'])) disabled @endunless
-                               class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($configuration['available_money'])) bg-gray-200 @endunless"/>
+                                class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($configuration['available_money'])) bg-gray-200 @endunless"/>
                         </label>
                         @error('available_money')
                         <p class="text-red-800">
@@ -61,10 +61,10 @@
                         </select>
                     </div>
                     <div class="mt-4">
-                        <label for="expense_percentage_limit" class="block mb-2">
+                        <label for="expense_percentage_limit" class="block mb-2 text-sm">
                             Coloque el porcentaje (%) del umbral.
                             <input id="expense_percentage_limit" name="expense_percentage_limit" type="number" value="{{ $configuration['expense_percentage_limit'] }}" @unless(is_null($configuration['expense_percentage_limit'])) disabled @endunless
-                               class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($configuration['expense_percentage_limit'])) bg-gray-200 @endunless"/>
+                                class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2 @unless(is_null($configuration['expense_percentage_limit'])) bg-gray-200 @endunless"/>
                         </label>
                     </div>
                 </div>

@@ -31,40 +31,31 @@
                                 $today = now()->format('Y-m-d');
                             @endphp
                             <div class="mt-4">
-                                <label for="expense_date" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                                    <input
-                                        type="date"
-                                        id="expense_date"
-                                        name="expense_date"
-                                        value="{{old('expense_date', $today)}}"
-                                        class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                        placeholder="Dia"
-                                    />
-                                    <span class="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                        Dia de la compra
-                                    </span>
-                                </label>
+                                <x-form-input 
+                                    type="date" 
+                                    id="expense_date"
+                                    name="expense_date"
+                                    value="{{ old('expense_date', $today) }}"
+                                    label="Día de la compra" 
+                                    required>
+                                </x-form-input>
                                 @error('expense_date')
                                 <p class="text-red-800">
                                     {{$message}}
                                 </p>
                                 @enderror
                             </div>
+                            
                             <!-- Nombre del Gasto -->
                             <div class="mt-4">
-                                <label for="spentName" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                                    <input
-                                        type="text"
-                                        id="spentName"
-                                        name="spentName"
-                                        value="{{old('spentName')}}"
-                                        class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                        placeholder="Nombre del gasto"
-                                    />
-                                    <span class="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                        Nombre del Gasto
-                                    </span>
-                                </label>
+                                <x-form-input 
+                                    type="text" 
+                                    id="spentName"
+                                    name="spentName"
+                                    value="{{ old('spentName') }}"
+                                    label="Nombre del gasto" 
+                                    required>
+                                </x-form-input>
                                 @error('spentName')
                                 <p class="text-red-800">
                                     {{$message}}
@@ -73,20 +64,15 @@
                             </div>
                             <!-- Precio -->
                             <div class="mt-4">
-                                <label for="price" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        id="price"
-                                        name="price"
-                                        value="{{old('price')}}"
-                                        class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                        placeholder="Precio"
-                                    />
-                                    <span class="pointer-events-none absolute left-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                        Precio
-                                    </span>
-                                </label>
+                                <x-form-input 
+                                    type="number"
+                                    step="0.01"
+                                    id="price"
+                                    name="price"
+                                    value="{{ old('price') }}"
+                                    label="Precio" 
+                                    required>
+                                </x-form-input>
                                 @error('price')
                                 <p class="text-red-800">
                                     {{$message}}

@@ -27,11 +27,14 @@
                         <div class="p-2 bg-white shadow-md rounded-md">
                             <!-- fecha inicio del periodo del mes -->
                             <div class="mt-4">
-                                <label for="start_counting" class="block mb-2">
-                                    Configure la fecha de inicio del periodo de conteo de gastos.
-                                    <input id="start_counting" name="start_counting" type="date" value="{{ old('start_counting') }}"
-                                        class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                                </label>
+                                <x-form-input 
+                                    type="date"
+                                    id="start_counting"
+                                    name="start_counting"
+                                    value="{{ old('start_counting') }}"
+                                    label="Configure la fecha de inicio del periodo de conteo de gastos." 
+                                    required>
+                                </x-form-input>
                                 @error('start_counting')
                                 <p class="text-red-800">
                                     {{ $message }}
@@ -39,11 +42,14 @@
                                 @enderror
                             </div>
                             <div class="mt-4">
-                                <label for="end_counting" class="block mb-2">
-                                    Configure la fecha de fin del periodo de conteo de gastos.
-                                    <input id="end_counting" name="end_counting" type="date" value="{{ old('end_counting') }}"
-                                        class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                                </label>
+                                <x-form-input 
+                                    type="date"
+                                    id="end_counting"
+                                    name="end_counting"
+                                    value="{{ old('end_counting') }}"
+                                    label="Configure la fecha de fin del periodo de conteo de gastos." 
+                                    required>
+                                </x-form-input>
                                 @error('end_counting')
                                 <p class="text-red-800">
                                     {{ $message }}
@@ -51,27 +57,20 @@
                                 @enderror
                             </div>
                             <div class="mt-4">
-                                <label for="available_money" class="block mb-2">
-                                    Configure la cantidad de plata disponible para el mes, <br>
-                                    sin puntos ni comas.
-                                    <input id="available_money" name="available_money" type="number" value="{{ old('available_money') }}"
-                                    class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                                </label>
+                                <x-form-input 
+                                    type="number"
+                                    id="available_money"
+                                    name="available_money"
+                                    value="{{ old('available_money') }}"
+                                    label="Configure la cantidad de plata disponible para el mes." 
+                                    required>
+                                </x-form-input>
                                 @error('available_money')
                                 <p class="text-red-800">
                                     {{$message}}
                                 </p>
                                 @enderror
                             </div>
-                            <!-- <div>
-                                <label class="label cursor-pointer">
-                                    <input type="checkbox" id="info-checkbox" class="checkbox checkbox-primary rounded-md" />
-                                    <span class="label-text">¿Sumar resto del mes anterior?</span>
-                                </label>
-                            </div>
-                            <div id="info-content" class="hidden">
-                                <p id="info-text" class="bg-green-300 inline-block py-1 px-4 mt-2 border rounded-md"></p>
-                            </div> -->
                             <div class="mt-">
                                 <label for="month_available_money" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                                 <select id="month_available_money" name="month_available_money" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
@@ -87,11 +86,14 @@
                                 @enderror
                             </div>
                             <div class="mt-4">
-                                <label for="expense_percentage_limit" class="block mb-2">
-                                    Coloque el porcentaje (%) del umbral.
-                                    <input id="expense_percentage_limit" name="expense_percentage_limit" type="number" value="{{ old('expense_percentage_limit') }}"
-                                    class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                                </label>
+                                <x-form-input 
+                                    type="number"
+                                    id="expense_percentage_limit"
+                                    name="expense_percentage_limit"
+                                    value="{{ old('expense_percentage_limit') }}"
+                                    label="Coloque el porcentaje (%) del umbral." 
+                                    required>
+                                </x-form-input>
                                 @error('expense_percentage_limit')
                                 <p class="text-red-800">
                                     {{ $message }}

@@ -28,26 +28,34 @@
             <div class="w-full md:w-5/6 mx-auto">
                 <div class="p-2 bg-white rounded-md">
                     <div class="mt-4">
-                        <label for="start_counting" class="block mb-2">
-                            Configure la fecha de inicio del periodo de conteo de gastos.
-                            <input id="start_counting" name="start_counting" type="date" value="{{ $configuration['start_counting'] }}"
-                            class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                        </label>
+                        <x-form-input 
+                            type="date"
+                            id="start_counting"
+                            name="start_counting"
+                            value="{{ $configuration['start_counting'] }}"
+                            label="Configure la fecha de inicio del periodo de conteo de gastos." 
+                            required>
+                        </x-form-input>
                     </div>
                     <div class="mt-4">
-                        <label for="end_counting" class="block mb-2">
-                            Configure la fecha de fin del periodo de conteo de gastos.
-                            <input id="end_counting" name="end_counting" type="date" value="{{ $configuration['end_counting'] }}"
-                            class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                        </label>
+                        <x-form-input 
+                            type="date"
+                            id="end_counting"
+                            name="end_counting"
+                            value="{{ $configuration['end_counting'] }}"
+                            label="Configure la fecha de fin del periodo de conteo de gastos." 
+                            required>
+                        </x-form-input>
                     </div>
                     <div class="mt-4">
-                        <label for="available_money" class="block mb-2">
-                            Configure la cantidad de plata disponible para el mes correspondiente <br>
-                            Sin puntos, ni comas.
-                            <input id="available_money" name="available_money" type="number" value="{{ $configuration['available_money'] }}"
-                            class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                        </label>
+                        <x-form-input 
+                            type="number"
+                            id="available_money"
+                            name="available_money"
+                            value="{{ $configuration['available_money'] }}"
+                            label="Configure la cantidad de plata disponible para el mes." 
+                            required>
+                        </x-form-input>
                         @error('available_money')
                         <p class="text-red-800">
                             {{$message}}
@@ -64,11 +72,14 @@
                         </select>
                     </div>
                     <div class="mt-4">
-                        <label for="expense_percentage_limit" class="block mb-2">
-                            Coloque el porcentaje (%) del umbral.
-                            <input id="expense_percentage_limit" name="expense_percentage_limit" type="number" value="{{ $configuration['expense_percentage_limit'] }}"
-                            class="block w-full p-2 border border-gray-300 rounded sm-500:w-1/2"/>
-                        </label>
+                        <x-form-input 
+                            type="number"
+                            id="expense_percentage_limit"
+                            name="expense_percentage_limit"
+                            value="{{ $configuration['expense_percentage_limit'] }}"
+                            label="Coloque el porcentaje (%) del umbral." 
+                            required>
+                        </x-form-input>
                     </div>
                 </div>
             </div>

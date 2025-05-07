@@ -18,79 +18,45 @@
                 <form method="POST" action="{{ route('session-register.store') }}">
                 @csrf
                     <div>
-                        <label for="name" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                required
-                                autofocus
-                                autocomplete="name"
-                                class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                placeholder="name"
-                            />
-                            <span class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                Nombre
-                            </span>
-                        </label>
+                        <x-form-input
+                            type="text"
+                            id="name"
+                            name="name"
+                            label="Nombre"
+                        ></x-form-input>
                         @error('name')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mt-4">
-                        <label for="email" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                            <input
-                                type="text"
-                                id="email"
-                                name="email"
-                                required
-                                autofocus
-                                autocomplete="email"
-                                class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                placeholder="email"
-                            />
-                            <span class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                Email
-                            </span>
-                        </label>
+                        <x-form-input
+                            type="text"
+                            id="email"
+                            name="email"
+                            label="Email"
+                        ></x-form-input>
                         @error('email')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mt-4">
-                        <label for="password" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                            <input
-                                id="password"
-                                class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                type="password"
-                                name="password"
-                                required
-                                autocomplete="new-password"
-                                placeholder="password"
-                            />
-                            <span class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                Contraseña
-                            </span>
-                        </label>
+                        <x-form-input
+                            type="password"
+                            id="password"
+                            name="password"
+                            label="Contraseña"
+                        ></x-form-input>
                         @error('password')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mt-4">
-                        <label for="password_confirmation" class="relative block rounded-md border border-gray-200 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
-                            <input
-                                id="password_confirmation"
-                                class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 text-gray-900"
-                                type="password"
-                                name="password_confirmation"
-                                required
-                                autocomplete="new-password"
-                                placeholder="confirm-password"
-                            />
-                            <span class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
-                                Confirmar contraseña
-                            </span>
-                        </label>
+                        <x-form-input
+                            type="password"
+                            id="password"
+                            name="password_confirmation"
+                            label="Confirmar Contraseña"
+                        ></x-form-input>
                         @error('password_confirmation')
                             <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                         @enderror
