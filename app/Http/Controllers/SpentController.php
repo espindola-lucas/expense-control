@@ -28,7 +28,6 @@ class SpentController extends Controller
         $percentageUsed = null;
         $message = false;
         $hasConfiguration = true;
-        $currentYear = now()->year;
         $user = Auth::user();
         $config = PersonalConfigurationController::getAllConfiguration($user->id);
     
@@ -77,10 +76,6 @@ class SpentController extends Controller
         }
 
         $currentDate = $this->getCurrentDate();
-        $footerInformation = [
-            'year' => $currentYear,
-            'textInformation' => 'Expense Control'
-        ];
 
         $monthlyBalance = [
             'available_money' => $formattedAvailableMoney,
@@ -104,7 +99,6 @@ class SpentController extends Controller
             'percentageUsed' => $percentageUsed,
             'message' => $message,
             'branchName' => Helps::getGitBranchName(),
-            'footerInformation' => $footerInformation,
             'hasConfiguration' => $hasConfiguration
         ]);
     }
