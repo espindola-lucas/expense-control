@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <title>{{ config('app.name', 'Laravel') }}</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Styles -->
+        @livewireStyles
+    </head>
+    <body>
+        <div class="min-h-screen bg-page-custom">
+            <x-header :user="$user"></x-header>
+            <main class="container mx-auto p-4">
+                <form method="POST" action="{{ route('business-configuration.store') }}">
+                    @csrf
+                    <div class="w-full md:w-5/6 mx-auto">
+                        <div class="p-2 bg-white shadow-md rounded-md">
+                            <!-- <div class="mt-">
+                                <label for="configuration_type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                                <select id="configuration_type" name="configuration_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
+                                    <option selected disabled>Elegi el tipo de configuración</option>
+                                        <option value="personal">Personal</option>
+                                        <option value="business">Comercial</option>
+                                </select>
+                            </div> -->
+
+                            <div class="mt-4">
+                                <x-form-input 
+                                    type="date"
+                                    id="start_counting"
+                                    name="start_counting"
+                                    value="{{ old('start_counting') }}"
+                                    label="Configure la fecha de inicio del periodo de conteo de gastos." 
+                                    required>
+                                </x-form-input>
+                            </div>
+
+                            <div class="mt-4">
+                                <x-form-input 
+                                    type="date"
+                                    id="end_counting"
+                                    name="end_counting"
+                                    value="{{ old('end_counting') }}"
+                                    label="Configure la fecha de fin del periodo de conteo de gastos." 
+                                    required>
+                                </x-form-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container mx-auto p-4">
+                        <div class="w-full md:w-5/6 mx-auto">
+                            <section class="flex justify-between">
+                                <a href="{{ route('configuration.index') }}" id="back-button">
+                                    <x-button-add>
+                                        Volver
+                                    </x-button-add>
+                                </a>
+                                <button id="add-expense" type="submit" class="px-2 inline-flex text-xl leading-5 px-4 py-2 rounded-lg font-semibold bg-blue-100 text-blue-800">
+                                    Agregar
+                                </button>
+                            </section>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </body>
+    @vite('resources/js/app.js')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const configSelect = document.getElementById('configuration_type');
+        const personalFields = document.getElementById('personal-fields');
+
+        function toggleFields() {
+            const selected = configSelect.value;
+
+            if (selected === 'personal'){
+                personalFields.style.display = 'block';
+                document.getElementById('available_money').required = true;
+                document.getElementById('month_available_money').required = true;
+                document.getElementById('expense_percentage_limit').required = true;
+            } else if (selected === 'business'){
+                personalFields.style.display = 'none';
+                document.getElementById('available_money').required = false;
+                document.getElementById('month_available_money').required = false;
+                document.getElementById('expense_percentage_limit').required = false;
+            }
+        }
+
+        configSelect.addEventListener('change', toggleFields);
+
+        toggleFields();
+    });
+</script>
+</html>

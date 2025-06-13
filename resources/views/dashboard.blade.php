@@ -21,16 +21,23 @@
         <div class="min-h-screen bg-page-custom">
             <x-header :user="$user"></x-header>
 
-            @if($message)
-                <x-notification class="w-full text-red-700 bg-red-100">
-                    <x-slot name="message">
-                        Apa, ya gastaste mas del {{ $lastConfiguration['expense_percentage_limit'] }}% de la plata del mes. <br>
-                        Porcentaje usado: {{ $percentageUsed['percentageUser'] }}%
-                    </x-slot>
-                </x-notification>
+            @if($type === 'personal')
+                @if($message)
+                    <x-notification class="w-full text-red-700 bg-red-100">
+                        <x-slot name="message">
+                            Apa, ya gastaste mas del {{ $lastConfiguration['expense_percentage_limit'] }}% de la plata del mes. <br>
+                            Porcentaje usado: {{ $percentageUsed['percentageUser'] }}%
+                        </x-slot>
+                    </x-notification>
+                @endif
             @endif
             <main class="container mx-auto p-4 mb-14">
             
+                <div class="flex w-11/12 mx-auto space-x-4 mb-4 justify-evenly">
+                    <a href="{{ route('dashboard', ['type' => 'personal']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Personal</a>
+                    <a href="{{ route('dashboard', ['type' => 'business']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Negocio</a>
+                </div>
+
             @if($hasConfiguration)
                 <div class="w-11/12 mx-auto">
                     <div class="flex justify-between sm-500:mb-4">
@@ -44,7 +51,9 @@
                         </div>
                         
                         <div class="hidden sm-500:block">
-                            <x-period-display :lastConfiguration="$lastConfiguration"/>
+                            @if($type === 'personal')
+                                <x-period-display :lastConfiguration="$lastConfiguration"/>
+                            @endif
                         </div>
 
                         <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
@@ -59,22 +68,28 @@
                             <x-filter-dropdown :allPeriods="$allPeriods"/>
                             <x-button-filter/>
                         </form>
-                        <x-period-display :lastConfiguration="$lastConfiguration" />
+                        @if($type === 'personal')
+                            <x-period-display :lastConfiguration="$lastConfiguration"/>
+                        @endif
                     </div>
 
-                    <x-monthly-balance 
-                        :availableMoney="$monthly_balance['available_money']"
-                        :totalPrice="$monthly_balance['total_price']"
-                        :restMoney="$monthly_balance['rest_money']"
-                        :countSpent="$monthly_balance['count_spent']"
-                    />
+                    @if($type === 'personal')
+                        <x-monthly-balance 
+                            :availableMoney="$monthly_balance['available_money']"
+                            :totalPrice="$monthly_balance['total_price']"
+                            :restMoney="$monthly_balance['rest_money']"
+                            :countSpent="$monthly_balance['count_spent']"
+                        />
+                    @endif
 
-                    <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
-                        <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
-                            style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
-                            {{ $percentageUsed['percentageUser'] }}%
+                    @if($type === 'personal')
+                        <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
+                            <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
+                                style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
+                                {{ $percentageUsed['percentageUser'] }}%
+                            </div>
                         </div>
-                    </div>
+                    @endif
             @else
                     <div class="w-11/12 mx-auto">
                         <article class="overflow-hidden rounded-lg shadow-sm transition hover:shadow-lg">

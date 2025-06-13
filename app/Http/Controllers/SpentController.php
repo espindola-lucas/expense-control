@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Spent;
+use App\Models\Sell;
 use App\Models\PersonalConfiguration;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\Helps;
-use Illuminate\Support\Facades\Session;
 class SpentController extends Controller
 {
     /**
@@ -29,8 +29,9 @@ class SpentController extends Controller
         $message = false;
         $hasConfiguration = true;
         $user = Auth::user();
-        $config = PersonalConfigurationController::getAllConfiguration($user->id);
-    
+        $config = Helps::getAllConfiguration($user->id);
+
+        $type = $request->query('type', 'personal'); // default: personal
         $selectedMonth = $request->input('period');
 
         $getAllPeriods = $this->getAllPeriods($user->id);
@@ -47,60 +48,90 @@ class SpentController extends Controller
             $endDate = $request->input('end_date') ?? $this->getEndDateFromDatabase($user);
         }
 
-        $data = $this->filterByPeriod($user->id, $startDate, $endDate);
-        
-        $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
-        
-        if($data['availableMoney'] != 0 ){
-            $restMoney = $data['availableMoney'] - $data['totalPrice'];
-        }else {
-            $restMoney = 0;
-        }
-
-        // Formatear los valores para la salida
-        $formattedAvailableMoney = Helps::formatValue($data['availableMoney']);
-        $formattedRestMoney = Helps::formatValue($restMoney);
-        $formattedTotalPrice = Helps::formatValue($data['totalPrice']);
-        $lastConfiguration = $this->getConfigurationForMonth($user->id);
-
-        if(!empty($formattedAvailableMoney)){
-            $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney'], $lastConfiguration->expense_percentage_limit);
-            if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
-                $message = true;
+        if($type === 'personal'){
+            $data = $this->filterByPeriod($user->id, $startDate, $endDate, $type);
+            $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
+            
+            if($data['availableMoney'] != 0 ){
+                $restMoney = $data['availableMoney'] - $data['totalPrice'];
+            }else {
+                $restMoney = 0;
             }
-        }else{
-            $percentageUsed = [
-                'percentageUser' => 0,
-                'color' => 'green'
+            
+            // Formatear los valores para la salida
+            $formattedAvailableMoney = Helps::formatValue($data['availableMoney']);
+            $formattedRestMoney = Helps::formatValue($restMoney);
+            $formattedTotalPrice = Helps::formatValue($data['totalPrice']);
+            $lastConfiguration = $this->getConfigurationForMonth($user->id);
+            
+            if(!empty($formattedAvailableMoney)){
+                $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney'], $lastConfiguration->expense_percentage_limit);
+                if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
+                    $message = true;
+                }
+            }else{
+                $percentageUsed = [
+                    'percentageUser' => 0,
+                    'color' => 'green'
+                ];
+            }
+            
+            $currentDate = $this->getCurrentDate();
+            
+            $monthlyBalance = [
+                'available_money' => $formattedAvailableMoney,
+                'total_price' => $formattedTotalPrice,
+                'rest_money' => $formattedRestMoney,
+                'count_spent' => $countSpents,
             ];
+    
+            if($config->isEmpty()){
+                $hasConfiguration = false;
+            }
+
+            return view('dashboard', [
+                'spents' => $data['spents'],
+                'user' => $user,
+                'allPeriods' => $getAllPeriods,
+                'monthly_balance' => $monthlyBalance,
+                'lastConfiguration' => $lastConfiguration,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'currentDate' => $currentDate,
+                'percentageUsed' => $percentageUsed,
+                'message' => $message,
+                'branchName' => Helps::getGitBranchName(),
+                'hasConfiguration' => $hasConfiguration,
+                'type' => $type
+            ]);
+        }elseif($type === 'business'){
+            $data = $this->filterByPeriod($user->id, $startDate, $endDate, $type);
+        
+            $currentDate = $this->getCurrentDate();
+            
+            // $monthlyBalance = [
+            //     'available_money' => $formattedAvailableMoney,
+            //     'total_price' => $formattedTotalPrice,
+            //     'rest_money' => $formattedRestMoney,
+            //     'count_spent' => $countSpents,
+            // ];
+    
+            if($config->isEmpty()){
+                $hasConfiguration = false;
+            }
+            return view('dashboard', [
+                'spents' => $data['sells'],
+                'user' => $user,
+                'allPeriods' => $getAllPeriods,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'currentDate' => $currentDate,
+                'branchName' => Helps::getGitBranchName(),
+                'hasConfiguration' => $hasConfiguration,
+                'type' => $type
+            ]);
         }
-
-        $currentDate = $this->getCurrentDate();
-
-        $monthlyBalance = [
-            'available_money' => $formattedAvailableMoney,
-            'total_price' => $formattedTotalPrice,
-            'rest_money' => $formattedRestMoney,
-            'count_spent' => $countSpents,
-        ];
-
-        if($config->isEmpty()){
-            $hasConfiguration = false;
-        }
-        return view('dashboard', [
-            'spents' => $data['spents'],
-            'user' => $user,
-            'allPeriods' => $getAllPeriods,
-            'monthly_balance' => $monthlyBalance,
-            'lastConfiguration' => $lastConfiguration,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'currentDate' => $currentDate,
-            'percentageUsed' => $percentageUsed,
-            'message' => $message,
-            'branchName' => Helps::getGitBranchName(),
-            'hasConfiguration' => $hasConfiguration
-        ]);
+        
     }
 
     /**
@@ -247,16 +278,24 @@ class SpentController extends Controller
     *  - availableMoney: Money available in the selected period.
     *  - totalPrice: Total amount of expenses in the selected period.
     */
-    private function filterByPeriod($userId, $startDate, $endDate){
-        $spents = $this->getFilteredSpentsByPeriod($userId, $startDate, $endDate);
-        $availableMoney = $this->getAvailableMoneyByPeriod($userId, $startDate, $endDate);
-        $totalPrice = $this->getTotalPriceByPeriod($userId, $startDate, $endDate);
-        
-        return [
-            'spents' => $spents,
-            'availableMoney' => $availableMoney,
-            'totalPrice' => $totalPrice
-        ];
+    private function filterByPeriod($userId, $startDate, $endDate, $type){
+        if($type === 'personal'){
+            $spents = $this->getFilteredSpentsByPeriod($userId, $startDate, $endDate, $type);
+            $availableMoney = $this->getAvailableMoneyByPeriod($userId, $startDate, $endDate);
+            $totalPrice = $this->getTotalPriceByPeriod($userId, $startDate, $endDate);
+            
+            return [
+                'spents' => $spents,
+                'availableMoney' => $availableMoney,
+                'totalPrice' => $totalPrice
+            ];
+        }elseif($type === 'business'){
+            $sells = $this->getFilteredSpentsByPeriod($userId, $startDate, $endDate, $type);
+
+            return [
+                'sells' => $sells,
+            ];
+        }
     }
 
     /**
@@ -353,19 +392,31 @@ class SpentController extends Controller
     * 
     * @return \Illuminate\Database\Eloquent\Collection List of formatted Spent records.
     */
-    private function getFilteredSpentsByPeriod($userId, $startDate, $endDate){
-        $spents = Spent::where('user_id', $userId)
+    private function getFilteredSpentsByPeriod($userId, $startDate, $endDate, $type){
+        if($type === 'personal'){
+            $informations = Spent::where('user_id', $userId)
                             ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
                             ->orderBy('expense_date', 'desc')
                             ->get();
+        }elseif($type === 'business'){
+            $informations = Sell::where('user_id', $userId)
+                            ->whereBetween('sell_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
+                            ->orderBy('sell_date', 'desc')
+                            ->get();
+        }
         
-        foreach($spents as $spent){
-            $spent->name = trim($spent->name);
-            $spent->price = number_format($spent->price, 0, '', '.');
-            $spent->expense_date = Carbon::parse($spent->expense_date)->format('d/m/Y');
+        foreach($informations as $info){
+            $info->name = trim($info->name);
+            $info->price = number_format($info->price, 0, '', '.');
+            if($type === 'personal'){
+                $info->expense_date = Carbon::parse($info->expense_date)->format('d/m/Y');
+            }elseif($type === 'business'){
+                $info->sell_date = Carbon::parse($info->expense_date)->format('d/m/Y');
+            }
         }
 
-        return $spents;
+
+        return $informations;
     }
 
     /**
