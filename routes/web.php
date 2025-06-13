@@ -5,8 +5,10 @@ use App\Http\Controllers\SessionAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SpentController;
 use App\Http\Controllers\PersonalConfigurationController;
+use App\Http\Controllers\BusinessConfigurationController;
+use App\Http\Controllers\ConfigurationHomeController;
 use App\Http\Controllers\FixedExpenseController;
-use App\Http\Middleware\CheckSessionTimeout;
+// use App\Http\Middleware\CheckSessionTimeout;
 
 Route::get('/', function () {
     return view('welcome');
@@ -44,11 +46,13 @@ DELETE /spents/{product} → SpentController@destroy
 Route::middleware([
     'auth',
     'verified',
-    CheckSessionTimeout::class,
+    // CheckSessionTimeout::class,
 ])->group(function () {
     Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');
     Route::resource('spents', SpentController::class);
-    Route::resource('configuration', PersonalConfigurationController::class);
+    Route::resource('configuration', ConfigurationHomeController::class);
+    Route::resource('personal-configuration', PersonalConfigurationController::class);
+    Route::resource('business-configuration', BusinessConfigurationController::class);
     Route::get('/get-info', [PersonalConfigurationController::class, 'getInfo']);
     Route::resource('fixedexpenses', FixedExpenseController::class);
     Route::resource('is_admin', AdminController::class)

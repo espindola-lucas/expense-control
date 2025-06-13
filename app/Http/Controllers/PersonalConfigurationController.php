@@ -3,22 +3,20 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PersonalConfiguration;
+use App\Models\BusinessConfiguration;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon;
 use App\Models\Spent;
 use App\Helpers\Helps;
 
 class PersonalConfigurationController extends Controller
 {
-    public function index(Request $request){
-        $months = Helps::getNameMonths();
+    static function getPersonalData(){
         $user = Auth::user();
-        $allConfigurations = $this->getAllConfiguration($user->id);
-        $hasConfiguration = true;
+        $configs = Helps::getAllConfiguration($user->id, 'personal');
 
-        foreach ($allConfigurations as $configuration) {
-            $configuration->available_money = $this->formatMoney($configuration->available_money);
+        foreach ($configs as $configuration) {
+            $configuration->available_money = Helps::formatValue($configuration->available_money);
             $month_name = Helps::getMonthNameByKey($configuration->month_available_money);
             $configuration->month_available_money = "{$configuration->month_available_money} - {$month_name}";
 
@@ -27,30 +25,14 @@ class PersonalConfigurationController extends Controller
             $configuration->show_edit_button = $currentDate->lte($endDate);
         }
 
-        $currentYear = now()->year;
-        $footerInformation = [
-            'year' => $currentYear,
-            'textInformation' => 'Expense Control'
-        ];
-
-        if($allConfigurations->isEmpty()){
-            $hasConfiguration = false;
-        }
-
-        return view('configuration', [
-            'months' => $months,
-            'configurations' => $allConfigurations,
-            'user' => $user,
-            'hasConfiguration' => $hasConfiguration,
-            'footerInformation' => $footerInformation
-        ]);
+        return $configs;
     }
 
     public function create(){
         $months = Helps::getNameMonths();
         $user = Auth::user();
 
-        return view('configuration.create-configuration', [
+        return view('configuration.create-personal-configuration', [
             'months' => $months,
             'user' => $user
         ]);
@@ -65,10 +47,10 @@ class PersonalConfigurationController extends Controller
                 'month_available_money' => 'required',
                 'expense_percentage_limit' => 'required|numeric'
             ]);
-
+    
             $start_counting = $request->input('start_counting');
             $end_counting = $request->input('end_counting');
-
+    
             PersonalConfiguration::create([
                 'start_counting' => $start_counting,
                 'end_counting' => $end_counting,
@@ -77,7 +59,7 @@ class PersonalConfigurationController extends Controller
                 'expense_percentage_limit' => $request->input('expense_percentage_limit'),
                 'user_id' => Auth::user()->id
             ]);
-
+            
             return redirect()->route('configuration.index')->with('success', 'Configuraci�n guardada exitosamente.');
         }
     }
@@ -86,10 +68,10 @@ class PersonalConfigurationController extends Controller
         $configId = PersonalConfiguration::find($id);
         $isDefaultMonth = false;
         $user = Auth::user();
-        $configuration = $this->getAllConfiguration($user->id);
+        $configuration = Helps::getAllConfiguration($user->id, 'personal');
         $selectedMonth = $configuration->first()->month_available_money ?? null;
         $months = Helps::getNameMonths();
-        return view('configuration.show-configuration', [
+        return view('configuration.show-personal-configuration', [
             'user' => $user,
             'configuration' => $configId,
             'isDefaultMonth' => $isDefaultMonth,
@@ -98,10 +80,11 @@ class PersonalConfigurationController extends Controller
         ]);
     }
 
-    public function edit(PersonalConfiguration $configuration){
+    public function edit($id){
+        $configuration = PersonalConfiguration::findOrfail($id);
         $months = Helps::getNameMonths();
         $user = Auth::user();
-        $selectedMonth = $configuration['month_available_money'];
+        $selectedMonth = $configuration->month_available_money;
         $currentYear = now()->year;
         $footerInformation = [
             'year' => $currentYear,
@@ -110,7 +93,7 @@ class PersonalConfigurationController extends Controller
         
         $isDefaultMonth = true;
         
-        return view('configuration.edit-configuration', [
+        return view('configuration.edit-personal-configuration', [
             'user' => $user,
             'configuration' => $configuration,
             'months' => $months,
@@ -131,26 +114,6 @@ class PersonalConfigurationController extends Controller
         $config->delete();
         
         return redirect('configuration');
-    }
-
-    static function getAllConfiguration($userId){
-        $configurations = PersonalConfiguration::where('user_id', $userId)
-                                        ->orderBy('id', 'desc')
-                                        ->get();
-        
-        foreach($configurations as $configuration){
-            $configuration->start_counting = Carbon::parse($configuration->start_counting)->format('d/m/Y');
-            $configuration->end_counting = Carbon::parse($configuration->end_counting)->format('d/m/Y');
-        }
-        
-        return $configurations;
-    }
-
-    private function formatMoney($amount) {
-        if (is_numeric($amount)) {
-            return number_format($amount, 0, ',', '.');
-        }
-        return $amount;
     }
 
     public function getInfo() {

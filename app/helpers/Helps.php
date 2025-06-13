@@ -5,7 +5,8 @@ use App\Enums\MonthEnum;
 use Illuminate\Support\Facades\File;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use function PHPUnit\Framework\throwException;
+use App\Models\PersonalConfiguration;
+use App\Models\BusinessConfiguration;
 
 class Helps{
     public static function getNameMonths(){
@@ -67,6 +68,42 @@ class Helps{
 
         $path = storage_path("logs/{$filename}.json");
         File::put($path, $jsonData);
+    }
+
+    public static function getAllConfiguration($userId, $type = 'personal') {
+        // map type to model and type name
+        $configMap = [
+            'personal' => [
+                'model' => PersonalConfiguration::class,
+                'typeName' => 'Personal'
+            ],
+            'business' => [
+                'model' => BusinessConfiguration::class,
+                'typeName' => 'Comercio'
+            ]
+        ];
+
+        if (!isset($configMap[$type])) {
+            throw new \InvalidArgumentException('Tipoe de configuracion invalido: $type');
+        }
+
+        $modelClass = $configMap[$type]['model'];
+        $typeName = $configMap[$type]['typeName'];
+
+        // get configs
+        $configs = $modelClass::where('user_id', $userId)
+                            ->orderBy('id', 'desc')
+                            ->get();
+
+        foreach ($configs as $config) {
+            $config->start_counting = Carbon::parse($config->start_counting)->format('d/m/Y');
+            $config->end_counting = Carbon::parse($config->end_counting)->format('d/m/Y');
+            $config->configuration_type = $typeName;
+            $config->real_id = $config->id;
+            $config->real_model = $modelClass;
+        }
+
+        return $configs;
     }
 }
 

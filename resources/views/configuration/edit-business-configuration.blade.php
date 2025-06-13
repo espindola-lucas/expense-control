@@ -22,7 +22,7 @@
     <x-header :user="$user"></x-header>
 
     <main class="container mx-auto p-4">
-        <form method="POST" action="{{ route('configuration.update', $configuration) }}">
+        <form method="POST" action="{{ route('business-configuration.update', $configuration) }}">
             @csrf
             @method('PUT')
             <div class="w-full md:w-5/6 mx-auto">
@@ -44,40 +44,6 @@
                             name="end_counting"
                             value="{{ $configuration['end_counting'] }}"
                             label="Configure la fecha de fin del periodo de conteo de gastos." 
-                            required>
-                        </x-form-input>
-                    </div>
-                    <div class="mt-4">
-                        <x-form-input 
-                            type="number"
-                            id="available_money"
-                            name="available_money"
-                            value="{{ $configuration['available_money'] }}"
-                            label="Configure la cantidad de plata disponible para el mes." 
-                            required>
-                        </x-form-input>
-                        @error('available_money')
-                        <p class="text-red-800">
-                            {{$message}}
-                        </p>
-                        @enderror
-                    </div>
-                    <div class="mt-">
-                        <label for="month_available_money" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                        <select id="month_available_money" name="month_available_money" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
-                            <option selected disabled>Elegi el mes correspondiente al monto disponible</option>
-                            @foreach($months as $month)
-                                <option value="{{ $month->value }}" {{ $selectedMonth == $month->value ? 'selected' : '' }}>{{ $month->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mt-4">
-                        <x-form-input 
-                            type="number"
-                            id="expense_percentage_limit"
-                            name="expense_percentage_limit"
-                            value="{{ $configuration['expense_percentage_limit'] }}"
-                            label="Coloque el porcentaje (%) del umbral." 
                             required>
                         </x-form-input>
                     </div>
