@@ -39,7 +39,8 @@ class ConfigurationHomeController extends Controller
             'user' => $user,
             'hasPersonalConfiguration' => $hasPersonalConfiguration,
             'hasBusinessConfiguration' => $hasBusinessConfiguration,
-            'footerInformation' => $footerInformation
+            'footerInformation' => $footerInformation,
+            'branchName' => Helps::getGitBranchName()
         ]);
     }
 }
