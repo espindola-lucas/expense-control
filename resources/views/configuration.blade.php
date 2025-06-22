@@ -65,6 +65,7 @@
                 </div>
             </main>
         </div>
+        <x-branch-name :branchName="$branchName"/>
         <x-buttom-nav></x-buttom-nav>
         <x-footer :nameWebApp="$footerInformation['textInformation']" :currentYear="$footerInformation['year']" />
         @stack('modals')
