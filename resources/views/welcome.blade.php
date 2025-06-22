@@ -29,8 +29,8 @@
                     </div>
                 </div>
             </div>
-            <div class="flex w-full sm-500:w-1/2 justify-center items-center bg-semi-white">
-                <form class="bg-white text-center mt-6 px-6 py-4 shadow-md sm:rounded-lg">
+            <div class="flex w-full sm-500:w-1/2 justify-center items-center bg-page-custom sm:bg-white">
+                <form class="bg-white text-center bg-semi-white rounded-lg mt-6 px-6 py-4 shadow-md sm:rounded-lg">
                     @if(session('success'))
                         <x-alert type="success">
                             {{ session('success') }}
