@@ -22,21 +22,19 @@
             <x-header :user="$user"></x-header>
             
             <main class="container mx-auto p-4">
-                <form method="POST" action="{{ route('spents.store') }}">
+                <form method="POST" action="{{ route($storeRoute) }}">
                 @csrf
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white rounded-md">
                             <!-- Fecha de compra -->
-                            @php
-                                $today = now()->format('Y-m-d');
-                            @endphp
+                            
                             <div class="mt-4">
                                 <x-form-input 
                                     type="date" 
-                                    id="expense_date"
-                                    name="expense_date"
-                                    value="{{ old('expense_date', $today) }}"
-                                    label="Día de la compra" 
+                                    id="{{ $dateField }}"
+                                    name="{{ $dateField }}"
+                                    value="{{ old($dateField, $today) }}"
+                                    label="{{ $labelDate }}" 
                                     required>
                                 </x-form-input>
                                 @error('expense_date')
@@ -50,10 +48,10 @@
                             <div class="mt-4">
                                 <x-form-input 
                                     type="text" 
-                                    id="spentName"
-                                    name="spentName"
-                                    value="{{ old('spentName') }}"
-                                    label="Nombre del gasto" 
+                                    id="{{ $nameField }}"
+                                    name="{{ $nameField }}"
+                                    value="{{ old($nameField) }}"
+                                    label="{{ $labelName }}" 
                                     required>
                                 </x-form-input>
                                 @error('spentName')

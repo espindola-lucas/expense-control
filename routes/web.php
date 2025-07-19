@@ -7,6 +7,8 @@ use App\Http\Controllers\SpentController;
 use App\Http\Controllers\PersonalConfigurationController;
 use App\Http\Controllers\BusinessConfigurationController;
 use App\Http\Controllers\ConfigurationHomeController;
+use App\Http\Controllers\SellController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FixedExpenseController;
 // use App\Http\Middleware\CheckSessionTimeout;
 
@@ -48,8 +50,9 @@ Route::middleware([
     'verified',
     // CheckSessionTimeout::class,
 ])->group(function () {
-    Route::get('/dashboard', [SpentController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('spents', SpentController::class);
+    Route::resource('sells', SellController::class);
     Route::resource('configuration', ConfigurationHomeController::class);
     Route::resource('personal-configuration', PersonalConfigurationController::class);
     Route::resource('business-configuration', BusinessConfigurationController::class);

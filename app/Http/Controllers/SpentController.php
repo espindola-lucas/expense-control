@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Spent;
 use App\Models\Sell;
 use App\Models\PersonalConfiguration;
+use App\Http\Controllers\PersonalConfigurationController;
+use App\Http\Controllers\BusinessConfigurationController;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\Helps;
+
 class SpentController extends Controller
 {
     /**
@@ -28,13 +31,14 @@ class SpentController extends Controller
         $percentageUsed = null;
         $message = false;
         $hasConfiguration = true;
+        $hasBothConfig = false;
         $user = Auth::user();
         $config = Helps::getAllConfiguration($user->id);
 
         $type = $request->query('type', 'personal'); // default: personal
         $selectedMonth = $request->input('period');
 
-        $getAllPeriods = $this->getAllPeriods($user->id);
+        $getAllPeriods = Helps::getAllPeriods($user->id, 'personal');
 
         if($selectedMonth){
             $selectedPeriod = $getAllPeriods->firstWhere('month_available_money', $selectedMonth);
@@ -44,94 +48,73 @@ class SpentController extends Controller
             }
         } else {
             // usar los valores por defecte si no se usa el filtro
-            $startDate = $request->input('start_date') ?? $this->getStartDateFromDatabase($user);
-            $endDate = $request->input('end_date') ?? $this->getEndDateFromDatabase($user);
+            $startDate = $request->input('start_date') ?? Helps::getStartDateFromDatabase($user->id, 'personal');
+            $endDate = $request->input('end_date') ?? Helps::getEndDateFromDatabase($user->id, 'personal');
         }
 
-        if($type === 'personal'){
-            $data = $this->filterByPeriod($user->id, $startDate, $endDate, $type);
-            $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
+        $getPersonalData = PersonalConfigurationController::getPersonalData();
+        $getBusinessData = BusinessConfigurationController::getBusinessData();
+
+        if($getPersonalData->isNotEmpty() && $getBusinessData->isNotEmpty()){
+            $hasBothConfig = true;
+        }
+
+        $data = Helps::filterByPeriod($user->id, $startDate, $endDate, $type);
+        $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
+        
+        if($data['availableMoney'] != 0 ){
+            $restMoney = $data['availableMoney'] - $data['totalPrice'];
+        }else {
+            $restMoney = 0;
+        }
             
-            if($data['availableMoney'] != 0 ){
-                $restMoney = $data['availableMoney'] - $data['totalPrice'];
-            }else {
-                $restMoney = 0;
+        // Formatear los valores para la salida
+        $formattedAvailableMoney = Helps::formatValue($data['availableMoney']);
+        $formattedRestMoney = Helps::formatValue($restMoney);
+        $formattedTotalPrice = Helps::formatValue($data['totalPrice']);
+        $lastConfiguration = $this->getConfigurationForMonth($user->id);
+            
+        if(!empty($formattedAvailableMoney)){
+            $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney'], $lastConfiguration->expense_percentage_limit);
+            if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
+                $message = true;
             }
-            
-            // Formatear los valores para la salida
-            $formattedAvailableMoney = Helps::formatValue($data['availableMoney']);
-            $formattedRestMoney = Helps::formatValue($restMoney);
-            $formattedTotalPrice = Helps::formatValue($data['totalPrice']);
-            $lastConfiguration = $this->getConfigurationForMonth($user->id);
-            
-            if(!empty($formattedAvailableMoney)){
-                $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney'], $lastConfiguration->expense_percentage_limit);
-                if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
-                    $message = true;
-                }
-            }else{
-                $percentageUsed = [
-                    'percentageUser' => 0,
-                    'color' => 'green'
-                ];
-            }
-            
-            $currentDate = $this->getCurrentDate();
-            
-            $monthlyBalance = [
-                'available_money' => $formattedAvailableMoney,
-                'total_price' => $formattedTotalPrice,
-                'rest_money' => $formattedRestMoney,
-                'count_spent' => $countSpents,
+        }else{
+            $percentageUsed = [
+                'percentageUser' => 0,
+                'color' => 'green'
             ];
-    
-            if($config->isEmpty()){
-                $hasConfiguration = false;
-            }
-
-            return view('dashboard', [
-                'spents' => $data['spents'],
-                'user' => $user,
-                'allPeriods' => $getAllPeriods,
-                'monthly_balance' => $monthlyBalance,
-                'lastConfiguration' => $lastConfiguration,
-                'startDate' => $startDate,
-                'endDate' => $endDate,
-                'currentDate' => $currentDate,
-                'percentageUsed' => $percentageUsed,
-                'message' => $message,
-                'branchName' => Helps::getGitBranchName(),
-                'hasConfiguration' => $hasConfiguration,
-                'type' => $type
-            ]);
-        }elseif($type === 'business'){
-            $data = $this->filterByPeriod($user->id, $startDate, $endDate, $type);
-        
-            $currentDate = $this->getCurrentDate();
-            
-            // $monthlyBalance = [
-            //     'available_money' => $formattedAvailableMoney,
-            //     'total_price' => $formattedTotalPrice,
-            //     'rest_money' => $formattedRestMoney,
-            //     'count_spent' => $countSpents,
-            // ];
-    
-            if($config->isEmpty()){
-                $hasConfiguration = false;
-            }
-            return view('dashboard', [
-                'spents' => $data['sells'],
-                'user' => $user,
-                'allPeriods' => $getAllPeriods,
-                'startDate' => $startDate,
-                'endDate' => $endDate,
-                'currentDate' => $currentDate,
-                'branchName' => Helps::getGitBranchName(),
-                'hasConfiguration' => $hasConfiguration,
-                'type' => $type
-            ]);
         }
         
+        $currentDate = Helps::getDate();
+        
+        $monthlyBalance = [
+            'available_money' => $formattedAvailableMoney,
+            'total_price' => $formattedTotalPrice,
+            'rest_money' => $formattedRestMoney,
+            'count_spent' => $countSpents,
+        ];
+    
+        if($config->isEmpty()){
+            $hasConfiguration = false;
+        }
+
+        return view('dashboard', [
+            'spents' => $data['spents'],
+            'user' => $user,
+            'allPeriods' => $getAllPeriods,
+            'monthly_balance' => $monthlyBalance,
+            'lastConfiguration' => $lastConfiguration,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'currentDate' => $currentDate,
+            'percentageUsed' => $percentageUsed,
+            'message' => $message,
+            'branchName' => Helps::getGitBranchName(),
+            'hasConfiguration' => $hasConfiguration,
+            'type' => $type,
+            'hasBothConfig' => $hasBothConfig
+        ]);
     }
 
     /**
@@ -142,10 +125,22 @@ class SpentController extends Controller
     *
     * @return \Illuminate\View\View View to create a new expense.
     */
-    public function create(){
+    public function create(Request $request){
+        
         $user = Auth::user();
-        return view('spents.create-spent', [
-            'user' => $user
+        $type = $request->query('type', 'personal');
+        $isSell = $type === 'business';
+
+        return view('abm.create', [
+            'user' => $user,
+            'type' => $type,
+            'isSell' => $isSell,
+            'storeRoute' => $isSell ? 'sells.store' : 'spents.store',
+            'dateField' => $isSell ? 'sell_date' : 'expense_date',
+            'nameField' => $isSell ? 'sellName' : 'spentName',
+            'labelDate' => $isSell ? 'Dia de la venta' : 'Dia de la compra',
+            'labelName' => $isSell ? 'Nombre de la venta' : 'Nombre del gasto',
+            'today' => now()->format('Y-m-d'),
         ]);
     }
 
@@ -183,7 +178,7 @@ class SpentController extends Controller
 
             return redirect()->route('dashboard')->with('success', 'Gasto agregado exitosamente.');
         }
-        return view('spents.create-spent');
+        return view('abm.create');
     }
 
     /**
@@ -203,7 +198,7 @@ class SpentController extends Controller
         $spent->name = trim($spent->name);
         $spent->price = trim($spent->price);
 
-        return view('spents.edit-spent', [
+        return view('abm.edit', [
             'spent' => $spent,
             'user' => $user
         ]);
@@ -247,94 +242,6 @@ class SpentController extends Controller
     }
 
     /**
-    * Retrieve all available periods for the authenticated user.
-    *
-    * This method fetches all the periods (start and end dates) 
-    * along with the available money for each period configured 
-    * by the user.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * @return \Illuminate\Support\Collection List of periods with start date, end date, and available money.
-    */
-    private function getAllPeriods($userId){
-        $periods = PersonalConfiguration::select('start_counting', 'end_counting', 'month_available_money')
-                                ->where('user_id', $userId)
-                                ->get();
-        return $periods;
-    }
-
-    /**
-    * Filter expenses and retrieve related data for a specific period.
-    *
-    * This method retrieves the expenses, available money, and total 
-    * amount spent by the authenticated user within the specified 
-    * start and end dates.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * @param string $startDate The start date of the period (Y-m-d).
-    * @param string $endDate The end date of the period (Y-m-d).
-    * @return array Contains:
-    *  - spents: List of expenses within the period.
-    *  - availableMoney: Money available in the selected period.
-    *  - totalPrice: Total amount of expenses in the selected period.
-    */
-    private function filterByPeriod($userId, $startDate, $endDate, $type){
-        if($type === 'personal'){
-            $spents = $this->getFilteredSpentsByPeriod($userId, $startDate, $endDate, $type);
-            $availableMoney = $this->getAvailableMoneyByPeriod($userId, $startDate, $endDate);
-            $totalPrice = $this->getTotalPriceByPeriod($userId, $startDate, $endDate);
-            
-            return [
-                'spents' => $spents,
-                'availableMoney' => $availableMoney,
-                'totalPrice' => $totalPrice
-            ];
-        }elseif($type === 'business'){
-            $sells = $this->getFilteredSpentsByPeriod($userId, $startDate, $endDate, $type);
-
-            return [
-                'sells' => $sells,
-            ];
-        }
-    }
-
-    /**
-    * Get the start date of the latest configured period for the user.
-    *
-    * Retrieves the start_counting date from the most recent 
-    * Configuration record of the authenticated user. 
-    * If no configuration exists, returns the current date.
-    *
-    * @param \App\Models\User $user The authenticated user instance.
-    * @return \Illuminate\Support\Carbon|string Start date from the latest configuration or current date.
-    */
-    private function getStartDateFromDatabase($user) {
-        $configuration = PersonalConfiguration::where('user_id', $user->id)
-                                      ->latest()
-                                      ->first();
-
-        return $configuration ? $configuration->start_counting : Carbon::now();
-    }
-    
-    /**
-    * Get the end date of the latest configured period for the user.
-    *
-    * Retrieves the end_counting date from the most recent 
-    * Configuration record of the authenticated user. 
-    * If no configuration exists, returns the current date.
-    *
-    * @param \App\Models\User $user The authenticated user instance.
-    * @return \Illuminate\Support\Carbon|string End date from the latest configuration or current date.
-    */
-    private function getEndDateFromDatabase($user) {
-        $configuration = PersonalConfiguration::where('user_id', $user->id)
-                                      ->latest()
-                                      ->first();
-    
-        return $configuration ? $configuration->end_counting : Carbon::now();
-    }
-
-    /**
     * Format the given month to a two-digit string.
     *
     * Ensures that the month input is always a two-character 
@@ -348,147 +255,6 @@ class SpentController extends Controller
         return intval($monthInput) < 10 
             ? str_pad($monthInput, 2, '0', STR_PAD_LEFT) 
             : $monthInput;
-    }
-
-    /**
-    * Retrieve filtered expenses by year and month.
-    *
-    * Fetches the Spent records for the given user, 
-    * applying optional filters for month and year. 
-    * Results are ordered by the expense date.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * @param string|null $monthFilter Optional month filter (two-digit string).
-    * @param string|null $yearFilter Optional year filter (four-digit string).
-    * 
-    * @return \Illuminate\Database\Eloquent\Collection List of filtered Spent records.
-    */
-    private function getFilteredSpentsByYearMonth($userId, $monthFilter, $yearFilter) {
-        $query = Spent::where('user_id', $userId);
-
-        if ($monthFilter) {
-            $query->whereMonth('expense_date', $monthFilter);
-        }
-
-        if ($yearFilter) {
-            $query->whereYear('expense_date', $yearFilter);
-        }
-    
-        return $query->orderBy('expense_date')->get();
-    }
-    
-    /**
-    * Retrieve filtered expenses within a specific date range.
-    *
-    * Fetches Spent records for the given user where the 
-    * expense date falls between the provided start and end dates.
-    * 
-    * Additionally, formats the price with thousand separators 
-    * and formats the date as 'dd/mm/YYYY' for presentation purposes.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * @param string $startDate Start date of the filter period (YYYY-MM-DD).
-    * @param string $endDate End date of the filter period (YYYY-MM-DD).
-    * 
-    * @return \Illuminate\Database\Eloquent\Collection List of formatted Spent records.
-    */
-    private function getFilteredSpentsByPeriod($userId, $startDate, $endDate, $type){
-        if($type === 'personal'){
-            $informations = Spent::where('user_id', $userId)
-                            ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
-                            ->orderBy('expense_date', 'desc')
-                            ->get();
-        }elseif($type === 'business'){
-            $informations = Sell::where('user_id', $userId)
-                            ->whereBetween('sell_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
-                            ->orderBy('sell_date', 'desc')
-                            ->get();
-        }
-        
-        foreach($informations as $info){
-            $info->name = trim($info->name);
-            $info->price = number_format($info->price, 0, '', '.');
-            if($type === 'personal'){
-                $info->expense_date = Carbon::parse($info->expense_date)->format('d/m/Y');
-            }elseif($type === 'business'){
-                $info->sell_date = Carbon::parse($info->expense_date)->format('d/m/Y');
-            }
-        }
-
-
-        return $informations;
-    }
-
-    /**
-    * Retrieve all expense records for the given user.
-    * 
-    * Fetches all Spent records associated with the user ID provided,
-    * regardless of any date filter. 
-    * 
-    * Additionally, formats the expense_date attribute to 'dd/mm/YYYY'
-    * for presentation purposes.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * 
-    * @return \Illuminate\Database\Eloquent\Collection List of formatted Spent records.
-    */
-    private function getAllSpentForMonth($userId){
-        $spents = Spent::where('user_id', $userId)
-                            ->get();
-        
-        foreach ($spents as $spent) {
-            $spent->expense_date = Carbon::parse($spent->expense_date)->format('d/m/Y');
-        }
-        
-        return $spents;
-    }
-
-    /**
-    * Retrieve the available money for a user within a specific period.
-    * 
-    * If a start and end date are provided, it looks for a Configuration
-    * whose date range intersects with the given period.
-    * 
-    * If no dates are provided, it fetches the available money from the 
-    * current active Configuration based on today's date.
-    * 
-    * @param int $userId The ID of the authenticated user.
-    * @param string|null $startDate Optional start date to filter.
-    * @param string|null $endDate Optional end date to filter.
-    * 
-    * @return int Available money configured for the user within the period.
-    */
-    private function getAvailableMoneyByPeriod($userId, $startDate = null, $endDate = null) {
-        $query = PersonalConfiguration::where('user_id', $userId);
-
-        if ($startDate && $endDate) {
-            // Filtra las configuraciones donde el rango de fechas proporcionado intersecta con el rango de la configuración.
-            $query->where(function ($q) use ($startDate, $endDate) {
-                $q->where(function ($query) use ($startDate, $endDate) {
-                    $query->whereNotNull('start_counting')
-                          ->whereNotNull('end_counting')
-                          ->where(function ($query) use ($startDate, $endDate) {
-                              $query->whereBetween('start_counting', [$startDate, $endDate])
-                                    ->orWhereBetween('end_counting', [$startDate, $endDate])
-                                    ->orWhere(function ($query) use ($startDate, $endDate) {
-                                        $query->where('start_counting', '<=', $startDate)
-                                              ->where('end_counting', '>=', $endDate);
-                                    });
-                          });
-                });
-            });
-        } else {
-            // Si no se proporcionan fechas, devuelve el dinero disponible para la configuración actual.
-            $query->whereNotNull('start_counting')
-                  ->whereNotNull('end_counting')
-                  ->whereDate('start_counting', '<=', now())
-                  ->whereDate('end_counting', '>=', now())
-                  ->orderBy('start_counting', 'desc');
-        }
-
-        $configurationMoney = $query->first();
-
-        return $configurationMoney ? $configurationMoney->available_money : 0;
     }
 
     /**
@@ -517,49 +283,6 @@ class SpentController extends Controller
         }
 
         return $count;
-    }
-    
-    /**
-    * Get the total price of Spents filtered by year and month.
-    *
-    * This method sums the 'price' of all Spents that belong 
-    * to the specified year and month.
-    *
-    * @param int|null $yearFilter  Year to filter the Spents.
-    * @param int|null $monthFilter Month to filter the Spents.
-    *
-    * @return float Total price of the filtered Spents.
-    */
-    private function getTotalPriceByYearMonth($yearFilter, $monthFilter) {
-        $query = Spent::query();
-    
-        if ($yearFilter) {
-            $query->whereRaw('EXTRACT(YEAR FROM "expense_date") = ?', [$yearFilter]);
-        }
-    
-        if ($monthFilter) {
-            $query->whereRaw('EXTRACT(MONTH FROM "expense_date") = ?', [$monthFilter]);
-        }
-    
-        return $query->sum('price');
-    }
-
-    /**
-    * Get the total price of Spents within a specific period.
-    *
-    * Sums the 'price' of all Spents that belong to the authenticated user 
-    * and fall within the provided date range.
-    *
-    * @param int $userId         ID of the authenticated user.
-    * @param string $startDate   Start date of the period (Y-m-d format).
-    * @param string $endDate     End date of the period (Y-m-d format).
-    *
-    * @return float Total price of the filtered Spents.
-    */
-    private function getTotalPriceByPeriod($userId, $startDate, $endDate) {
-        return Spent::where('user_id', $userId)
-                        ->whereBetween('expense_date', [$startDate, $endDate])
-                        ->sum('price');
     }
     
     /**
@@ -637,18 +360,6 @@ class SpentController extends Controller
             'percentageUser' => 0,
             'color' => 'green',
         ];
-    }
-    
-    private function getMonths() {
-        return Helps::getNameMonths();
-    }
-
-    private function getCurrentDate(){
-        return Helps::getDate();
-    }
-
-    private function amountOfExpenses(){
-        
     }
     
 }

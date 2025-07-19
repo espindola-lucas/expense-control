@@ -20,100 +20,87 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-page-custom">
             <x-header :user="$user"></x-header>
-
+            
+            <!-- personal -->
             @if($type === 'personal')
                 @if($message)
                     <x-notification class="w-full text-red-700 bg-red-100">
-                        <x-slot name="message">
-                            Apa, ya gastaste mas del {{ $lastConfiguration['expense_percentage_limit'] }}% de la plata del mes. <br>
-                            Porcentaje usado: {{ $percentageUsed['percentageUser'] }}%
-                        </x-slot>
-                    </x-notification>
+                            <x-slot name="message">
+                                Apa, ya gastaste mas del {{ $lastConfiguration['expense_percentage_limit'] }}% de la plata del mes. <br>
+                                Porcentaje usado: {{ $percentageUsed['percentageUser'] }}%
+                            </x-slot>
+                        </x-notification>
                 @endif
             @endif
+
+            <!-- personal & busines -->
             <main class="container mx-auto p-4 mb-14">
+                @if($hasConfiguration)
+                    @if($hasBothConfig)
+                        <!-- choose information to display -->
+                        <div class="flex w-11/12 mx-auto space-x-4 mb-4 justify-evenly">
+                            <a href="{{ route('dashboard', ['type' => 'personal']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Personal</a>
+                            <a href="{{ route('dashboard', ['type' => 'business']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Negocio</a>
+                        </div>
+                    @endif
+                
             
-                <div class="flex w-11/12 mx-auto space-x-4 mb-4 justify-evenly">
-                    <a href="{{ route('dashboard', ['type' => 'personal']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Personal</a>
-                    <a href="{{ route('dashboard', ['type' => 'business']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Negocio</a>
-                </div>
+                    <!-- "navbar" 2 -->
+                    <div class="w-11/12 mx-auto">
+                        <div class="flex justify-between sm-500:mb-4">
+                            <a href="{{ route($type === 'personal' ? 'spents.create' : 'sells.create', ['type' => $type]) }}" id="add-expense">
+                                <x-button-add>
+                                    Agregar
+                                </x-button-add>
+                            </a>
 
-            @if($hasConfiguration)
-                <div class="w-11/12 mx-auto">
-                    <div class="flex justify-between sm-500:mb-4">
-                        <a href="{{ route('spents.create') }}" id="add-expense">
-                            <x-button-add>
-                                Agregar
-                            </x-button-add>
-                        </a>
-                        <div class="flex items-center space-x-4 text-white">
-                            Fecha: {{ $currentDate }}
+                            <div class="flex items-center space-x-4 text-white">
+                                Fecha: {{ $currentDate }}
+                            </div>
+
+                            <div class="hidden sm-500:block">
+                                @if($type === 'personal')
+                                    <x-period-display :lastConfiguration="$lastConfiguration"/>
+                                @endif
+                            </div>
+
+                            <!-- filters -->
+                            <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
+                                <x-filter-dropdown :allPeriods="$allPeriods"/>
+                                <x-button-filter/>
+                            </form>
                         </div>
-                        
-                        <div class="hidden sm-500:block">
-                            @if($type === 'personal')
-                                <x-period-display :lastConfiguration="$lastConfiguration"/>
-                            @endif
-                        </div>
 
-                        <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
-                            <x-filter-dropdown :allPeriods="$allPeriods"/>
-                            <x-button-filter/>
-                        </form>
-                    </div>
-
-                    <!-- Responsive -->
-                    <div class="flex flex-col space-y-2 sm-500:hidden">
-                        <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 justify-center items-center">
-                            <x-filter-dropdown :allPeriods="$allPeriods"/>
-                            <x-button-filter/>
-                        </form>
                         @if($type === 'personal')
-                            <x-period-display :lastConfiguration="$lastConfiguration"/>
+                            <x-monthly-balance
+                                :availableMoney="$monthly_balance['available_money']"
+                                :totalPrice="$monthly_balance['total_price']"
+                                :restMoney="$monthly_balance['rest_money']"
+                                :countSpent="$monthly_balance['count_spent']"
+                            />
+
+                            <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
+                                <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
+                                    style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
+                                    {{ $percentageUsed['percentageUser'] }}%
+                                </div>
+                            </div>
+
+                            <x-spent-card :spents="$spents" />
+                        @endif
+
+                        @if($type === 'business')
+                            <x-sell-card :sells="$sells" />
                         @endif
                     </div>
+                @else
+                    <x-empty-configuration-message :user="$user" />
+                @endif
 
-                    @if($type === 'personal')
-                        <x-monthly-balance 
-                            :availableMoney="$monthly_balance['available_money']"
-                            :totalPrice="$monthly_balance['total_price']"
-                            :restMoney="$monthly_balance['rest_money']"
-                            :countSpent="$monthly_balance['count_spent']"
-                        />
-                    @endif
-
-                    @if($type === 'personal')
-                        <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
-                            <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
-                                style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
-                                {{ $percentageUsed['percentageUser'] }}%
-                            </div>
-                        </div>
-                    @endif
-            @else
-                    <div class="w-11/12 mx-auto">
-                        <article class="overflow-hidden rounded-lg shadow-sm transition hover:shadow-lg">
-                            <div class="bg-white p-4 sm:p-6">
-                                <h1 class="text-xl text-center">Hola, <span class="font-semibold text-blue-700">{{ $user->name }}</span>!</h1>
-                                <p class="mt-2 mb-4 text-base text-center">
-                                    Parece que <strong>aún no hiciste ninguna configuración.</strong> <br>
-                                    Presioná el botón de abajo para empezar a configurar tu experiencia.
-                                </p>
-                                <a href="{{ route('configuration.index') }}" class="w-full max-w-xs flex flex-col items-center text-base text-white bg-blue-700 rounded-lg py-2 px-4 mx-auto">
-                                    <span>Configuración</span>
-                                </a>
-                            </div>
-                        </article>
-                    </div>
-            @endif
-                    <x-spent-card :spents="$spents"/>
-
-                    <x-branch-name :branchName="$branchName"/>
-                </div>
+                <x-branch-name :branchName="$branchName" />
             </main>
         </div>
         <x-buttom-nav></x-buttom-nav>
-        <x-footer></x-footer>
         @stack('modals')
 
         @livewireScripts
