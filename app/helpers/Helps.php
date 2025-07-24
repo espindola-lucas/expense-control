@@ -221,6 +221,16 @@ class Helps{
         }
     }
 
+    public static function filterByText($userId, $text, $type){
+        if($type === 'personal'){
+            $spents = Spent::where('user_id', $userId)
+                            ->where('name', 'ilike', '%' . $text . '%')
+                            ->get();
+        }
+
+        return $spents;
+    }
+
     private static function getFilteredSpentsByPeriod($userId, $startDate, $endDate){
         $informations = Spent::where('user_id', $userId)
                         ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
