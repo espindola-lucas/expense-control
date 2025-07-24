@@ -63,15 +63,15 @@
                                     <x-period-display :lastConfiguration="$lastConfiguration"/>
                                 @endif
                             </div>
-
-                            <!-- filters -->
-                            <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 -mt-8 hidden sm-500:flex">
-                                <x-filter-dropdown :allPeriods="$allPeriods"/>
-                                <x-button-filter/>
-                            </form>
                         </div>
+                        <!-- filters -->
+                        <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 justify-between sm-500:-mt-6">
+                            <x-search-text />
+                            <x-filter-dropdown :allPeriods="$allPeriods"/>
+                            <x-button-filter/>
+                        </form>
 
-                        @if($type === 'personal')
+                        @if($type === 'personal' && !$onlyFilter)
                             <x-monthly-balance
                                 :availableMoney="$monthly_balance['available_money']"
                                 :totalPrice="$monthly_balance['total_price']"
@@ -86,6 +86,11 @@
                                 </div>
                             </div>
 
+                            <x-spent-card :spents="$spents" />
+                        @endif
+
+                        @if($onlyFilter)
+                            <p class="text-white text-lg text-center">Resultados de la busqued por texto</p>
                             <x-spent-card :spents="$spents" />
                         @endif
 
