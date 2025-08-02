@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Helpers;
+
 use Carbon\Carbon;
 use App\Enums\MonthEnum;
 use Illuminate\Support\Facades\File;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Support\Collection;
 use App\Models\PersonalConfiguration;
 use App\Models\BusinessConfiguration;
 use App\Models\Spent;
@@ -15,26 +19,38 @@ class Helps{
         return MonthEnum::getMonths();
     }
 
-    public static function getDate(){
-        $currentDate = Carbon::now()->format('d/m/Y');
-        return $currentDate;
+    public static function getDate(): string
+    {
+        return Carbon::now()->format('d/m/Y');
     }
 
-    public static function getMonthNameByKey($key){
+    public static function getMonthNameByKey(string $key): string
+    {
         return MonthEnum::getMonthNameByKey($key);
     }
 
-    public static function formatValue($param) {
+    public static function formatValue(float|int|null $param): string
+    {
+        if ($param === null){
+            return '0';
+        }
+
         return number_format($param, 0, '', '.');
     }
     
-    public static function getGitBranchName(){
-        $gitBranch = base_path('.git/HEAD');
-        $headContent = file_get_contents($gitBranch);
-        if(strpos($headContent, 'ref:') === 0){
-            $branch = trim(str_replace('ref: refs/heads/', '', $headContent));
+    public static function getGitBranchName(): string
+    {
+        $gitHeadPath = base_path('.git/HEAD');
+        
+        if(!file_exists($gitHeadPath)) {
+            return 'unknown';
         }
-        return $branch;
+        $headContent = file_get_contents($gitHeadPath);
+        
+        if(strpos($headContent, 'ref:') === 0){
+            return trim(str_replace('ref: refs/heads/', '', $headContent));
+        }
+        return 'unknown';
     }
 
     public static function saveQuery($query, string $filename = 'consulta-sql')
@@ -72,7 +88,8 @@ class Helps{
         File::put($path, $jsonData);
     }
 
-    public static function getAllConfiguration($userId, $type = 'personal') {
+    public static function getAllConfiguration(int $userId, string $type = 'personal'): Collection
+    {
         // map type to model and type name
         $configMap = [
             'personal' => [
@@ -86,7 +103,7 @@ class Helps{
         ];
 
         if (!isset($configMap[$type])) {
-            throw new \InvalidArgumentException('Tipoe de configuracion invalido: $type');
+            throw new \InvalidArgumentException('Tipo de configuracion invalido: {$type}');
         }
 
         $modelClass = $configMap[$type]['model'];
@@ -102,7 +119,7 @@ class Helps{
             $config->end_counting = Carbon::parse($config->end_counting)->format('d/m/Y');
             $config->configuration_type = $typeName;
             $config->real_id = $config->id;
-            $config->real_model = $modelClass;
+            $config->real_model = class_basename($modelClass);
         }
 
         return $configs;
@@ -118,20 +135,22 @@ class Helps{
     * @param int $userId The ID of the authenticated user.
     * @return \Illuminate\Support\Collection List of periods with start date, end date, and available money.
     */
-    public static function getAllPeriods($user, $tabla){
+    public static function getAllPeriods(int $user, string $tabla): Collection
+    {
         if($tabla === 'personal'){
-            $periods = PersonalConfiguration::select('start_counting', 'end_counting', 'month_available_money')
+            return PersonalConfiguration::select('start_counting', 'end_counting', 'month_available_money')
                                 ->where('user_id', $user)
                                 ->get();
         
-            return $periods;
-        }elseif($tabla === 'business'){
-            $periods = BusinessConfiguration::select('start_counting', 'end_counting')
-                                ->where('user_id', $user)
-                                ->get();
-        
-            return $periods;
         }
+        
+        if($tabla === 'business'){
+            return BusinessConfiguration::select('start_counting', 'end_counting')
+                                ->where('user_id', $user)
+                                ->get();
+        }
+
+        return collect();
     }
 
         /**
@@ -144,20 +163,19 @@ class Helps{
     * @param \App\Models\User $user The authenticated user instance.
     * @return \Illuminate\Support\Carbon|string Start date from the latest configuration or current date.
     */
-    public static function getStartDateFromDatabase($user, $tabla){
+    public static function getStartDateFromDatabase(int $user, string $tabla): string
+    {
         if($tabla === 'personal'){
-            $configuration = PersonalConfiguration::where('user_id', $user)
+            return PersonalConfiguration::where('user_id', $user)
                                 ->latest()
-                                ->first();
-        
-            return $configuration ? $configuration->start_counting : Carbon::now();
+                                ->value('start_counting') ?? Carbon::now()->toDateString();
         }elseif($tabla === 'business'){
-            $configuration = BusinessConfiguration::where('user_id', $user)
+            return BusinessConfiguration::where('user_id', $user)
                                 ->latest()
-                                ->first();
-        
-            return $configuration ? $configuration->start_counting : Carbon::now();
+                                ->value('start_counting') ?? Carbon::now()->toDateString();
         }
+
+        return Carbon::now()->toDateString();
     }
 
     /**
@@ -170,20 +188,18 @@ class Helps{
     * @param \App\Models\User $user The authenticated user instance.
     * @return \Illuminate\Support\Carbon|string End date from the latest configuration or current date.
     */
-    public static function getEndDateFromDatabase($user, $tabla){
+    public static function getEndDateFromDatabase(int $user, string $tabla): string
+    {
         if($tabla === 'personal'){
-            $configuration = PersonalConfiguration::where('user_id', $user)
+            return PersonalConfiguration::where('user_id', $user)
                                 ->latest()
-                                ->first();
-        
-            return $configuration ? $configuration->end_counting : Carbon::now();
+                                ->value('end_counting') ?? Carbon::now()->toDateString();
         }elseif($tabla === 'business'){
-            $configuration = BusinessConfiguration::where('user_id', $user)
+            return BusinessConfiguration::where('user_id', $user)
                                 ->latest()
-                                ->first();
-        
-            return $configuration ? $configuration->end_counting : Carbon::now();
+                                ->value('end_counting') ?? Carbon::now()->toDateString();
         }
+        return Carbon::now()->toDateString();
     }
 
     /**
@@ -201,7 +217,8 @@ class Helps{
     *  - availableMoney: Money available in the selected period.
     *  - totalPrice: Total amount of expenses in the selected period.
     */
-    public static function filterByPeriod($userId, $startDate, $endDate, $type){
+    public static function filterByPeriod(int $userId, string $startDate, string $endDate, string $type): array
+    {
         if($type === 'personal'){
             $spents = self::getFilteredSpentsByPeriod($userId, $startDate, $endDate);
             $availableMoney = self::getAvailableMoneyByPeriod($userId, $startDate, $endDate);
@@ -221,32 +238,36 @@ class Helps{
         }
     }
 
-    public static function filterByText($userId, $text, $type){
+    public static function filterByText(int $userId, string $text, string $type): Collection
+    {
         if($type === 'personal'){
-            $spents = Spent::where('user_id', $userId)
+            return Spent::where('user_id', $userId)
                             ->where('name', 'ilike', '%' . $text . '%')
                             ->get();
         }
 
-        return $spents;
+        return collect();
     }
 
-    private static function getFilteredSpentsByPeriod($userId, $startDate, $endDate){
+    private static function getFilteredSpentsByPeriod(int $userId, string $startDate, string $endDate): Collection
+    {
         $informations = Spent::where('user_id', $userId)
                         ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
                         ->orderBy('expense_date', 'desc')
                         ->get();
 
-        foreach($informations as $info){
+        $informations->transform(function ($info) {
             $info->name = trim($info->name);
             $info->price = number_format($info->price, 0, '', '.');
             $info->expense_date = Carbon::parse($info->expense_date)->format('d/m/Y');
-        }
+            return $info;
+        });
 
         return $informations;
     }
 
-    private static function getAvailableMoneyByPeriod($userId, $startDate, $endDate){
+    private static function getAvailableMoneyByPeriod(int $userId, string $startDate, string $endDate): int
+    {
         $query = PersonalConfiguration::where('user_id', $userId);
 
         if ($startDate && $endDate) {
@@ -279,23 +300,27 @@ class Helps{
         return $configurationMoney ? $configurationMoney->available_money : 0;
     }
 
-    private static function getTotalPriceByPeriod($userId, $startDate, $endDate){
+    private static function getTotalPriceByPeriod(int $userId, string $startDate, string $endDate): int
+    {
         return Spent::where('user_id', $userId)
                         ->whereBetween('expense_date', [$startDate, $endDate])
                         ->sum('price');
     }
 
-    private static function getFilteredSellsByPeriod($userId, $startDate, $endDate){
+    private static function getFilteredSellsByPeriod(int $userId, string $startDate, string $endDate): Collection
+    {
         $informations = Sell::where('user_id', $userId)
                         ->whereBetween('sell_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
                         ->orderBy('sell_date', 'desc')
                         ->get();
 
-        foreach($informations as $info){
+        $informations->transform(function ($info) {
             $info->name = trim($info->name);
             $info->price = number_format($info->price, 0, '', '.');
             $info->sell_date = Carbon::parse($info->sell_date)->format('d/m/Y');
-        }
+
+            return $info;
+        });
 
         return $informations;
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PersonalConfiguration;
-use App\Models\BusinessConfiguration;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Spent;
@@ -103,9 +102,11 @@ class PersonalConfigurationController extends Controller
         ]);
     }
 
-    public function update(Request $request, PersonalConfiguration $configuration){
+    public function update(Request $request, PersonalConfiguration $configuration, $id){
         $input = $request->all();
-        $configuration->update($input);
+        $configuration = PersonalConfiguration::findOrFail($id);
+        $configuration->fill($input);
+        $configuration->save();
         return redirect('configuration');
     }
 

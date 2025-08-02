@@ -53,7 +53,8 @@ class SellController extends Controller
             'branchName' => Helps::getGitBranchName(),
             'hasConfiguration' => $hasConfiguration,
             'type' => $type,
-            'hasBothConfig' => $hasBothConfig
+            'hasBothConfig' => $hasBothConfig,
+            'onlyFilter' => false
         ]);
     }
 
