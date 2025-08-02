@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SessionAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SpentController;
@@ -56,9 +55,4 @@ Route::middleware([
     Route::resource('configuration', ConfigurationHomeController::class);
     Route::resource('personal-configuration', PersonalConfigurationController::class);
     Route::resource('business-configuration', BusinessConfigurationController::class);
-    Route::get('/get-info', [PersonalConfigurationController::class, 'getInfo']);
-    Route::resource('fixedexpenses', FixedExpenseController::class);
-    Route::resource('is_admin', AdminController::class)
-        ->parameters(['is_admin' => 'user'])
-        ->only(['index', 'destroy']);
 });

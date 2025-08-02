@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Enums;
 
@@ -26,7 +27,7 @@ enum MonthEnum: string
         foreach (self::cases() as $index => $month) {
             $months->push((object)[
                 'name' => $month->value,
-                'value' => str_pad($index + 1, 2, '0', STR_PAD_LEFT)
+                'value' => str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)
             ]);
         }
 

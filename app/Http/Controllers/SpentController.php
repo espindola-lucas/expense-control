@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -214,7 +215,6 @@ class SpentController extends Controller
         $user = Auth::user();
 
         $spent->name = trim($spent->name);
-        $spent->price = trim($spent->price);
 
         return view('abm.edit', [
             'spent' => $spent,
@@ -236,7 +236,8 @@ class SpentController extends Controller
     public function update(Request $request, Spent $spent)
     {
         $input = $request->all();
-        $spent -> update($input);
+        dd($spent->getAttributes());
+        $spent->update($input);
         return redirect('dashboard');
     }
 
@@ -260,22 +261,6 @@ class SpentController extends Controller
     }
 
     /**
-    * Format the given month to a two-digit string.
-    *
-    * Ensures that the month input is always a two-character 
-    * string by padding with a leading zero if necessary.
-    * Example: 3 becomes '03'.
-    *
-    * @param int|string $monthInput The month value to format.
-    * @return string The formatted month as a two-digit string.
-    */
-    private function formatMonth($monthInput) {
-        return intval($monthInput) < 10 
-            ? str_pad($monthInput, 2, '0', STR_PAD_LEFT) 
-            : $monthInput;
-    }
-
-    /**
     * Get the total number of Spents for a user within a specific period.
     * 
     * It joins the Spents with the Configurations table to ensure that
@@ -287,7 +272,7 @@ class SpentController extends Controller
     * 
     * @return int Total number of spents within the period.
     */
-    private function getTotalSpentsByPeriod($userId, $startDate = null, $endDate = null){
+    private function getTotalSpentsByPeriod(int $userId, string $startDate = null, string $endDate = null): int {
         if($startDate && $endDate){
             $count = Spent::join('personal_configurations as c', function ($join){
                 $join->on('spents.expense_date', '>=', 'c.start_counting')
@@ -313,15 +298,15 @@ class SpentController extends Controller
     * 
     * @return PersonalConfiguration|null  Latest Configuration found or null if not exists.
     */
-    private function getConfigurationForMonth($userId) {
-         // Obtener la configuración para el mes y año específicos
+    private function getConfigurationForMonth(int $userId): ?PersonalConfiguration {
         $configuration = PersonalConfiguration::where('user_id', $userId)
                                         ->orderBy('end_counting', 'desc')
                                         ->first();
     
-        if ($configuration) {
+        if ($configuration instanceof PersonalConfiguration) {
             $this->formatConfigurationDates($configuration);
         }
+
         return $configuration;
     }
     
@@ -335,7 +320,7 @@ class SpentController extends Controller
     * 
     * @return void
     */
-    private function formatConfigurationDates(&$configuration) {
+    private function formatConfigurationDates(PersonalConfiguration $configuration): void {
         if (!is_null($configuration['start_counting']) && !is_null($configuration['end_counting'])) {
             $configuration['start_counting'] = $this->formatDate($configuration['start_counting']);
             $configuration['end_counting'] = $this->formatDate($configuration['end_counting']);
@@ -352,7 +337,7 @@ class SpentController extends Controller
     * @param string $date  The date string to format.
     * @return string       The formatted date.
     */
-    private function formatDate($date) {
+    private function formatDate(string $date): string {
         return Carbon::createFromFormat('Y-m-d', str_replace('/', '-', $date))->format('d/m/y');
     }
 
@@ -364,7 +349,7 @@ class SpentController extends Controller
     * @param int $limit
     * @return array
     */
-    private function checkSpending($totalPrice, $availableMoney, $limit){
+    private function checkSpending(int $totalPrice,int $availableMoney,int $limit): array{
         if ($totalPrice && $availableMoney) {
             $percentage = round(($totalPrice / $availableMoney) * 100, 1, PHP_ROUND_HALF_UP);
 
