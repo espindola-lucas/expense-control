@@ -88,15 +88,18 @@
         </div>
         <div class="grid grid-cols-1 gap-1 py-3">
             <div class="flex space-x-2 justify-center">
-                <a href="{{ route('configuration.show', $configuration->id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
+                @php
+                    $routePrefix = $configuration->configuration_type === 'Personal' ? 'personal-configuration' : 'business-configuration';
+                @endphp
+                <a href="{{ route($routePrefix . '.show', $configuration->id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
                     Ver
                 </a>
                 @if($configuration->show_edit_button)
-                    <a href="{{ route('configuration.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
+                    <a href="{{ route($routePrefix . '.edit', $configuration->id) }}" class="inline-block rounded bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700">
                         Editar
                     </a>
                 @endif
-                <form method="POST" action="{{ route('configuration.destroy', $configuration->id) }}" class="inline">
+                <form method="POST" action="{{ route($routePrefix . '.destroy', $configuration->id) }}" class="inline">
                     @method('DELETE')
                     @csrf
                     <button id="configuration-delete" class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700">Eliminar</button>
