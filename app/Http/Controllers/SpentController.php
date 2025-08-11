@@ -236,7 +236,6 @@ class SpentController extends Controller
     public function update(Request $request, Spent $spent)
     {
         $input = $request->all();
-        dd($spent->getAttributes());
         $spent->update($input);
         return redirect('dashboard');
     }
