@@ -50,16 +50,15 @@ class SpentController extends Controller
                 $endDate = $selectedPeriod->end_counting;
             }
         } else {
-            // usar los valores por defecte si no se usa el filtro
+            // use default values, if not use filter
             $startDate = $request->input('start_date') ?? Helps::getStartDateFromDatabase($user->id, 'personal');
             $endDate = $request->input('end_date') ?? Helps::getEndDateFromDatabase($user->id, 'personal');
         }
 
-        $getPersonalData = PersonalConfigurationController::getPersonalData();
-        $getBusinessData = BusinessConfigurationController::getBusinessData();
+        $getInfoPersonalBusiness = $this->getPersonalBusinessData();
         $lastConfiguration = $this->getConfigurationForMonth($user->id);
 
-        if($getPersonalData->isNotEmpty() && $getBusinessData->isNotEmpty()){
+        if($getInfoPersonalBusiness['personalData']->isNotEmpty() && $getInfoPersonalBusiness['businessData']->isNotempty()){
             $hasBothConfig = true;
         }
 
@@ -85,35 +84,21 @@ class SpentController extends Controller
 
         $countSpents = $this->getTotalSpentsByPeriod($user->id, $startDate, $endDate);
         
-        if($data['availableMoney'] != 0){
-            $restMoney = $data['availableMoney'] - $data['totalPrice'];
-        }else {
-            $restMoney = 0;
-        }
-            
-        // Formatear los valores para la salida
-        $formattedAvailableMoney = Helps::formatValue($data['availableMoney']);
-        $formattedRestMoney = Helps::formatValue($restMoney);
-        $formattedTotalPrice = Helps::formatValue($data['totalPrice']);
-            
-        if(!empty($formattedAvailableMoney)){
-            $percentageUsed = $this->checkSpending($data['totalPrice'], $data['availableMoney'], $lastConfiguration->expense_percentage_limit);
-            if($percentageUsed['percentageUser'] >= $lastConfiguration->expense_percentage_limit){
-                $message = true;
-            }
-        }else{
-            $percentageUsed = [
-                'percentageUser' => 0,
-                'color' => 'green'
-            ];
-        }
-                
-        $monthlyBalance = [
-            'available_money' => $formattedAvailableMoney,
-            'total_price' => $formattedTotalPrice,
-            'rest_money' => $formattedRestMoney,
-            'count_spent' => $countSpents,
-        ];
+        $restMoney = $this->getRestMoney($data['availableMoney'], $data['totalPrice']);
+        
+        $refactorValueExit = $this->refactorValueExit($data, $restMoney);
+
+        $percentageUsed = $this->getPercentageUsed($data['totalPrice'], $data['availableMoney']);
+
+        $percentageUsed = $this->showMessage($refactorValueExit['formattedAvailableMoney'],$percentageUsed,$lastConfiguration->expense_percentage_limit
+        );
+        
+        $monthlyBalance = $this->monthlyBalance(
+            $refactorValueExit['formattedAvailableMoney'],
+            $refactorValueExit['formattedTotalPrice'],
+            $refactorValueExit['formattedRestMoney'],
+            $countSpents
+        );
     
         if($config->isEmpty()){
             $hasConfiguration = false;
@@ -259,6 +244,58 @@ class SpentController extends Controller
         return redirect()->route('dashboard', ['year' => $year_filter, 'month' => $month_filter]);
     }
 
+    private function getPersonalBusinessData(): array{
+        return [
+            'personalData' => PersonalConfigurationController::getPersonalData(),
+            'businessData' => BusinessConfigurationController::getBusinessData()
+        ];
+    }
+
+    private function refactorValueExit(array $data, int $restMoney): array {
+        return [
+            'formattedAvailableMoney' => Helps::formatValue($data['availableMoney']),
+            'formattedRestMoney' => Helps::formatValue($restMoney),
+            'formattedTotalPrice' => Helps::formatValue($data['totalPrice'])
+        ];
+    }
+
+    private function showMessage(string $availableMoney, int|float $percentageUsed, int $lastConfiguration)
+    {
+        
+        if(!empty($availableMoney)) {
+            if($percentageUsed >= $lastConfiguration){
+                return [
+                    'message' => true,
+                    'percentageUser' => $percentageUsed,
+                    'color' => 'red'
+                ];
+            } else {
+                return [
+                    'message' => false,
+                    'percentageUser' => $percentageUsed,
+                    'color' => 'green'
+                ];
+            }
+        }
+    
+        return [
+            'message' => false,
+            'percentageUser' => 0,
+            'color' => 'green'
+        ];
+    }
+
+    private function monthlyBalance(string $availableMoney, string $totalPrice, string $restMoney, int $countSpent): array
+    {
+     
+        return [
+            'avalaibleMoney' => $availableMoney,
+            'totalPrice' => $totalPrice,
+            'restMoney' => $restMoney,
+            'countSpent' => $countSpent 
+        ];
+    }
+
     /**
     * Get the total number of Spents for a user within a specific period.
     * 
@@ -285,6 +322,15 @@ class SpentController extends Controller
         }
 
         return $count;
+    }
+
+    private function getRestMoney(int $availableMoney, int $totalPrice): int
+    {
+        if ($availableMoney != 0){
+            $restMoney = $availableMoney - $totalPrice;
+            return $restMoney;
+        }
+        return 0;
     }
     
     /**
@@ -362,6 +408,16 @@ class SpentController extends Controller
             'percentageUser' => 0,
             'color' => 'green',
         ];
+    }
+
+    private function getPercentageUsed(int $totalPrice,int $availableMoney): int|float
+    {
+        if ($totalPrice && $availableMoney){
+            $percentage = round(($totalPrice / $availableMoney) * 100, 1, PHP_ROUND_HALF_UP);
+            return $percentage;
+        }
+
+        return 0;
     }
     
 }
