@@ -73,10 +73,10 @@
 
                         @if($type === 'personal' && !$onlyFilter)
                             <x-monthly-balance
-                                :availableMoney="$monthly_balance['available_money']"
-                                :totalPrice="$monthly_balance['total_price']"
-                                :restMoney="$monthly_balance['rest_money']"
-                                :countSpent="$monthly_balance['count_spent']"
+                                :availableMoney="$monthly_balance['avalaibleMoney']"
+                                :totalPrice="$monthly_balance['totalPrice']"
+                                :restMoney="$monthly_balance['restMoney']"
+                                :countSpent="$monthly_balance['countSpent']"
                             />
 
                             <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">

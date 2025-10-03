@@ -7,7 +7,59 @@
         Información sobre las configuraciones de negocio
     @endif
 </div>
-<table class="min-w-full bg-card-custom divide-y-2 divide-gray-200 bg-white text-sm text-center mt-4 mb-4 rounded-md hidden sm:block">
+<table class="table table-xs bg-white w-full table-auto mt-4 rounded-md hidden sm:table">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Inicio Periodo</th>
+            <th>Fin Periodo</th>
+            <th>Plata Disponible</th>
+            <th>Mes Correspondiente</th>
+            <th>Porcentaje Limite</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="w-full">
+        @foreach($config as $configuration)
+        <tr>
+            <td class="text-center text-sm">{{ $configuration->configuration_type }}</td>
+            <td class="text-center text-sm">{{ $configuration->start_counting }}</td>
+            <td class="text-center text-sm">{{ $configuration->end_counting }}</td>
+            @if($configuration->configuration_type === 'Personal')
+                <td class="text-center text-sm px-4 py-2">$ {{ $configuration->available_money }}</td>
+                <td class="text-center text-sm px-4 py-2">{{ $configuration->month_available_money }}</td>
+                <td class="text-center text-sm px-4 py-2">{{ $configuration->expense_percentage_limit }}%</td>
+            @else
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+            @endif
+            <td class="px-4 py-2 text-center">
+                @php
+                    $routePrefix = $configuration->configuration_type === 'Personal' ? 'personal-configuration' : 'business-configuration';
+                @endphp
+                <a href="{{ route($routePrefix . '.show', $configuration->id) }}" class="hover:underline">
+                    <i class="hgi hgi-stroke hgi-sharp hgi-book-edit"></i>
+                </a>
+                @if($configuration->show_edit_button)
+                    <a href="{{ route($routePrefix . '.edit', $configuration->id) }}" class="hover:underline">
+                        <i class="hgi hgi-stroke hgi-edit-01"></i>
+                    </a>
+                @endif
+                <form method="POST" action="{{ route($routePrefix . '.destroy', $configuration->id) }}" class="inline">
+                    @method('DELETE')
+                    @csrf
+                    <button id="configuration-delete" class="hover:underline">
+                        <i class="hgi hgi-stroke hgi-delete-02"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
+<!-- <table class="min-w-full bg-card-custom divide-y-2 divide-gray-200 bg-white text-sm text-center mt-4 mb-4 rounded-md hidden sm:block">
     <thead class="ltr:text-left rtl:text-right">
         <tr>
             <th class="whitespace-nowrap px-4 py-2 font-medium text-black">Tipo</th>
@@ -56,7 +108,7 @@
         </tr>
         @endforeach
     </tbody>
-</table>
+</table> -->
 
 <!-- responsive -->
 <div class="bg-white rounded-md mt-6 sm:hidden block">

@@ -243,6 +243,7 @@ class Helps{
         if($type === 'personal'){
             return Spent::where('user_id', $userId)
                             ->where('name', 'ilike', '%' . $text . '%')
+                            ->orderBy('expense_date', 'desc')
                             ->get();
         }
 
