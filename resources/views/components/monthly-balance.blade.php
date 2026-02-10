@@ -1,21 +1,22 @@
-<div class="bg-white shadow-md py-2 rounded-md p-2 lg:py-4 lg:flex lg:justify-between">
-    <p class="text-center text-green-800">
-        <span class="block lg:hidden">Disponible: $ {{ $availableMoney }}</span>
-        <span class="hidden lg:block">Plata disponible: $ {{ $availableMoney }}</span>
-    </p>
-    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-    <p class="text-center text-red-800">
-        <span class="block lg:hidden">Gastos: $ {{ $totalPrice }}</span>
-        <span class="hidden lg:block">Total de gastos: ${{ $totalPrice }}</span>
-    </p>
-    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-    <p class="text-center text-blue-800">
-        <span class="block lg:hidden">Resto: $ {{ $restMoney }}</span>
-        <span class="hidden lg:block">Resto de plata disponible: $ {{ $restMoney }}</span>
-    </p>
-    <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
-    <p class="text-center text-orange-400">
-        <span class="block lg:hidden">Cantidad: {{ $countSpent }}</span>
-        <span class="hidden lg:block">Conteo de gastos: {{ $countSpent }}</span>
-    </p>
-</div>
+<section class="mt-6 mb-6 text-gray-400 body-font rounded-md border p-4">
+    <div class="container">
+        <div class="flex flex-wrap -m-4 text-center">
+            <div class="p-4 sm:w-1/4 w-1/2">
+                <h2 class="title-font font-medium text-2xl text-white">$ {{ $availableMoney }}</h2>
+                <p class="leading-relaxed">Disponible</p>
+            </div>
+            <div class="p-4 sm:w-1/4 w-1/2">
+                <h2 class="title-font font-medium text-2xl text-white">$ {{ $totalPrice }}</h2>
+                <p class="leading-relaxed">Gastos</p>
+            </div>
+            <div class="p-4 sm:w-1/4 w-1/2">
+                <h2 class="title-font font-medium text-2xl text-white">$ {{ $restMoney }}</h2>
+                <p class="leading-relaxed">Resto</p>
+            </div>
+            <div class="p-4 sm:w-1/4 w-1/2">
+                <h2 class="title-font font-medium text-2xl text-white">{{ $countSpent }}</h2>
+                <p class="leading-relaxed">Cantidad</p>
+            </div>
+        </div>
+    </div>
+</section>

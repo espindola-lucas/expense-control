@@ -1,32 +1,36 @@
-<div class="flex flex-col flex-wrap lg:grid lg:grid-cols-3 xl:grid xl:grid-cols-5">
+<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5">
     @foreach($spents as $spent)
-        <div class="flex flex-col bg-card-custom my-2 mx-1 h-48 rounded-md py-4 px-6 xl:w-60">
-            <h3 id="expense-title" class="text-center text-white font-bold text-xl text-gray-800 pb-2">{{ $spent->name }}</h3>
-            <h3 class="text-base text-white font-semibold text-gray-900">$ {{ $spent->price }}</h3>
-            <p class="text-sm text-gray-500 pb-3"></p>
-            <div class="flex gap-2 text-sm text-gray-500 border-b pb-2">
-                <p class="text-white">{{ __('last update') }}:</p>
-                <p class="text-white">{{ $spent->expense_date }}</p>
-            </div>
-            <div class="flex justify-around items-center py-3">
-                <div class="flex gap-2 text-gray-600 hover:scale-110 duration-200 hover:cursor-pointer hover:bg-green-700 hover:text-green-100 hover:px-2 hover:rounded-md">
-                    <!-- <svg class="w-6 stroke-green-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg> -->
-                    <a href="{{ route('spents.edit', $spent->id) }}">
-                        <button class="font-semibold text-sm text-green-700 hover:text-green-100">Editar</button>
-                    </a>
+        
+
+        <article class="group relative bg-white/3 rounded-md p-4 flex flex-col justify-between border">
+            <div class="flex items-start justify-between">
+                <div class="min-w-0 pr-2">
+                    <h4 class="text-white font-semibold truncate">{{ $spent->name }}</h4>
+                    <div class="text-xs text-white/70 mt-1">{{ $spent->expense_date }}</div>
+                    @if(isset($spent->description) && $spent->description)
+                        <p class="text-sm text-white/80 mt-2 line-clamp-2">{{ $spent->description }}</p>
+                    @endif
                 </div>
-                <div class="flex gap-2 text-gray-600 hover:scale-110 duration-200 hover:cursor-pointer hover:bg-red-700 hover:text-red-100 hover:px-2 hover:rounded-md">
-                    <!-- <svg class="w-6 stroke-red-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> -->
+
+                <div class="text-right ml-3">
+                    <div class="text-2xl font-bold text-white">
+                        $ {{ ($spent->price) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between">
+                <!-- Buttons: visible on mobile, hidden on md+ until hover -->
+                <div class="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-150">
+                    <a href="{{ route('spents.edit', $spent->id) }}" class="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">Editar</a>
+
                     <form method="POST" action="{{ route('spents.destroy', $spent->id) }}" class="inline">
                         @method('DELETE')
                         @csrf
-                        <button id="expense-delete" class="font-semibold text-sm text-red-700 hover:text-red-100">Eliminar</button>
+                        <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm">Eliminar</button>
                     </form>
                 </div>
             </div>
-        </div>
+        </article>
     @endforeach
 </div>

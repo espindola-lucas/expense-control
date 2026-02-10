@@ -19,7 +19,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-page-custom">
-            <x-header :user="$user"></x-header>
+            <x-header></x-header>
             
             <!-- personal -->
             @if($type === 'personal')
@@ -36,42 +36,21 @@
             <!-- personal & busines -->
             <main class="container mx-auto p-4 mb-14">
                 @if($hasConfiguration)
-                    @if($hasBothConfig)
-                        <!-- choose information to display -->
-                        <div class="flex w-11/12 mx-auto space-x-4 mb-4 justify-evenly">
-                            <a href="{{ route('dashboard', ['type' => 'personal']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Personal</a>
-                            <a href="{{ route('dashboard', ['type' => 'business']) }}" class="bg-green-600 text-white px-4 py-2 rounded">Negocio</a>
-                        </div>
-                    @endif
-                
-            
                     <!-- "navbar" 2 -->
                     <div class="w-11/12 mx-auto">
-                        <div class="flex justify-between sm-500:mb-4">
-                            <a href="{{ route($type === 'personal' ? 'spents.create' : 'sells.create', ['type' => $type]) }}" id="add-expense">
-                                <x-button-add>
-                                    Agregar
-                                </x-button-add>
-                            </a>
 
-                            <div class="flex items-center space-x-4 text-white">
-                                Fecha: {{ $currentDate }}
-                            </div>
-
-                            <div class="hidden sm-500:block">
-                                @if($type === 'personal')
-                                    <x-period-display :lastConfiguration="$lastConfiguration"/>
-                                @endif
-                            </div>
-                        </div>
+                        <x-btn-add-show-period
+                            :currentDate="$currentDate"
+                            :type="$type"
+                            :lastConfiguration="$lastConfiguration"
+                        />
                         <!-- filters -->
                         <form action="{{ route('dashboard') }}" method="GET" class="flex space-x-4 justify-between sm-500:-mt-6">
                             <x-search-text />
-                            <x-filter-dropdown :allPeriods="$allPeriods"/>
                             <x-button-filter/>
                         </form>
 
-                        @if($type === 'personal' && !$onlyFilter)
+                        @if(isset($spents) && !$onlyFilter)
                             <x-monthly-balance
                                 :availableMoney="$monthly_balance['avalaibleMoney']"
                                 :totalPrice="$monthly_balance['totalPrice']"
@@ -79,10 +58,15 @@
                                 :countSpent="$monthly_balance['countSpent']"
                             />
 
-                            <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mt-4">
-                                <div class="bg-{{$percentageUsed['color']}}-700 h-6 rounded-full text-sm text-center text-white"
-                                    style="width: calc({{ $percentageUsed['percentageUser'] }}%); max-width: 100%;">
-                                    {{ $percentageUsed['percentageUser'] }}%
+                            <div role="progressbar" aria-valuenow="{{ $percentageUsed['percentageUser'] }}" aria-valuemin="0" aria-valuemax="100">
+                                <div class="flex justify-between gap-4">
+                                  <span class="text-sm text-white font-semibold">Gastando...</span>
+
+                                  <span class="text-sm text-white font-semibold">{{ $percentageUsed['percentageUser'] }}%</span>
+                                </div>
+
+                                <div class="mt-2 mb-2 w-full border-2 border-black bg-white p-1 shadow-[2px_2px_0_0]">
+                                  <div class="h-3 bg-{{ $percentageUsed['color'] }}-600" style="width: {{ $percentageUsed['percentageUser'] }}%; max-width: 100%;"></div>
                                 </div>
                             </div>
 
@@ -93,13 +77,9 @@
                             <p class="text-white text-lg text-center">Resultados de la busqued por texto</p>
                             <x-spent-card :spents="$spents" />
                         @endif
-
-                        @if($type === 'business')
-                            <x-sell-card :sells="$sells" />
-                        @endif
                     </div>
                 @else
-                    <x-empty-configuration-message :user="$user" />
+                    <x-empty-configuration-message :user="$user" />r
                 @endif
 
                 <x-branch-name :branchName="$branchName" />

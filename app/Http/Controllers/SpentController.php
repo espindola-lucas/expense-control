@@ -8,7 +8,6 @@ use App\Models\Spent;
 use App\Models\Sell;
 use App\Models\PersonalConfiguration;
 use App\Http\Controllers\PersonalConfigurationController;
-use App\Http\Controllers\BusinessConfigurationController;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\Helps;
@@ -55,12 +54,8 @@ class SpentController extends Controller
             $endDate = $request->input('end_date') ?? Helps::getEndDateFromDatabase($user->id, 'personal');
         }
 
-        $getInfoPersonalBusiness = $this->getPersonalBusinessData();
+        $personalData = PersonalConfigurationController::getPersonalData();
         $lastConfiguration = $this->getConfigurationForMonth($user->id);
-
-        if($getInfoPersonalBusiness['personalData']->isNotEmpty() && $getInfoPersonalBusiness['businessData']->isNotempty()){
-            $hasBothConfig = true;
-        }
 
         if(!$filterText){
             $data = Helps::filterByPeriod($user->id, $startDate, $endDate, $type);
@@ -76,7 +71,7 @@ class SpentController extends Controller
                 'lastConfiguration' => $lastConfiguration,
                 'hasConfiguration' => $hasConfiguration,
                 'type' => $type,
-                'hasBothConfig' => $hasBothConfig,
+                'hasBothConfig' => false,
                 'onlyFilter' => $onlyFilter,
                 'branchName' => Helps::getGitBranchName(),
             ]);
@@ -132,18 +127,16 @@ class SpentController extends Controller
     public function create(Request $request){
         
         $user = Auth::user();
-        $type = $request->query('type', 'personal');
-        $isSell = $type === 'business';
-
+        // Spent creation only; related feature removed
         return view('abm.create', [
             'user' => $user,
-            'type' => $type,
-            'isSell' => $isSell,
-            'storeRoute' => $isSell ? 'sells.store' : 'spents.store',
-            'dateField' => $isSell ? 'sell_date' : 'expense_date',
-            'nameField' => $isSell ? 'sellName' : 'spentName',
-            'labelDate' => $isSell ? 'Dia de la venta' : 'Dia de la compra',
-            'labelName' => $isSell ? 'Nombre de la venta' : 'Nombre del gasto',
+            'type' => 'personal',
+            'isSell' => false,
+            'storeRoute' => 'spents.store',
+            'dateField' => 'expense_date',
+            'nameField' => 'spentName',
+            'labelDate' => 'Dia de la compra',
+            'labelName' => 'Nombre del gasto',
             'today' => now()->format('Y-m-d'),
         ]);
     }
@@ -244,10 +237,10 @@ class SpentController extends Controller
         return redirect()->route('dashboard', ['year' => $year_filter, 'month' => $month_filter]);
     }
 
-    private function getPersonalBusinessData(): array{
+    private function getPersonalData(): array{
         return [
             'personalData' => PersonalConfigurationController::getPersonalData(),
-            'businessData' => BusinessConfigurationController::getBusinessData()
+            'extraData' => collect()
         ];
     }
 

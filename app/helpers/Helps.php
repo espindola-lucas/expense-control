@@ -10,10 +10,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\Collection;
 use App\Models\PersonalConfiguration;
-use App\Models\BusinessConfiguration;
 use App\Models\Spent;
-use App\Models\Sell;
-
 class Helps{
     public static function getNameMonths(){
         return MonthEnum::getMonths();
@@ -31,11 +28,22 @@ class Helps{
 
     public static function formatValue(float|int|null $param): string
     {
-        if ($param === null){
+        if ($param === null || $param === 0) {
             return '0';
         }
 
-        return number_format($param, 0, '', '.');
+        if ($param < 1000) {
+            return (string) $param;
+        }
+
+        $value = $param / 1000;
+        $decimal = ($param % 1000) / 100;
+
+        if ($decimal > 0) {
+            return number_format($value, 1, '.', '') . 'K';
+        }
+
+        return floor($value) . 'K';
     }
     
     public static function getGitBranchName(): string
@@ -95,10 +103,6 @@ class Helps{
             'personal' => [
                 'model' => PersonalConfiguration::class,
                 'typeName' => 'Personal'
-            ],
-            'business' => [
-                'model' => BusinessConfiguration::class,
-                'typeName' => 'Comercio'
             ]
         ];
 
@@ -141,13 +145,6 @@ class Helps{
             return PersonalConfiguration::select('start_counting', 'end_counting', 'month_available_money')
                                 ->where('user_id', $user)
                                 ->get();
-        
-        }
-        
-        if($tabla === 'business'){
-            return BusinessConfiguration::select('start_counting', 'end_counting')
-                                ->where('user_id', $user)
-                                ->get();
         }
 
         return collect();
@@ -169,10 +166,6 @@ class Helps{
             return PersonalConfiguration::where('user_id', $user)
                                 ->latest()
                                 ->value('start_counting') ?? Carbon::now()->toDateString();
-        }elseif($tabla === 'business'){
-            return BusinessConfiguration::where('user_id', $user)
-                                ->latest()
-                                ->value('start_counting') ?? Carbon::now()->toDateString();
         }
 
         return Carbon::now()->toDateString();
@@ -192,10 +185,6 @@ class Helps{
     {
         if($tabla === 'personal'){
             return PersonalConfiguration::where('user_id', $user)
-                                ->latest()
-                                ->value('end_counting') ?? Carbon::now()->toDateString();
-        }elseif($tabla === 'business'){
-            return BusinessConfiguration::where('user_id', $user)
                                 ->latest()
                                 ->value('end_counting') ?? Carbon::now()->toDateString();
         }
@@ -229,13 +218,9 @@ class Helps{
                 'availableMoney' => $availableMoney,
                 'totalPrice' => $totalPrice
             ];
-        }elseif($type === 'business'){
-            $sells = self::getFilteredSellsByPeriod($userId, $startDate, $endDate);
-
-            return [
-                'sells' => $sells,
-            ];
         }
+
+        return [];
     }
 
     public static function filterByText(int $userId, string $text, string $type): Collection
@@ -259,7 +244,8 @@ class Helps{
 
         $informations->transform(function ($info) {
             $info->name = trim($info->name);
-            $info->price = number_format($info->price, 0, '', '.');
+            $info->price = Helps::formatValue($info->price);
+            // $info->price = number_format($info->price, 0, '', '.');
             $info->expense_date = Carbon::parse($info->expense_date)->format('d/m/Y');
             return $info;
         });

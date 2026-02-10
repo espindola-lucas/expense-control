@@ -25,14 +25,6 @@
                     @csrf
                     <div class="w-full md:w-5/6 mx-auto">
                         <div class="p-2 bg-white shadow-md rounded-md">
-                            <!-- <div class="mt-">
-                                <label for="configuration_type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
-                                <select id="configuration_type" name="configuration_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 sm-500:w-1/2">
-                                    <option selected disabled>Elegi el tipo de configuración</option>
-                                        <option value="personal">Personal</option>
-                                        <option value="business">Comercial</option>
-                                </select>
-                            </div> -->
 
                             <div class="mt-4">
                                 <x-form-input 
@@ -123,11 +115,6 @@
                 document.getElementById('available_money').required = true;
                 document.getElementById('month_available_money').required = true;
                 document.getElementById('expense_percentage_limit').required = true;
-            } else if (selected === 'business'){
-                personalFields.style.display = 'none';
-                document.getElementById('available_money').required = false;
-                document.getElementById('month_available_money').required = false;
-                document.getElementById('expense_percentage_limit').required = false;
             }
         }
 
