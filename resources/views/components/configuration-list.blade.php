@@ -1,13 +1,9 @@
-@props(['config', 'type'])
+@props(['config'])
 
 <div class="min-w-full bg-white text-lg rounded-md text-center mt-4 py-1">
-    @if($type === 'personal')
-        Información sobre las configuraciones personales
-    @elseif ($type === 'business')
-        Información sobre las configuraciones de negocio
-    @endif
+    Información sobre las configuraciones personales
 </div>
-<table class="table table-xs bg-white w-full table-auto mt-4 rounded-md hidden sm:table">
+<table class="table table-xs bg-page-custom border text-white w-full table-auto mt-4 hidden sm:table">
     <thead>
         <tr>
             <th>Tipo</th>
@@ -36,7 +32,7 @@
             @endif
             <td class="px-4 py-2 text-center">
                 @php
-                    $routePrefix = $configuration->configuration_type === 'Personal' ? 'personal-configuration' : 'business-configuration';
+                    $routePrefix = 'personal-configuration';
                 @endphp
                 <a href="{{ route($routePrefix . '.show', $configuration->id) }}" class="hover:underline">
                     <i class="hgi hgi-stroke hgi-sharp hgi-book-edit"></i>
@@ -89,7 +85,7 @@
             @endif
             <td class="whitespace-nowrap px-4 py-2">
                 @php
-                    $routePrefix = $configuration->configuration_type === 'Personal' ? 'personal-configuration' : 'business-configuration';
+                    $routePrefix = 'personal-configuration';
                 @endphp
                 <a href="{{ route($routePrefix . '.show', $configuration->id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
                     Ver
@@ -111,37 +107,37 @@
 </table> -->
 
 <!-- responsive -->
-<div class="bg-white rounded-md mt-6 sm:hidden block">
+<div class="bg-page-custom rounded-md mt-6 sm:hidden block">
     <dl class="-my-3 divide-y divide-black text-sm">
         @foreach($config as $configuration)
         <div class="grid grid-cols-1 gap-1 py-3">
-            <dt class="font-medium text-black text-center">Inicio de Periodo</dt>
-            <dd class="text-black text-center sm:col-span-2">{{ $configuration->start_counting }}</dd>
+            <dt class="font-medium text-white text-center">Inicio de Periodo</dt>
+            <dd class="text-white text-center sm:col-span-2">{{ $configuration->start_counting }}</dd>
         </div>
   
         <div class="grid grid-cols-1 gap-1 py-3">
-            <dt class="font-medium text-black text-center">Fin de Periodo</dt>
-            <dd class="text-black text-center sm:col-span-2">{{ $configuration->end_counting }}</dd>
+            <dt class="font-medium text-white text-center">Fin de Periodo</dt>
+            <dd class="text-white text-center sm:col-span-2">{{ $configuration->end_counting }}</dd>
         </div>
   
         <div class="grid grid-cols-1 gap-1 py-3">
-            <dt class="font-medium text-black text-center">Plata Disponible</dt>
-            <dd class="text-black text-center sm:col-span-2">$ {{ $configuration->available_money }}</dd>
+            <dt class="font-medium text-white text-center">Plata Disponible</dt>
+            <dd class="text-white text-center sm:col-span-2">$ {{ $configuration->available_money }}</dd>
         </div>
   
         <div class="grid grid-cols-1 gap-1 py-3">
-            <dt class="font-medium text-black text-center">Mes Correspondiente</dt>
-            <dd class="text-black text-center sm:col-span-2">{{ $configuration->month_available_money }}</dd>
+            <dt class="font-medium text-white text-center">Mes Correspondiente</dt>
+            <dd class="text-white text-center sm:col-span-2">{{ $configuration->month_available_money }}</dd>
         </div>
   
         <div class="grid grid-cols-1 gap-1 py-3">
-            <dt class="font-medium text-black text-center">Porcentaje Limite</dt>
-            <dd class="text-black text-center sm:col-span-2">{{ $configuration->expense_percentage_limit }}%</dd>
+            <dt class="font-medium text-white text-center">Porcentaje Limite</dt>
+            <dd class="text-white text-center sm:col-span-2">{{ $configuration->expense_percentage_limit }}%</dd>
         </div>
         <div class="grid grid-cols-1 gap-1 py-3">
             <div class="flex space-x-2 justify-center">
                 @php
-                    $routePrefix = $configuration->configuration_type === 'Personal' ? 'personal-configuration' : 'business-configuration';
+                    $routePrefix = 'personal-configuration';
                 @endphp
                 <a href="{{ route($routePrefix . '.show', $configuration->id) }}" class="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700">
                     Ver

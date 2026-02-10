@@ -7,7 +7,6 @@ use App\Models\Spent;
 use App\Models\Sell;
 use App\Models\PersonalConfiguration;
 use App\Http\Controllers\PersonalConfigurationController;
-use App\Http\Controllers\BusinessConfigurationController;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Helpers\Helps;
@@ -20,31 +19,22 @@ class SellController extends Controller
     public function index(Request $request)
     {
         $hasConfiguration = true;
-        $hasBothConfig = false;
         $user = Auth::user();
-        $config = Helps::getAllConfiguration($user->id);
 
-        $type = $request->query('type');
         $selectedMonth = $request->input('period');
 
-        $getAllPeriods = Helps::getAllPeriods($user->id, 'business');
+        $getAllPeriods = Helps::getAllPeriods($user->id, 'personal');
 
-        $startDate = $request->input('start_date') ?? Helps::getStartDateFromDatabase($user->id, 'business');
-        $endDate = $request->input('end_date') ?? Helps::getEndDateFromDatabase($user->id, 'business');
+        $startDate = $request->input('start_date') ?? Helps::getStartDateFromDatabase($user->id, 'personal');
+        $endDate = $request->input('end_date') ?? Helps::getEndDateFromDatabase($user->id, 'personal');
 
-        $getPersonalData = PersonalConfigurationController::getPersonalData();
-        $getBusinessData = BusinessConfigurationController::getBusinessData();
-
-        if($getPersonalData->isNotEmpty() && $getBusinessData->isNotEmpty()){
-            $hasBothConfig = true;
-        }
-
-        $data = Helps::filterByPeriod($user->id, $startDate, $endDate, $type);
+        // Get sells directly for the selected period
+        $sells = Helps::getFilteredSellsByPeriod($user->id, $startDate, $endDate);
 
         $currentDate = Helps::getdate();
 
         return view('dashboard', [
-            'sells' => $data['sells'],
+            'sells' => $sells,
             'user' => $user,
             'allPeriods' => $getAllPeriods,
             'startDate' => $startDate,
@@ -52,8 +42,8 @@ class SellController extends Controller
             'currentDate' => $currentDate,
             'branchName' => Helps::getGitBranchName(),
             'hasConfiguration' => $hasConfiguration,
-            'type' => $type,
-            'hasBothConfig' => $hasBothConfig,
+            'type' => 'personal',
+            'hasBothConfig' => false,
             'onlyFilter' => false
         ]);
     }
@@ -64,19 +54,16 @@ class SellController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
-
-        $type = $request->query('type', 'personal');
-        $isSell = $type === 'business';
-
+        // This controller handles sales (sells) only now
         return view('abm.create', [
             'user' => $user,
-            'type' => $type,
-            'isSell' => $isSell,
-            'storeRoute' => $isSell ? 'sells.store' : 'spents.store',
-            'dateField' => $isSell ? 'sell_date' : 'expense_date',
-            'nameField' => $isSell ? 'sellName' : 'spentName',
-            'labelDate' => $isSell ? 'Dia de la venta' : 'Dia de la compra',
-            'labelName' => $isSell ? 'Nombre de la venta' : 'Nombre del gasto',
+            'type' => 'personal',
+            'isSell' => true,
+            'storeRoute' => 'sells.store',
+            'dateField' => 'sell_date',
+            'nameField' => 'sellName',
+            'labelDate' => 'Dia de la venta',
+            'labelName' => 'Nombre de la venta',
             'today' => now()->format('Y-m-d'),
         ]);
     }
@@ -86,8 +73,6 @@ class SellController extends Controller
      */
     public function store(Request $request)
     {
-        $type = $request->query('type', 'business');
-
         if($request->isMethod('post')){
             $request->validate([
                 'sell_date' => 'required',
@@ -104,8 +89,7 @@ class SellController extends Controller
                 'price' => $price,
                 'user_id' => Auth::user()->id
             ]);
-
-            return redirect()->route('dashboard', ['type' => $type])
+            return redirect()->route('dashboard')
                             ->with('success', 'Venta agregada correctamente.');
         }
         return view('abm.create');
@@ -142,6 +126,6 @@ class SellController extends Controller
     {
         $sell->delete();
         
-        return redirect()->route('dashboard', ['type' => 'business']);
+        return redirect()->route('dashboard');
     }
 }

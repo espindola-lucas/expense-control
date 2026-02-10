@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Helps;
 use App\Http\Controllers\PersonalConfigurationController;
-use App\Http\Controllers\BusinessConfigurationController;
 
 class ConfigurationHomeController extends Controller
 {
@@ -13,17 +12,11 @@ class ConfigurationHomeController extends Controller
         $months = Helps::getNameMonths();
         $user = Auth::user();
         $hasPersonalConfiguration = false;
-        $hasBusinessConfiguration = false;
 
         $getPersonalData = PersonalConfigurationController::getPersonalData();
-        $getBusinessData = BusinessConfigurationController::getBusinessData();
 
         if ($getPersonalData->isNotEmpty()){
             $hasPersonalConfiguration = true;
-        }
-
-        if ($getBusinessData->isNotEmpty()){
-            $hasBusinessConfiguration = true;
         }
 
         $currentYear = now()->year;
@@ -35,10 +28,8 @@ class ConfigurationHomeController extends Controller
         return view('configuration', [
             'months' => $months,
             'personalConfig' => $getPersonalData,
-            'businessConfig' => $getBusinessData,
             'user' => $user,
             'hasPersonalConfiguration' => $hasPersonalConfiguration,
-            'hasBusinessConfiguration' => $hasBusinessConfiguration,
             'footerInformation' => $footerInformation,
             'branchName' => Helps::getGitBranchName()
         ]);
