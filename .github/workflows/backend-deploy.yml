@@ -17,6 +17,8 @@ on:
       - '.github/workflows/backend-deploy.yml'
       - 'version'
 
+  workflow_dispatch:
+
 jobs:
   build-and-push:
     name: Build & Push Docker image
