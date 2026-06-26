@@ -12,7 +12,7 @@ class StoreSpentAction
         return Spent::create([
             'expense_date' => $data['expense_date'],
             'name'         => trim($data['spentName']),
-            'price'        => trim($data['price']),
+            'price'        => $data['price'],
             'user_id'      => $userId,
         ]);
     }
