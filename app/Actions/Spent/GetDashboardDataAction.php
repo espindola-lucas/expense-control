@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Actions\Spent;
@@ -18,54 +19,54 @@ class GetDashboardDataAction
         ?string $startDateParam,
         ?string $endDateParam,
     ): array {
-        $config           = Helps::getAllConfiguration($userId);
-        $getAllPeriods     = Helps::getAllPeriods($userId, 'personal');
+        $config = Helps::getAllConfiguration($userId);
+        $getAllPeriods = Helps::getAllPeriods($userId, 'personal');
         $lastConfiguration = $this->getConfigurationForMonth($userId);
-        $hasConfiguration  = !$config->isEmpty();
+        $hasConfiguration = ! $config->isEmpty();
 
         if ($selectedMonth) {
             $selectedPeriod = $getAllPeriods->firstWhere('month_available_money', $selectedMonth);
-            $startDate      = $selectedPeriod?->start_counting ?? Helps::getStartDateFromDatabase($userId, 'personal');
-            $endDate        = $selectedPeriod?->end_counting   ?? Helps::getEndDateFromDatabase($userId, 'personal');
+            $startDate = $selectedPeriod?->start_counting ?? Helps::getStartDateFromDatabase($userId, 'personal');
+            $endDate = $selectedPeriod?->end_counting ?? Helps::getEndDateFromDatabase($userId, 'personal');
         } else {
             $startDate = $startDateParam ?? Helps::getStartDateFromDatabase($userId, 'personal');
-            $endDate   = $endDateParam   ?? Helps::getEndDateFromDatabase($userId, 'personal');
+            $endDate = $endDateParam ?? Helps::getEndDateFromDatabase($userId, 'personal');
         }
 
         if ($filterText) {
             return [
-                'isFilter'          => true,
-                'spents'            => Helps::filterByText($userId, $filterText, $type),
-                'allPeriods'        => $getAllPeriods,
+                'isFilter' => true,
+                'spents' => Helps::filterByText($userId, $filterText, $type),
+                'allPeriods' => $getAllPeriods,
                 'lastConfiguration' => $lastConfiguration,
-                'hasConfiguration'  => $hasConfiguration,
-                'type'              => $type,
-                'startDate'         => $startDate,
-                'endDate'           => $endDate,
+                'hasConfiguration' => $hasConfiguration,
+                'type' => $type,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
             ];
         }
 
-        $data        = Helps::filterByPeriod($userId, $startDate, $endDate, $type);
+        $data = Helps::filterByPeriod($userId, $startDate, $endDate, $type);
         $countSpents = $this->getTotalSpentsByPeriod($userId, $startDate, $endDate);
-        $restMoney   = $this->getRestMoney($data['availableMoney'], $data['totalPrice']);
-        $formatted   = $this->formatValues($data, $restMoney);
+        $restMoney = $this->getRestMoney($data['availableMoney'], $data['totalPrice']);
+        $formatted = $this->formatValues($data, $restMoney);
         $percentageUsed = $this->getPercentageUsed($data['totalPrice'], $data['availableMoney']);
 
         return [
-            'isFilter'          => false,
-            'spents'            => $data['spents'],
-            'allPeriods'        => $getAllPeriods,
-            'monthly_balance'   => $this->buildMonthlyBalance($formatted, $countSpents),
+            'isFilter' => false,
+            'spents' => $data['spents'],
+            'allPeriods' => $getAllPeriods,
+            'monthly_balance' => $this->buildMonthlyBalance($formatted, $countSpents),
             'lastConfiguration' => $lastConfiguration,
-            'hasConfiguration'  => $hasConfiguration,
-            'percentageUsed'    => $this->buildPercentageMessage(
+            'hasConfiguration' => $hasConfiguration,
+            'percentageUsed' => $this->buildPercentageMessage(
                 $formatted['formattedAvailableMoney'],
                 $percentageUsed,
                 $lastConfiguration?->expense_percentage_limit ?? 0,
             ),
-            'type'              => $type,
-            'startDate'         => $startDate,
-            'endDate'           => $endDate,
+            'type' => $type,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ];
     }
 
@@ -74,13 +75,13 @@ class GetDashboardDataAction
         if ($startDate && $endDate) {
             return Spent::join('personal_configurations as c', function ($join) {
                 $join->on('spents.expense_date', '>=', 'c.start_counting')
-                     ->on('spents.expense_date', '<=', 'c.end_counting')
-                     ->on('spents.user_id', '=', 'c.user_id');
+                    ->on('spents.expense_date', '<=', 'c.end_counting')
+                    ->on('spents.user_id', '=', 'c.user_id');
             })
-            ->where('c.start_counting', $startDate)
-            ->where('c.end_counting', $endDate)
-            ->where('spents.user_id', $userId)
-            ->count();
+                ->where('c.start_counting', $startDate)
+                ->where('c.end_counting', $endDate)
+                ->where('spents.user_id', $userId)
+                ->count();
         }
 
         return 0;
@@ -95,18 +96,18 @@ class GetDashboardDataAction
     {
         return [
             'formattedAvailableMoney' => Helps::formatValue($data['availableMoney']),
-            'formattedRestMoney'      => Helps::formatValue($restMoney),
-            'formattedTotalPrice'     => Helps::formatValue($data['totalPrice']),
+            'formattedRestMoney' => Helps::formatValue($restMoney),
+            'formattedTotalPrice' => Helps::formatValue($data['totalPrice']),
         ];
     }
 
     private function buildPercentageMessage(string $availableMoney, int|float $percentageUsed, int $limit): array
     {
-        if (!empty($availableMoney)) {
+        if (! empty($availableMoney)) {
             return [
-                'message'        => $percentageUsed >= $limit,
+                'message' => $percentageUsed >= $limit,
                 'percentageUser' => $percentageUsed,
-                'color'          => $percentageUsed >= $limit ? 'red' : 'green',
+                'color' => $percentageUsed >= $limit ? 'red' : 'green',
             ];
         }
 
@@ -117,9 +118,9 @@ class GetDashboardDataAction
     {
         return [
             'avalaibleMoney' => $formatted['formattedAvailableMoney'],
-            'totalPrice'     => $formatted['formattedTotalPrice'],
-            'restMoney'      => $formatted['formattedRestMoney'],
-            'countSpent'     => $countSpents,
+            'totalPrice' => $formatted['formattedTotalPrice'],
+            'restMoney' => $formatted['formattedRestMoney'],
+            'countSpent' => $countSpents,
         ];
     }
 
@@ -135,8 +136,8 @@ class GetDashboardDataAction
     private function getConfigurationForMonth(int $userId): ?PersonalConfiguration
     {
         $configuration = PersonalConfiguration::where('user_id', $userId)
-                                              ->orderBy('end_counting', 'desc')
-                                              ->first();
+            ->orderBy('end_counting', 'desc')
+            ->first();
 
         if ($configuration instanceof PersonalConfiguration) {
             $this->formatConfigurationDates($configuration);
@@ -147,10 +148,10 @@ class GetDashboardDataAction
 
     private function formatConfigurationDates(PersonalConfiguration $configuration): void
     {
-        if (!is_null($configuration->start_counting) && !is_null($configuration->end_counting)) {
+        if (! is_null($configuration->start_counting) && ! is_null($configuration->end_counting)) {
             $configuration->start_counting = $this->formatDate($configuration->start_counting);
-            $configuration->end_counting   = $this->formatDate($configuration->end_counting);
-        } elseif (!is_null($configuration->start_counting)) {
+            $configuration->end_counting = $this->formatDate($configuration->end_counting);
+        } elseif (! is_null($configuration->start_counting)) {
             $configuration->start_counting = $this->formatDate($configuration->start_counting);
         } else {
             $configuration->end_counting = $this->formatDate($configuration->end_counting);

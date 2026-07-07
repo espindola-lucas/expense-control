@@ -1,18 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Helpers;
 
-use Carbon\Carbon;
 use App\Enums\MonthEnum;
-use Illuminate\Support\Facades\File;
-use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Support\Collection;
 use App\Models\PersonalConfiguration;
 use App\Models\Spent;
-class Helps{
-    public static function getNameMonths(){
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+
+class Helps
+{
+    public static function getNameMonths()
+    {
         return MonthEnum::getMonths();
     }
 
@@ -40,24 +44,25 @@ class Helps{
         $decimal = ($param % 1000) / 100;
 
         if ($decimal > 0) {
-            return number_format($value, 1, '.', '') . 'K';
+            return number_format($value, 1, '.', '').'K';
         }
 
-        return floor($value) . 'K';
+        return floor($value).'K';
     }
-    
+
     public static function getGitBranchName(): string
     {
         $gitHeadPath = base_path('.git/HEAD');
-        
-        if(!file_exists($gitHeadPath)) {
+
+        if (! file_exists($gitHeadPath)) {
             return 'unknown';
         }
         $headContent = file_get_contents($gitHeadPath);
-        
-        if(strpos($headContent, 'ref:') === 0){
+
+        if (strpos($headContent, 'ref:') === 0) {
             return trim(str_replace('ref: refs/heads/', '', $headContent));
         }
+
         return 'unknown';
     }
 
@@ -67,23 +72,24 @@ class Helps{
         // get SQL and bindings according to the query type
         if ($query instanceof EloquentBuilder || $query instanceof QueryBuilder) {
             $sql = $query->toSql();
-            $bindings =  $query->getBindings();
+            $bindings = $query->getBindings();
         } else {
             throw new \InvalidArgumentException('Expected instance of Query\Builder or Eloquent\Builder');
         }
 
         foreach ($bindings as $binding) {
-            $value = is_numeric($binding) ? $binding : "'" . addslashes($binding) . "'";
+            $value = is_numeric($binding) ? $binding : "'".addslashes($binding)."'";
             $sql = preg_replace('/\?/', $value, $sql, 1);
         }
 
         $path = storage_path("logs/{$filename}.txt");
 
-        File::append($path, $sql . PHP_EOL);
+        File::append($path, $sql.PHP_EOL);
     }
 
-    public static function executeLogQuery($query, string $filename = 'resultados-query'){
-        if ($query instanceof EloquentBuilder || $query instanceof QueryBuilder){
+    public static function executeLogQuery($query, string $filename = 'resultados-query')
+    {
+        if ($query instanceof EloquentBuilder || $query instanceof QueryBuilder) {
             $results = $query->get();
         } else {
             throw new \InvalidArgumentException('Expected instance of Query\Builder or Eloquent\Builder');
@@ -102,11 +108,11 @@ class Helps{
         $configMap = [
             'personal' => [
                 'model' => PersonalConfiguration::class,
-                'typeName' => 'Personal'
-            ]
+                'typeName' => 'Personal',
+            ],
         ];
 
-        if (!isset($configMap[$type])) {
+        if (! isset($configMap[$type])) {
             throw new \InvalidArgumentException('Tipo de configuracion invalido: {$type}');
         }
 
@@ -115,8 +121,8 @@ class Helps{
 
         // get configs
         $configs = $modelClass::where('user_id', $userId)
-                            ->orderBy('id', 'desc')
-                            ->get();
+            ->orderBy('id', 'desc')
+            ->get();
 
         foreach ($configs as $config) {
             $config->start_counting = Carbon::parse($config->start_counting)->format('d/m/Y');
@@ -130,93 +136,94 @@ class Helps{
     }
 
     /**
-    * Retrieve all available periods for the authenticated user.
-    *
-    * This method fetches all the periods (start and end dates) 
-    * along with the available money for each period configured 
-    * by the user.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * @return \Illuminate\Support\Collection List of periods with start date, end date, and available money.
-    */
+     * Retrieve all available periods for the authenticated user.
+     *
+     * This method fetches all the periods (start and end dates)
+     * along with the available money for each period configured
+     * by the user.
+     *
+     * @param  int  $userId  The ID of the authenticated user.
+     * @return \Illuminate\Support\Collection List of periods with start date, end date, and available money.
+     */
     public static function getAllPeriods(int $user, string $tabla): Collection
     {
-        if($tabla === 'personal'){
+        if ($tabla === 'personal') {
             return PersonalConfiguration::select('start_counting', 'end_counting', 'month_available_money')
-                                ->where('user_id', $user)
-                                ->get();
+                ->where('user_id', $user)
+                ->get();
         }
 
         return collect();
     }
 
-        /**
-    * Get the start date of the latest configured period for the user.
-    *
-    * Retrieves the start_counting date from the most recent 
-    * Configuration record of the authenticated user. 
-    * If no configuration exists, returns the current date.
-    *
-    * @param \App\Models\User $user The authenticated user instance.
-    * @return \Illuminate\Support\Carbon|string Start date from the latest configuration or current date.
-    */
+    /**
+     * Get the start date of the latest configured period for the user.
+     *
+     * Retrieves the start_counting date from the most recent
+     * Configuration record of the authenticated user.
+     * If no configuration exists, returns the current date.
+     *
+     * @param  \App\Models\User  $user  The authenticated user instance.
+     * @return \Illuminate\Support\Carbon|string Start date from the latest configuration or current date.
+     */
     public static function getStartDateFromDatabase(int $user, string $tabla): string
     {
-        if($tabla === 'personal'){
+        if ($tabla === 'personal') {
             return PersonalConfiguration::where('user_id', $user)
-                                ->latest()
-                                ->value('start_counting') ?? Carbon::now()->toDateString();
+                ->latest()
+                ->value('start_counting') ?? Carbon::now()->toDateString();
         }
 
         return Carbon::now()->toDateString();
     }
 
     /**
-    * Get the end date of the latest configured period for the user.
-    *
-    * Retrieves the end_counting date from the most recent 
-    * Configuration record of the authenticated user. 
-    * If no configuration exists, returns the current date.
-    *
-    * @param \App\Models\User $user The authenticated user instance.
-    * @return \Illuminate\Support\Carbon|string End date from the latest configuration or current date.
-    */
+     * Get the end date of the latest configured period for the user.
+     *
+     * Retrieves the end_counting date from the most recent
+     * Configuration record of the authenticated user.
+     * If no configuration exists, returns the current date.
+     *
+     * @param  \App\Models\User  $user  The authenticated user instance.
+     * @return \Illuminate\Support\Carbon|string End date from the latest configuration or current date.
+     */
     public static function getEndDateFromDatabase(int $user, string $tabla): string
     {
-        if($tabla === 'personal'){
+        if ($tabla === 'personal') {
             return PersonalConfiguration::where('user_id', $user)
-                                ->latest()
-                                ->value('end_counting') ?? Carbon::now()->toDateString();
+                ->latest()
+                ->value('end_counting') ?? Carbon::now()->toDateString();
         }
+
         return Carbon::now()->toDateString();
     }
 
     /**
-    * Filter expenses and retrieve related data for a specific period.
-    *
-    * This method retrieves the expenses, available money, and total 
-    * amount spent by the authenticated user within the specified 
-    * start and end dates.
-    *
-    * @param int $userId The ID of the authenticated user.
-    * @param string $startDate The start date of the period (Y-m-d).
-    * @param string $endDate The end date of the period (Y-m-d).
-    * @return array Contains:
-    *  - spents: List of expenses within the period.
-    *  - availableMoney: Money available in the selected period.
-    *  - totalPrice: Total amount of expenses in the selected period.
-    */
+     * Filter expenses and retrieve related data for a specific period.
+     *
+     * This method retrieves the expenses, available money, and total
+     * amount spent by the authenticated user within the specified
+     * start and end dates.
+     *
+     * @param  int  $userId  The ID of the authenticated user.
+     * @param  string  $startDate  The start date of the period (Y-m-d).
+     * @param  string  $endDate  The end date of the period (Y-m-d).
+     * @return array Contains:
+     *               - spents: List of expenses within the period.
+     *               - availableMoney: Money available in the selected period.
+     *               - totalPrice: Total amount of expenses in the selected period.
+     */
     public static function filterByPeriod(int $userId, string $startDate, string $endDate, string $type): array
     {
-        if($type === 'personal'){
+        if ($type === 'personal') {
             $spents = self::getFilteredSpentsByPeriod($userId, $startDate, $endDate);
             $availableMoney = self::getAvailableMoneyByPeriod($userId, $startDate, $endDate);
             $totalPrice = self::getTotalPriceByPeriod($userId, $startDate, $endDate);
-            
+
             return [
                 'spents' => $spents,
                 'availableMoney' => $availableMoney,
-                'totalPrice' => $totalPrice
+                'totalPrice' => $totalPrice,
             ];
         }
 
@@ -225,11 +232,13 @@ class Helps{
 
     public static function filterByText(int $userId, string $text, string $type): Collection
     {
-        if($type === 'personal'){
-            return Spent::where('user_id', $userId)
-                            ->where('name', 'ilike', '%' . $text . '%')
-                            ->orderBy('expense_date', 'desc')
-                            ->get();
+        if ($type === 'personal') {
+            $spents = Spent::where('user_id', $userId)
+                ->where('name', 'ilike', '%'.$text.'%')
+                ->orderBy('expense_date', 'desc')
+                ->get();
+
+            return self::formatSpentsForDisplay($spents);
         }
 
         return collect();
@@ -238,19 +247,22 @@ class Helps{
     private static function getFilteredSpentsByPeriod(int $userId, string $startDate, string $endDate): Collection
     {
         $informations = Spent::where('user_id', $userId)
-                        ->whereBetween('expense_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
-                        ->orderBy('expense_date', 'desc')
-                        ->get();
+            ->whereBetween('expense_date', [sprintf("'%s'", $startDate), sprintf("'%s'", $endDate)])
+            ->orderBy('expense_date', 'desc')
+            ->get();
 
-        $informations->transform(function ($info) {
+        return self::formatSpentsForDisplay($informations);
+    }
+
+    private static function formatSpentsForDisplay(Collection $spents): Collection
+    {
+        return $spents->transform(function ($info) {
             $info->name = trim($info->name);
             $info->price = Helps::formatValue($info->price);
-            // $info->price = number_format($info->price, 0, '', '.');
             $info->expense_date = Carbon::parse($info->expense_date)->format('d/m/Y');
+
             return $info;
         });
-
-        return $informations;
     }
 
     private static function getAvailableMoneyByPeriod(int $userId, string $startDate, string $endDate): int
@@ -262,24 +274,24 @@ class Helps{
             $query->where(function ($q) use ($startDate, $endDate) {
                 $q->where(function ($query) use ($startDate, $endDate) {
                     $query->whereNotNull('start_counting')
-                          ->whereNotNull('end_counting')
-                          ->where(function ($query) use ($startDate, $endDate) {
-                              $query->whereBetween('start_counting', [$startDate, $endDate])
-                                    ->orWhereBetween('end_counting', [$startDate, $endDate])
-                                    ->orWhere(function ($query) use ($startDate, $endDate) {
-                                        $query->where('start_counting', '<=', $startDate)
-                                              ->where('end_counting', '>=', $endDate);
-                                    });
-                          });
+                        ->whereNotNull('end_counting')
+                        ->where(function ($query) use ($startDate, $endDate) {
+                            $query->whereBetween('start_counting', [$startDate, $endDate])
+                                ->orWhereBetween('end_counting', [$startDate, $endDate])
+                                ->orWhere(function ($query) use ($startDate, $endDate) {
+                                    $query->where('start_counting', '<=', $startDate)
+                                        ->where('end_counting', '>=', $endDate);
+                                });
+                        });
                 });
             });
         } else {
             // Si no se proporcionan fechas, devuelve el dinero disponible para la configuración actual.
             $query->whereNotNull('start_counting')
-                  ->whereNotNull('end_counting')
-                  ->whereDate('start_counting', '<=', now())
-                  ->whereDate('end_counting', '>=', now())
-                  ->orderBy('start_counting', 'desc');
+                ->whereNotNull('end_counting')
+                ->whereDate('start_counting', '<=', now())
+                ->whereDate('end_counting', '>=', now())
+                ->orderBy('start_counting', 'desc');
         }
 
         $configurationMoney = $query->first();
@@ -290,16 +302,16 @@ class Helps{
     private static function getTotalPriceByPeriod(int $userId, string $startDate, string $endDate): int
     {
         return Spent::where('user_id', $userId)
-                        ->whereBetween('expense_date', [$startDate, $endDate])
-                        ->sum('price');
+            ->whereBetween('expense_date', [$startDate, $endDate])
+            ->sum('price');
     }
 
     private static function getFilteredSellsByPeriod(int $userId, string $startDate, string $endDate): Collection
     {
         $informations = Sell::where('user_id', $userId)
-                        ->whereBetween('sell_date', [sprintf("'%s'",$startDate), sprintf("'%s'", $endDate)])
-                        ->orderBy('sell_date', 'desc')
-                        ->get();
+            ->whereBetween('sell_date', [sprintf("'%s'", $startDate), sprintf("'%s'", $endDate)])
+            ->orderBy('sell_date', 'desc')
+            ->get();
 
         $informations->transform(function ($info) {
             $info->name = trim($info->name);
@@ -312,5 +324,3 @@ class Helps{
         return $informations;
     }
 }
-
-?>
