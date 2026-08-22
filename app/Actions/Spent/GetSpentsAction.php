@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Spent;
 
-use App\Models\Spent;
+use App\Models\Movement;
 use Illuminate\Support\Collection;
 
 class GetSpentsAction
@@ -14,13 +14,14 @@ class GetSpentsAction
         ?string $startDate = null,
         ?string $endDate = null,
     ): Collection {
-        $query = Spent::where('user_id', $userId)
-                      ->orderBy('expense_date', 'desc');
+        $query = Movement::expenses()
+                      ->where('user_id', $userId)
+                      ->orderBy('movement_date', 'desc');
 
         if ($search) {
             $query->where('name', 'ilike', '%' . $search . '%');
         } elseif ($startDate && $endDate) {
-            $query->whereBetween('expense_date', [$startDate, $endDate]);
+            $query->whereBetween('movement_date', [$startDate, $endDate]);
         }
 
         return $query->get();

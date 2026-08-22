@@ -10,7 +10,7 @@ use App\Actions\Spent\UpdateSpentAction;
 use App\Helpers\Helps;
 use App\Http\Requests\Spent\StoreSpentRequest;
 use App\Http\Requests\Spent\UpdateSpentRequest;
-use App\Models\Spent;
+use App\Models\Movement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -84,9 +84,11 @@ class SpentController extends Controller
         return redirect()->route('dashboard')->with('success', 'Gasto agregado exitosamente.');
     }
 
-    public function edit(Spent $spent)
+    public function edit(Movement $spent)
     {
         $spent->name = trim($spent->name);
+        $spent->expense_date = $spent->movement_date;
+        $spent->price = $spent->amount;
 
         return view('abm.edit', [
             'spent' => $spent,
@@ -94,14 +96,14 @@ class SpentController extends Controller
         ]);
     }
 
-    public function update(UpdateSpentRequest $request, Spent $spent, UpdateSpentAction $action)
+    public function update(UpdateSpentRequest $request, Movement $spent, UpdateSpentAction $action)
     {
         $action->execute($spent, $request->validated());
 
         return redirect('dashboard');
     }
 
-    public function destroy(Request $request, Spent $spent, DeleteSpentAction $action)
+    public function destroy(Request $request, Movement $spent, DeleteSpentAction $action)
     {
         $action->execute($spent);
 

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions\Spent;
 
+use App\Enums\MovementType;
 use App\Helpers\Helps;
+use App\Models\Movement;
 use App\Models\PersonalConfiguration;
-use App\Models\Spent;
 use Carbon\Carbon;
 
 class GetDashboardDataAction
@@ -73,14 +74,15 @@ class GetDashboardDataAction
     private function getTotalSpentsByPeriod(int $userId, ?string $startDate, ?string $endDate): int
     {
         if ($startDate && $endDate) {
-            return Spent::join('personal_configurations as c', function ($join) {
-                $join->on('spents.expense_date', '>=', 'c.start_counting')
-                    ->on('spents.expense_date', '<=', 'c.end_counting')
-                    ->on('spents.user_id', '=', 'c.user_id');
+            return Movement::join('personal_configurations as c', function ($join) {
+                $join->on('movements.movement_date', '>=', 'c.start_counting')
+                    ->on('movements.movement_date', '<=', 'c.end_counting')
+                    ->on('movements.user_id', '=', 'c.user_id');
             })
                 ->where('c.start_counting', $startDate)
                 ->where('c.end_counting', $endDate)
-                ->where('spents.user_id', $userId)
+                ->where('movements.user_id', $userId)
+                ->where('movements.type', MovementType::Expense)
                 ->count();
         }
 

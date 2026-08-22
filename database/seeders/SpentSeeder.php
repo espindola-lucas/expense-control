@@ -2,10 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Actions\Account\GetOrCreateDefaultAccountAction;
+use App\Actions\Category\GetOrCreateDefaultCategoryAction;
+use App\Enums\CategoryType;
+use App\Enums\MovementType;
+use App\Models\Movement;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Spent;
-use Carbon\Carbon;
 
 class SpentSeeder extends Seeder
 {
@@ -14,28 +18,24 @@ class SpentSeeder extends Seeder
      */
     public function run(): void
     {
-        // Primer registro
-        Spent::create([
-            'expense_date' => Carbon::now(),
-            'name' => 'Gasto 1',
-            'price' => 100,
-            'user_id' => 1, // Refiriéndose al ID de un usuario previamente creado
-        ]);
+        $userId = 1; // Refiriéndose al ID de un usuario previamente creado
 
-        // Segundo registro
-        Spent::create([
-            'expense_date' => Carbon::now(),
-            'name' => 'Gasto 2',
-            'price' => 250,
-            'user_id' => 1, // Refiriéndose al ID de un usuario previamente creado
-        ]);
+        $account = app(GetOrCreateDefaultAccountAction::class)->execute($userId);
+        $category = app(GetOrCreateDefaultCategoryAction::class)->execute($userId, CategoryType::Expense);
 
-        // Tercer registro
-        Spent::create([
-            'expense_date' => Carbon::now(),
-            'name' => 'Gasto 3',
-            'price' => 150,
-            'user_id' => 1, // Refiriéndose al ID de un usuario previamente creado
-        ]);
+        $names = ['Gasto 1', 'Gasto 2', 'Gasto 3'];
+        $prices = [100, 250, 150];
+
+        foreach ($names as $index => $name) {
+            Movement::create([
+                'user_id' => $userId,
+                'account_id' => $account->id,
+                'category_id' => $category->id,
+                'type' => MovementType::Expense,
+                'name' => $name,
+                'amount' => $prices[$index],
+                'movement_date' => Carbon::now(),
+            ]);
+        }
     }
 }

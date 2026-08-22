@@ -8,9 +8,10 @@ use App\Actions\Spent\GetDashboardDataAction;
 use App\Actions\Spent\GetSpentsAction;
 use App\Actions\Spent\StoreSpentAction;
 use App\Actions\Spent\UpdateSpentAction;
+use App\Enums\MovementType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SpentResource;
-use App\Models\Spent;
+use App\Models\Movement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -65,10 +66,14 @@ class SpentApiController extends Controller
         return response()->json(new SpentResource($spent), 201);
     }
 
-    public function update(Request $request, Spent $spent, UpdateSpentAction $action): JsonResponse
+    public function update(Request $request, Movement $spent, UpdateSpentAction $action): JsonResponse
     {
         if ($spent->user_id !== $request->user()->id) {
             abort(403);
+        }
+
+        if ($spent->type !== MovementType::Expense) {
+            abort(404);
         }
 
         $validated = $request->validate([
@@ -86,10 +91,14 @@ class SpentApiController extends Controller
         return response()->json(new SpentResource($spent->fresh()));
     }
 
-    public function destroy(Request $request, Spent $spent, DeleteSpentAction $action): JsonResponse
+    public function destroy(Request $request, Movement $spent, DeleteSpentAction $action): JsonResponse
     {
         if ($spent->user_id !== $request->user()->id) {
             abort(403);
+        }
+
+        if ($spent->type !== MovementType::Expense) {
+            abort(404);
         }
 
         $action->execute($spent);

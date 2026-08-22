@@ -13,8 +13,8 @@ class SpentResource extends JsonResource
         return [
             'id'     => (string) $this->id,
             'name'   => trim($this->name),
-            'amount' => (float) $this->price,
-            'date'   => $this->expense_date,
+            'amount' => (float) $this->amount,
+            'date'   => $this->movement_date,
         ];
     }
 }

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 use App\Enums\MonthEnum;
+use App\Enums\MovementType;
+use App\Models\Movement;
 use App\Models\PersonalConfiguration;
-use App\Models\Spent;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -233,9 +234,10 @@ class Helps
     public static function filterByText(int $userId, string $text, string $type): Collection
     {
         if ($type === 'personal') {
-            $spents = Spent::where('user_id', $userId)
+            $spents = Movement::expenses()
+                ->where('user_id', $userId)
                 ->where('name', 'ilike', '%'.$text.'%')
-                ->orderBy('expense_date', 'desc')
+                ->orderBy('movement_date', 'desc')
                 ->get();
 
             return self::formatSpentsForDisplay($spents);
@@ -246,9 +248,10 @@ class Helps
 
     private static function getFilteredSpentsByPeriod(int $userId, string $startDate, string $endDate): Collection
     {
-        $informations = Spent::where('user_id', $userId)
-            ->whereBetween('expense_date', [sprintf("'%s'", $startDate), sprintf("'%s'", $endDate)])
-            ->orderBy('expense_date', 'desc')
+        $informations = Movement::expenses()
+            ->where('user_id', $userId)
+            ->whereBetween('movement_date', [sprintf("'%s'", $startDate), sprintf("'%s'", $endDate)])
+            ->orderBy('movement_date', 'desc')
             ->get();
 
         return self::formatSpentsForDisplay($informations);
@@ -258,8 +261,8 @@ class Helps
     {
         return $spents->transform(function ($info) {
             $info->name = trim($info->name);
-            $info->price = Helps::formatValue($info->price);
-            $info->expense_date = Carbon::parse($info->expense_date)->format('d/m/Y');
+            $info->price = Helps::formatValue($info->amount);
+            $info->expense_date = Carbon::parse($info->movement_date)->format('d/m/Y');
 
             return $info;
         });
@@ -301,9 +304,10 @@ class Helps
 
     private static function getTotalPriceByPeriod(int $userId, string $startDate, string $endDate): int
     {
-        return Spent::where('user_id', $userId)
-            ->whereBetween('expense_date', [$startDate, $endDate])
-            ->sum('price');
+        return Movement::expenses()
+            ->where('user_id', $userId)
+            ->whereBetween('movement_date', [$startDate, $endDate])
+            ->sum('amount');
     }
 
     private static function getFilteredSellsByPeriod(int $userId, string $startDate, string $endDate): Collection
